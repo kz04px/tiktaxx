@@ -1,0 +1,6 @@
+*.o
+*.exe
+*.txt
+*.lnk
+!LICENSE.txt
+!README.txt
