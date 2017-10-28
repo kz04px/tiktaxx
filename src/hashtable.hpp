@@ -2,6 +2,7 @@
 #define HASHTABLE_HPP_INCLUDED
 
 #include <cstdint>
+
 #include "move.hpp"
 
 typedef struct

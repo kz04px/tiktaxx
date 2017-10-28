@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "search.hpp"
 #include "movegen.hpp"
 #include "move.hpp"

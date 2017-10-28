@@ -1,5 +1,6 @@
-#include "zobrist.hpp"
 #include <random>
+
+#include "zobrist.hpp"
 
 uint64_t turnKey;
 uint64_t pieceKeys[2][49];

@@ -1,6 +1,8 @@
 #ifndef MAKEMOVE_HPP_INCLUDED
 #define MAKEMOVE_HPP_INCLUDED
 
+#include <string>
+
 #include "ataxx.hpp"
 #include "move.hpp"
 

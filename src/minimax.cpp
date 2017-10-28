@@ -1,4 +1,6 @@
+#include <iostream>
 #include <ctime>
+
 #include "search.hpp"
 #include "makemove.hpp"
 #include "move.hpp"

@@ -9,7 +9,6 @@
 
 #include <iostream>
 
-#include "ataxx.hpp"
 #include "search.hpp"
 #include "movegen.hpp"
 #include "move.hpp"

@@ -2,6 +2,7 @@
 #define ZOBRIST_HPP_INCLUDED
 
 #include <cstdint>
+
 #include "ataxx.hpp"
 
 void zobristInit();

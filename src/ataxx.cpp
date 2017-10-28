@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "ataxx.hpp"
 #include "score.hpp"
 #include "eval.hpp"

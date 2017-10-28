@@ -11,12 +11,10 @@
 #include <vector>
 #include <cmath>
 
-#include "ataxx.hpp"
 #include "search.hpp"
 #include "movegen.hpp"
 #include "move.hpp"
 #include "makemove.hpp"
-#include "pv.hpp"
 #include "rollout.hpp"
 
 typedef struct Node

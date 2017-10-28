@@ -1,7 +1,7 @@
 #ifndef ATAXX_HPP_INCLUDED
 #define ATAXX_HPP_INCLUDED
 
-#include <iostream>
+#include <string>
 #include <cstdint>
 
 struct SIDE { enum {CROSS, NOUGHT}; };
