@@ -23,8 +23,8 @@ int main()
     Hashtable tt;
     tableInit(&tt);
     create(&tt, 128);
-    //printDetails(&tt);
-    //std::cout << std::endl;
+    printDetails(&tt);
+    std::cout << std::endl;
 
     print(pos);
     std::cout << std::endl;
@@ -137,8 +137,12 @@ int main()
     std::cout << std::endl;
     std::cout << std::endl;
 
+    //printDetails(&tt);
+    //clear(&tt);
+    //std::cout << std::endl;
+
     std::cout << "Perft:" << std::endl;
-    perft(pos, 6);
+    perft(&tt, pos, 8);
     std::cout << std::endl;
     std::cout << std::endl;
 

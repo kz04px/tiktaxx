@@ -76,7 +76,7 @@ void search(Hashtable *tt, const Position& pos, const int depth)
     // Search info
     searchInfo info;
     info.start = clock();
-    info.end   = clock() + 10*CLOCKS_PER_SEC;
+    info.end   = clock() + 20*CLOCKS_PER_SEC;
     info.nodes = 0ULL;
     info.leafNodes = 0ULL;
     info.depth = 0;

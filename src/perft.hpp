@@ -4,9 +4,9 @@
 #include <cinttypes>
 
 #include "ataxx.hpp"
+#include "hashtable.hpp"
 
-void perft(const Position& pos, const int depth);
-void splitPerft(const Position& pos, const int depth);
-uint64_t perftSearch(const int depth);
+void perft(Hashtable *tt, const Position& pos, const int depth);
+void splitPerft(Hashtable *tt, const Position& pos, const int depth);
 
 #endif

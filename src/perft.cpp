@@ -1,13 +1,13 @@
 #include <iostream>
 #include <ctime>
 
+#include "perft.hpp"
 #include "makemove.hpp"
 #include "move.hpp"
 #include "movegen.hpp"
-#include "hashtable.hpp"
 #include "zobrist.hpp"
 
-uint64_t perftSearch(const Position& pos, const int depth)
+uint64_t perftSearch(Hashtable *tt, const Position& pos, const int depth)
 {
     Move moves[256];
     int numMoves = movegen(pos, moves);
@@ -16,16 +16,16 @@ uint64_t perftSearch(const Position& pos, const int depth)
     {
         return numMoves;
     }
-/*
-    uint64_t key = hash.generate(pos);
+
+    uint64_t key = generateKey(pos);
 
     // Check the hash table
-    Entry entry = tt->probe(key);
-    if(key == entry.key && entry.depth == depth)
+    Entry entry = probe(tt, key);
+    if(key == entry.key && getDepth(entry) == depth)
     {
-        return entry.nodes;
+        return getNodes(entry);
     }
-*/
+
     uint64_t nodes = 0ULL;
 
     for(int n = 0; n < numMoves; ++n)
@@ -34,17 +34,18 @@ uint64_t perftSearch(const Position& pos, const int depth)
 
         makemove(newPos, moves[n]);
 
-        nodes += perftSearch(newPos, depth-1);
+        nodes += perftSearch(tt, newPos, depth-1);
     }
 
     // Add the hash table entry
-    //tt->add(key, depth, nodes);
+    addPerft(tt, key, depth, nodes);
 
     return nodes;
 }
 
-void splitPerft(const Position& pos, const int depth)
+void splitPerft(Hashtable *tt, const Position& pos, const int depth)
 {
+    clear(tt);
     Move moves[256];
     int numMoves = movegen(pos, moves);
 
@@ -59,19 +60,21 @@ void splitPerft(const Position& pos, const int depth)
                   << (moves[n].to == moves[n].from ? "single" : "double")
                   << "   ";
 
-        uint64_t nodes = perftSearch(newPos, depth-1);
+        uint64_t nodes = perftSearch(tt, newPos, depth-1);
 
         std::cout << nodes
                   << std::endl;
     }
+    clear(tt);
 }
 
-void perft(const Position& pos, const int depth)
+void perft(Hashtable *tt, const Position& pos, const int depth)
 {
+    clear(tt);
     for(int n = 1; n <= depth; ++n)
     {
         clock_t start = clock();
-        uint64_t nodes = perftSearch(pos, n);
+        uint64_t nodes = perftSearch(tt, pos, n);
         clock_t end = clock();
         double timeSpent = (double)(end-start)/CLOCKS_PER_SEC;
 

@@ -46,12 +46,12 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
     Entry entry = probe(info.tt, key);
     if(key == entry.key)
     {
-        if(entry.depth >= depth)
+        if(getDepth(entry) >= depth)
         {
-            return entry.eval;
+            return getEval(entry);
         }
 
-        ttMove = entry.move;
+        ttMove = getMove(entry);
     }
 
     PV newPV;
