@@ -22,6 +22,7 @@ void mctsPure(const Position& pos);
 void mctsUct(const Position& pos);
 
 // Other
+int mostCaptures(const Position& pos, searchInfo& info, searchStack *ss, PV& pv);
 int random(const Position& pos, searchInfo& info, searchStack *ss, PV& pv);
 
 #endif

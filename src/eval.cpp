@@ -85,21 +85,6 @@ int eval(const Position& pos)
         copy &= copy - 1;
     }
 */
-/*
-    for(int sq = 0; sq < 49; ++sq)
-    {
-        uint64_t bb = (1ULL)<<sq;
-        
-        if(pieces[PIECE::CROSS] & bb)
-        {
-            ourPST += PST[sq];
-        }
-        else if(pieces[PIECE::NOUGHT] & bb)
-        {
-            theirPST += PST[sq];
-        }
-    }
-*/
 
     int score =   TURN_BONUS*(pos.turn == SIDE::CROSS ? 1 : -1)
                 + PIECE_VALUE*numFriendly

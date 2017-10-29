@@ -2,6 +2,8 @@
 
 #include "movegen.hpp"
 #include "move.hpp"
+#include "bitboards.hpp"
+#include "other.hpp"
 
 std::string moveString(const Move n)
 {
@@ -29,4 +31,12 @@ void printMoves(const Position& pos)
                   << (moves[n].to == moves[n].from ? "single" : "double")
                   << std::endl;
     }
+}
+
+int countCaptures(const Position& pos, const Move n)
+{
+    uint64_t toBB = (1ULL) << n.to;
+    uint64_t near = singleJump(toBB);
+    uint64_t captured = near & pos.pieces[!pos.turn];
+    return popcountll(captured);
 }

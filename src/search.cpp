@@ -20,9 +20,9 @@ void splitSearch(Hashtable *tt, const Position& pos, const int depth)
     Move moves[256];
     int numMoves = movegen(pos, moves);
 
-    searchStack ss[300];
     // Set search stack
-    for(int n = 0; n < 300; ++n)
+    searchStack ss[MAX_DEPTH];
+    for(int n = 0; n < MAX_DEPTH; ++n)
     {
         ss[n].ply = n;
     }
@@ -89,6 +89,7 @@ void search(Hashtable *tt, const Position& pos, const int depth)
         pv.numMoves = 0;
 
         //int score = random(pos, info, ss, pv);
+        //int score = mostCaptures(pos, info, ss, pv);
         //int score = minimax(pos, info, ss, pv, d);
         int score = alphaBeta(pos, info, ss, pv, -INF, INF, d);
 
