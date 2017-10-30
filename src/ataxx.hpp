@@ -35,7 +35,7 @@ typedef struct
     std::uint64_t pieces[2];
 } Position;
 
-void setBoard(Position& pos, const char *fen);
+void setBoard(Position& pos, std::string fen);
 void print(const Position& pos);
 int valid(const Position& pos);
 

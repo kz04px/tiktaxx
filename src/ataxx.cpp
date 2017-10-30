@@ -4,7 +4,7 @@
 #include "score.hpp"
 #include "eval.hpp"
 
-void setBoard(Position& pos, const char *fen)
+void setBoard(Position& pos, std::string fen)
 {
     pos.pieces[PIECE::CROSS] = ((1ULL)<<(SQUARE::a7)) +
                                ((1ULL)<<(SQUARE::g1));

@@ -64,8 +64,11 @@ void printDetails(Hashtable *table)
 {
     std::cout << "Num entries: " << table->numEntries << std::endl;
     std::cout << "Max entries: " << table->maxEntries << std::endl;
-    std::cout << "Fullness:    " << 100.0*(double)table->numEntries/table->maxEntries << "%" << std::endl;
     std::cout << "Entry size:  " << sizeof(Entry) << std::endl;
+    if(table->maxEntries > 0)
+    {
+        std::cout << "Fullness:    " << 100.0*(double)table->numEntries/table->maxEntries << "%" << std::endl;
+    }
     std::cout << "Total size:  " << sizeof(Entry)*table->maxEntries << std::endl;
 }
 
@@ -92,7 +95,7 @@ int create(Hashtable *table, const int megabytes)
 {
     if(table->entries)
     {
-        delete table->entries;
+        tableRemove(table);
     }
 
     int bytes = megabytes * 1024 * 1024;
@@ -107,6 +110,16 @@ int create(Hashtable *table, const int megabytes)
     table->entries = new Entry[table->maxEntries];
 
     return bytes;
+}
+
+void tableRemove(Hashtable *table)
+{
+    if(table->entries)
+    {
+        table->numEntries = 0;
+        table->maxEntries = 0;
+        delete table->entries;
+    }
 }
 
 Entry probe(Hashtable *table, const uint64_t key)
