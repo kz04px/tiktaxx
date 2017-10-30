@@ -8,6 +8,21 @@ int main()
 {
     srand(time(0));
     zobristInit();
-    messageLoop();
+
+    std::string mode;
+    std::cin >> mode;
+    if(mode == "manual")
+    {
+        manual();
+    }
+    else if(mode == "uat")
+    {
+        messageLoop();
+    }
+    else
+    {
+        std::cout << "ERROR: Unknown protocol " << mode << std::endl;
+    }
+
     return 0;
 }

@@ -128,7 +128,18 @@ void search(Hashtable *tt, const Position& pos, const int depth)
         lastPV = pv;
     }
 
-    std::cout << "bestmove";
-    std::cout << " " << moveString(lastPV.moves[0]);
+    if(lastPV.numMoves == 0)
+    {
+        // If we somehow don't have a move from the PV, play a random one
+        Move moves[256];
+        int numMoves = movegen(pos, moves);
+
+        int n = rand() % numMoves;
+        std::cout << "bestmove " << moveString(moves[n]) << std::endl;
+    }
+    else
+    {
+        std::cout << "bestmove " << moveString(lastPV.moves[0]) << std::endl;
+    }
     std::cout << std::endl;
 }
