@@ -8,17 +8,17 @@
 
 #define STARTPOS "x5o/7/2-1-2/7/2-1-2/7/o5x x"
 
-bool setBoard(Position& pos, std::string fen)
+int setBoard(Position& pos, std::string fen)
 {
     if(fen == "startpos") {fen = STARTPOS;}
 
     std::vector<std::string> tokens = split(fen, ' ');
 
-         if(tokens.size() == 0) {return false;}
-    else if(tokens.size() > 2)  {return false;}
+         if(tokens.size() == 0) {return 1;}
+    else if(tokens.size() > 2)  {return 2;}
 
-         if(tokens[0].length() < 13) {return false;}
-    else if(tokens[0].length() > 54) {return false;}
+         if(tokens[0].length() < 13) {return 3;}
+    else if(tokens[0].length() > 55) {return 4;}
 
     // Clear
     pos.pieces[PIECE::CROSS] = 0ULL;
@@ -60,7 +60,7 @@ bool setBoard(Position& pos, std::string fen)
                 sq -= 14;
                 break;
             default:
-                return false;
+                return 5;
                 break;
         }
     }
@@ -77,15 +77,15 @@ bool setBoard(Position& pos, std::string fen)
         }
         else
         {
-            return false;
+            return 6;
         }
     }
 
-    if(sq != SQUARE::a2) {return false;}
+    if(sq != SQUARE::a2) {return 7;}
 
-    if(valid(pos) != 0) {return false;}
+    if(valid(pos) != 0) {return 8;}
 
-    return true;
+    return 0;
 }
 
 void print(const Position& pos)

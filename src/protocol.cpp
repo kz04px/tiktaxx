@@ -195,12 +195,22 @@ void messageLoop()
             {
                 if(n+2 < tokens.size())
                 {
-                    setBoard(pos, tokens[n+1] + " " + tokens[n+2]);
+                    int r = setBoard(pos, tokens[n+1] + " " + tokens[n+2]);
+                    if(r != 0)
+                    {
+                        std::cout << "WARNING: set position error (" << r << ")" << std::endl;
+                    }
+
                     n += 2;
                 }
                 else if(n+1 < tokens.size())
                 {
-                    setBoard(pos, tokens[n+1] + " X");
+                    int r = setBoard(pos, tokens[n+1] + " X");
+                    if(r != 0)
+                    {
+                        std::cout << "WARNING: set position error (" << r << ")" << std::endl;
+                    }
+
                     n += 1;
                 }
             }
@@ -234,6 +244,7 @@ void messageLoop()
                 std::cout << "-- setpos [position]" << std::endl;
                 std::cout << "-- eval" << std::endl;
                 std::cout << "-- movegen" << std::endl;
+                std::cout << "-- moves [moves]" << std::endl;
                 std::cout << "-- isready" << std::endl;
                 std::cout << "-- help" << std::endl;
                 std::cout << "-- about" << std::endl;
