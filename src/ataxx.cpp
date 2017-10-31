@@ -73,7 +73,7 @@ bool setBoard(Position& pos, std::string fen)
         }
         else if(tokens[1] == "o" || tokens[1] == "O")
         {
-            pos.turn = SIDE::CROSS;
+            pos.turn = SIDE::NOUGHT;
         }
         else
         {

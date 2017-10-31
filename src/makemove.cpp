@@ -68,12 +68,15 @@ void makemove(Position& pos, const Move n)
     pos.ply++;
 }
 
-void makemoves(Position& pos, const std::string movesString)
+bool makemoves(Position& pos, const std::string movesString)
 {
     std::vector<std::string> tokens = split(movesString, ' ');
 
     for(unsigned int n = 0; n < tokens.size(); ++n)
     {
+        if(legalMove(pos, tokens[n]) == false) {return false;}
         makemove(pos, tokens[n]);
     }
+
+    return true;
 }

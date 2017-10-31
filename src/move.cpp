@@ -40,3 +40,35 @@ int countCaptures(const Position& pos, const Move n)
     uint64_t captured = near & pos.pieces[!pos.turn];
     return popcountll(captured);
 }
+
+bool legalMove(const Position& pos, std::string move)
+{
+    Move moves[256];
+    int numMoves = movegen(pos, moves);
+
+    for(int n = 0; n < numMoves; ++n)
+    {
+        if(moveString(moves[n]) == move)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool legalMove(const Position& pos, const Move& move)
+{
+    Move moves[256];
+    int numMoves = movegen(pos, moves);
+
+    for(int n = 0; n < numMoves; ++n)
+    {
+        if(moves[n] == move)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}

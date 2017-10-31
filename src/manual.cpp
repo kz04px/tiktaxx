@@ -85,6 +85,7 @@ void manual()
             std::cout << std::endl;
 
             makemove(pos, moveString);
+            engineTurn = !engineTurn;
         }
         else
         {
@@ -93,11 +94,22 @@ void manual()
             std::cout << "Enter move: ";
             std::string moveString;
             std::cin >> moveString;
-            makemove(pos, moveString);
+
+            if(legalMove(pos, moveString) == false)
+            {
+                std::cout << std::endl;
+                std::cout << std::endl;
+                std::cout << "Illegal move" << std::endl;
+            }
+            else
+            {
+                makemove(pos, moveString);
+                engineTurn = !engineTurn;
+            }
+
             std::cout << std::endl;
             std::cout << std::endl;
         }
 
-        engineTurn = !engineTurn;
     }
 }

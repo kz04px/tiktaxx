@@ -22,5 +22,7 @@ struct Move
 std::string moveString(const Move n);
 void printMoves(const Position& pos);
 int countCaptures(const Position& pos, const Move n);
+bool legalMove(const Position& pos, std::string move);
+bool legalMove(const Position& pos, const Move& move);
 
 #endif

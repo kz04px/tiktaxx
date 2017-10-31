@@ -5,6 +5,7 @@
 #include "perft.hpp"
 #include "rollout.hpp"
 #include "eval.hpp"
+#include "makemove.hpp"
 #include "other.hpp"
 
 void messageLoop()
@@ -195,10 +196,12 @@ void messageLoop()
                 if(n+2 < tokens.size())
                 {
                     setBoard(pos, tokens[n+1] + " " + tokens[n+2]);
+                    n += 2;
                 }
                 else if(n+1 < tokens.size())
                 {
                     setBoard(pos, tokens[n+1] + " X");
+                    n += 1;
                 }
             }
             else if(tokens[n] == "eval")
@@ -208,6 +211,16 @@ void messageLoop()
             else if(tokens[n] == "movegen")
             {
                 printMoves(pos);
+            }
+            else if(tokens[n] == "moves")
+            {
+                for(unsigned int i = n+1; i < tokens.size(); ++i)
+                {
+                    if(legalMove(pos, tokens[i]) == false) {break;}
+                    
+                    makemove(pos, tokens[i]);
+                    n += 1;
+                }
             }
             else if(tokens[n] == "help")
             {
