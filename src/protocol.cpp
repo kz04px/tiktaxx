@@ -10,7 +10,7 @@
 void messageLoop()
 {
     Position pos;
-    setBoard(pos, "test");
+    setBoard(pos, "startpos");
 
     Hashtable tt;
     tableInit(&tt);

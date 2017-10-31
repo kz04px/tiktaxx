@@ -1,24 +1,91 @@
 #include <iostream>
+#include <vector>
 
 #include "ataxx.hpp"
 #include "score.hpp"
 #include "eval.hpp"
+#include "other.hpp"
 
-void setBoard(Position& pos, std::string fen)
+#define STARTPOS "x5o/7/2-1-2/7/2-1-2/7/o5x x"
+
+bool setBoard(Position& pos, std::string fen)
 {
-    pos.pieces[PIECE::CROSS] = ((1ULL)<<(SQUARE::a7)) +
-                               ((1ULL)<<(SQUARE::g1));
+    if(fen == "startpos") {fen = STARTPOS;}
 
-    pos.pieces[PIECE::NOUGHT] = ((1ULL)<<(SQUARE::a1)) +
-                                ((1ULL)<<(SQUARE::g7));
+    std::vector<std::string> tokens = split(fen, ' ');
 
-    pos.blockers = ((1ULL)<<(SQUARE::c3)) +
-                   ((1ULL)<<(SQUARE::e3)) +
-                   ((1ULL)<<(SQUARE::c5)) +
-                   ((1ULL)<<(SQUARE::e5));
+         if(tokens.size() == 0) {return false;}
+    else if(tokens.size() > 2)  {return false;}
 
+         if(tokens[0].length() < 13) {return false;}
+    else if(tokens[0].length() > 54) {return false;}
+
+    // Clear
+    pos.pieces[PIECE::CROSS] = 0ULL;
+    pos.pieces[PIECE::NOUGHT] = 0ULL;
+    pos.blockers = 0ULL;
     pos.turn = SIDE::CROSS;
     pos.ply = 0;
+
+    int sq = SQUARE::a7;
+
+    for(char& c : tokens[0])
+    {
+        switch(c)
+        {
+            case 'x':
+            case 'X':
+                pos.pieces[PIECE::CROSS] ^= (1ULL << sq);
+                sq++;
+                break;
+            case 'o':
+            case 'O':
+                pos.pieces[PIECE::NOUGHT] ^= (1ULL << sq);
+                sq++;
+                break;
+            case '-':
+                pos.blockers ^= (1ULL << sq);
+                sq++;
+                break;
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+                sq += c - '0';
+                break;
+            case '/':
+                sq -= 14;
+                break;
+            default:
+                return false;
+                break;
+        }
+    }
+
+    if(tokens.size() > 1)
+    {
+        if(tokens[1] == "x" || tokens[1] == "X")
+        {
+            pos.turn = SIDE::CROSS;
+        }
+        else if(tokens[1] == "o" || tokens[1] == "O")
+        {
+            pos.turn = SIDE::CROSS;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    if(sq != SQUARE::a2) {return false;}
+
+    if(valid(pos) != 0) {return false;}
+
+    return true;
 }
 
 void print(const Position& pos)
