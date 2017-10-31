@@ -64,7 +64,7 @@ void search(Hashtable *tt, const Position& pos, const int depth)
     // PV
     PV lastPV;
     lastPV.numMoves = 0;
-    lastPV.moves[0] = (Move){.from=0, .to=0};
+    lastPV.moves[0] = NO_MOVE;
 
     // Search stack
     searchStack ss[MAX_DEPTH];

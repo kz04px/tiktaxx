@@ -11,6 +11,7 @@
 #include "eval.hpp"
 #include "score.hpp"
 #include "zobrist.hpp"
+#include "sorting.hpp"
 
 int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth)
 {
@@ -40,7 +41,7 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
     }
 
     uint64_t key = generateKey(pos);
-    Move ttMove;
+    Move ttMove = NO_MOVE;
 
     // Check the hash table
     Entry entry = probe(info.tt, key);
@@ -58,21 +59,12 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
 
     PV newPV;
     newPV.numMoves = 0;
-    Move bestMove = (Move){.from=0,.to=0};
+    Move bestMove = NO_MOVE;
     Move moves[256];
     int numMoves = movegen(pos, moves);
 
     // Sort moves
-    for(int n = 0; n < numMoves; ++n)
-    {
-        if(moves[n] == ttMove)
-        {
-            Move temp = moves[0];
-            moves[0] = moves[n];
-            moves[n] = temp;
-            break;
-        }
-    }
+    sortMoves(pos, moves, numMoves, ttMove);
 
     for(int n = 0; n < numMoves; ++n)
     {

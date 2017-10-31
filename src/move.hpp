@@ -19,6 +19,8 @@ struct Move
     }
 };
 
+#define NO_MOVE ((Move){.from=50, .to=50})
+
 std::string moveString(const Move n);
 void printMoves(const Position& pos);
 int countCaptures(const Position& pos, const Move n);
