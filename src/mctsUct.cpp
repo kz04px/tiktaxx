@@ -109,7 +109,7 @@ int expandNode(Node *node)
     return numMoves;
 }
 
-void mctsUct(const Position& pos)
+void mctsUct(const Position& pos, int numSimulations, int movetime)
 {
     Node root;
     root.pos = pos;
@@ -117,11 +117,21 @@ void mctsUct(const Position& pos)
     root.numVisits = 0;
     root.parent = NULL;
 
-    int numSims = 0;
-
     clock_t start = clock();
-    clock_t endTarget = start + 5*CLOCKS_PER_SEC;
-    while(numSims <= 1000000 && clock() < endTarget)
+    clock_t endTarget = clock();
+
+    if(numSimulations == 0)
+    {
+        numSimulations = INT_MAX;
+        endTarget = start + ((double)movetime/1000.0)*CLOCKS_PER_SEC;
+    }
+    else if(movetime == 0)
+    {
+        endTarget = INT_MAX;
+    }
+
+    int sims = 0;
+    while(sims < numSimulations && clock() < endTarget)
     {
         Node *selection = &root;
 
@@ -153,7 +163,7 @@ void mctsUct(const Position& pos)
 
         // Step 3 -- Simulation
         int result = -rollout(selection->pos, 400);
-        numSims++;
+        sims++;
 
 
         // Step 4 -- Backpropagation
@@ -206,8 +216,7 @@ void mctsUct(const Position& pos)
 
 
         // Details
-        //if(numSims<10)
-        if(numSims%10000 == 0)
+        if(sims%10000 == 0)
         {
             Move moves[64];
             int pvLength = getPV(&root, moves);
@@ -223,9 +232,9 @@ void mctsUct(const Position& pos)
                 }
 
                 std::cout << "info"
-                          << " sims " << numSims
-                          << " winrate " << 100.0*(double)root.children[n].numWins/root.children[n].numVisits << "%"
-                          << " sps " << (uint64_t)(numSims/time)
+                          << " sims " << sims
+                          << " score " << 100.0*(double)root.children[n].numWins/root.children[n].numVisits << "%"
+                          << " sps " << (uint64_t)(sims/time)
                           << " time " << 1000.0*time
                           << " pv " << pvString
                           << std::endl;

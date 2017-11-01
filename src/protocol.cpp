@@ -36,7 +36,7 @@ void messageLoop()
                 // Default subcommands
                 int depth = 5;
                 int movetime = 0;
-                int simulations = 0;
+                int numSimulations = 0;
 
                 // Subcommands
                 for(unsigned int i = n+1; i < tokens.size(); ++i)
@@ -60,7 +60,7 @@ void messageLoop()
                     }
                     else if(tokens[i] == "simulations")
                     {
-                        simulations = stoi(tokens[i+1]);
+                        numSimulations = stoi(tokens[i+1]);
                         n += 2;
                         i += 1;
                     }
@@ -70,18 +70,47 @@ void messageLoop()
             }
             else if(tokens[n] == "mcts")
             {
-                if(n+1 >= tokens.size()) {continue;}
+                // Default subcommands
+                int numSimulations = 100000;
+                int movetime = 0;
+                int searchType = 1;
 
                 // Subcommands
-                if(tokens[n+1] == "pure")
+                for(unsigned int i = n+1; i < tokens.size(); ++i)
                 {
-                    n += 1;
-                    mctsPure(pos);
+                    if(tokens[i] == "pure")
+                    {
+                        searchType = 0;
+                        n += 1;
+                    }
+                    else if(tokens[i] == "uct")
+                    {
+                        searchType = 1;
+                        n += 1;
+                    }
+                    else if(tokens[i] == "movetime")
+                    {
+                        numSimulations = 0;
+                        movetime = stoi(tokens[i+1]);
+                        n += 2;
+                        i += 1;
+                    }
+                    else if(tokens[i] == "simulations")
+                    {
+                        numSimulations = stoi(tokens[i+1]);
+                        movetime = 0;
+                        n += 2;
+                        i += 1;
+                    }
                 }
-                else if(tokens[n+1] == "uct")
+
+                if(searchType == 0)
                 {
-                    n += 1;
-                    mctsUct(pos);
+                    mctsPure(pos, numSimulations, movetime);
+                }
+                else if(searchType == 1)
+                {
+                    mctsUct(pos, numSimulations, movetime);
                 }
             }
             else if(tokens[n] == "perft")

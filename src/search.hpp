@@ -8,7 +8,6 @@
 
 #define INF (1000000)
 #define MAX_DEPTH (32)
-#define NUM_SIMULATIONS (100000)
 
 void search(Hashtable *tt, const Position& pos, const int depth);
 void splitSearch(Hashtable *tt, const Position& pos, const int depth);
@@ -18,8 +17,8 @@ int minimax(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, cons
 int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth);
 
 // MCTS
-void mctsPure(const Position& pos);
-void mctsUct(const Position& pos);
+void mctsPure(const Position& pos, int numSimulations, int movetime);
+void mctsUct(const Position& pos, int numSimulations, int movetime);
 
 // Other
 int mostCaptures(const Position& pos, searchInfo& info, searchStack *ss, PV& pv);
