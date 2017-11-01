@@ -12,6 +12,7 @@
 #include "score.hpp"
 #include "zobrist.hpp"
 #include "sorting.hpp"
+#include "nextMove.hpp"
 
 int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth)
 {
@@ -63,14 +64,28 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
     Move moves[256];
     int numMoves = movegen(pos, moves);
 
-    // Sort moves
-    sortMoves(pos, moves, numMoves, ttMove);
-
+    // Score moves
+    int scores[256] = {0};
     for(int n = 0; n < numMoves; ++n)
+    {
+        if(moves[n] == ttMove)
+        {
+            scores[n] = 1000;
+        }
+        else
+        {
+            scores[n] = countCaptures(pos, moves[n]);
+        }
+
+        scores[n] += (moves[n].from == moves[n].to ? 1 : 0);
+    }
+
+    Move move;
+    while(nextMove(moves, numMoves, move, scores))
     {
         Position newPos = pos;
 
-        makemove(newPos, moves[n]);
+        makemove(newPos, move);
 
         info.nodes++;
 
@@ -85,10 +100,10 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
         {
             alpha = score;
 
-            bestMove = moves[n];
+            bestMove = move;
 
             // Update PV
-            pv.moves[0] = moves[n];
+            pv.moves[0] = move;
             memcpy(pv.moves + 1, newPV.moves, newPV.numMoves * sizeof(Move));
             pv.numMoves = newPV.numMoves + 1;
         }
