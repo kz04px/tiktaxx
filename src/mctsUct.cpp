@@ -56,7 +56,7 @@ int getPV(Node *node, Move *moves)
             }
         }
 
-        if(pvLength < 64)
+        if(pvLength < 256)
         {
             moves[pvLength] = node->children[bestIndex].move;
             pvLength++;
@@ -187,31 +187,6 @@ void mctsUct(const Position& pos, int numSimulations, int movetime)
             selection->numVisits++;
 
             selection = selection->parent;
-
-/*
-            if(result > 0 && selection->pos.turn == root.pos.turn)
-            {
-                selection->numWins++;
-            }
-            else if(result < 0 && selection->pos.turn != root.pos.turn)
-            {
-                selection->numWins++;
-            }
-
-            selection->numVisits++;
-
-            selection = selection->parent;
-*/
-
-/*
-            if(result > 0)
-            {
-                selection->numWins++;
-            }
-            selection->numVisits++;
-
-            selection = selection->parent;
-*/
         }
 
 
@@ -232,7 +207,7 @@ void mctsUct(const Position& pos, int numSimulations, int movetime)
 
                 std::cout << "info"
                           << " sims " << sims
-                          << " score " << 100.0*(double)root.children[n].numWins/root.children[n].numVisits << "%"
+                          << " score winchance " << (double)root.children[n].numWins/root.children[n].numVisits
                           << " sps " << (uint64_t)(sims/time)
                           << " time " << 1000.0*time
                           << " pv " << pvString
@@ -242,48 +217,33 @@ void mctsUct(const Position& pos, int numSimulations, int movetime)
         }
     }
 
-
     // Extract PV
-    Move moves[64];
+    Move moves[256];
     int pvLength = getPV(&root, moves);
-    std::string pvString = getPvString(moves, 1);
 
-
-    std::cout << "bestmove "
-              << pvString
-              << std::endl;
-
-
-/*
-    // Print all moves
-    for(unsigned int n = 0; n < root.children.size(); ++n)
+    if(pvLength > 0)
     {
-        std::cout << n+1
-                  << ":  ";
-
-             if(n+1 < 10)  {std::cout << "  ";}
-        else if(n+1 < 100) {std::cout << " ";}
-
-        std::cout << moveString(root.children[n].move);
-        if(root.children[n].move.to == root.children[n].move.from)
-        {
-            std::cout << "  ";
-        }
-
-        std::cout << "  ";
-
-        std::cout << 100.0*(double)root.children[n].numWins/root.children[n].numVisits
-                  << "%";
-
-        std::cout << "  ";
-
-        std::cout << "("
-                  << root.children[n].numWins
-                  << "/"
-                  << root.children[n].numVisits
-                  << ")";
-
-        std::cout << std::endl;
+        std::cout << "bestmove "
+                  << moveString(moves[0])
+                  << std::endl;
     }
-*/
+    else
+    {
+        // Play a random move
+        Move moves[256];
+        int numMoves = movegen(pos, moves);
+
+        if(numMoves >= 0)
+        {
+            int n = rand() % numMoves;
+
+            std::cout << "bestmove "
+                      << moveString(moves[n])
+                      << std::endl;
+        }
+        else
+        {
+            std::cout << "bestmove none" << std::endl;
+        }
+    }
 }

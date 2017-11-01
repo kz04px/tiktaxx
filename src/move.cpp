@@ -7,7 +7,7 @@
 
 std::string moveString(const Move n)
 {
-    if(n.to == n.from)
+    if(isSingle(n))
     {
         return squares[n.to];
     }

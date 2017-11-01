@@ -22,6 +22,8 @@ int findBestmove(const int numMoves, const int *wins, const int *draws, const in
 
     for(int n = 0; n < numMoves; ++n)
     {
+        if(wins[n] + draws[n] + losses[n] == 0) {continue;}
+
         double score = (double)wins[n]/(wins[n] + draws[n] + losses[n]);
 
         if(score >= bestScore)
@@ -45,7 +47,7 @@ void mctsPure(const Position& pos, int numSimulations, int movetime)
 
     if(numMoves == 0)
     {
-        std::cout << "bestmove pass" << std::endl;
+        std::cout << "bestmove none" << std::endl;
         return;
     }
 
@@ -103,7 +105,7 @@ void mctsPure(const Position& pos, int numSimulations, int movetime)
 
             std::cout << "info"
                       << " sims " << sims
-                      << " score " << 100.0*(double)win[bestIndex]/(win[bestIndex] + draw[bestIndex] + loss[bestIndex]) << "%"
+                      << " score winchance " << (double)win[bestIndex]/(win[bestIndex] + draw[bestIndex] + loss[bestIndex])
                       << " sps " << (uint64_t)((double)sims/time)
                       << " time " << 1000.0*time
                       << " pv " << moveString(moves[bestIndex])
