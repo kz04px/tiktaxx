@@ -36,7 +36,6 @@ void messageLoop()
                 // Default subcommands
                 int depth = 5;
                 int movetime = 0;
-                int numSimulations = 0;
 
                 // Subcommands
                 for(unsigned int i = n+1; i < tokens.size(); ++i)
@@ -49,24 +48,20 @@ void messageLoop()
                     else if(tokens[i] == "depth")
                     {
                         depth = stoi(tokens[i+1]);
+                        movetime = 0;
                         n += 2;
                         i += 1;
                     }
                     else if(tokens[i] == "movetime")
                     {
+                        depth = 0;
                         movetime = stoi(tokens[i+1]);
-                        n += 2;
-                        i += 1;
-                    }
-                    else if(tokens[i] == "simulations")
-                    {
-                        numSimulations = stoi(tokens[i+1]);
                         n += 2;
                         i += 1;
                     }
                 }
 
-                search(&tt, pos, depth);
+                search(&tt, pos, depth, movetime);
             }
             else if(tokens[n] == "mcts")
             {

@@ -9,13 +9,13 @@
 #include "search.hpp"
 #include "protocol.hpp"
 
-std::string getEngineMove(Hashtable *tt, Position& pos, int depth, bool verbose=false)
+std::string getEngineMove(Hashtable *tt, Position& pos, int depth, int movetime, bool verbose=false)
 {
     // We need to eat the output of the search because the user doesn't want to read it
     std::stringstream buffer;
     std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
 
-    search(tt, pos, depth);
+    search(tt, pos, depth, movetime);
 
     // Restore the normal output
     std::cout.rdbuf(old);
@@ -79,7 +79,7 @@ void manual()
         if(engineTurn == true)
         {
             std::cout << "Thinking..." << std::endl;
-            std::string moveString = getEngineMove(&tt, pos, 5);
+            std::string moveString = getEngineMove(&tt, pos, 0, 5000);
             std::cout << "Engine move: " << moveString << std::endl;
             std::cout << std::endl;
             std::cout << std::endl;
@@ -95,7 +95,11 @@ void manual()
             std::string moveString;
             std::cin >> moveString;
 
-            if(legalMove(pos, moveString) == false)
+            if(moveString == "quit")
+            {
+                break;
+            }
+            else if(legalMove(pos, moveString) == false)
             {
                 std::cout << std::endl;
                 std::cout << std::endl;
@@ -110,6 +114,7 @@ void manual()
             std::cout << std::endl;
             std::cout << std::endl;
         }
-
     }
+
+    tableRemove(&tt);
 }

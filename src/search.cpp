@@ -57,7 +57,7 @@ void splitSearch(Hashtable *tt, const Position& pos, const int depth)
     }
 }
 
-void search(Hashtable *tt, const Position& pos, const int depth)
+void search(Hashtable *tt, const Position& pos, int depth, int movetime)
 {
     uint64_t nodeTotal = 0ULL;
 
@@ -76,12 +76,22 @@ void search(Hashtable *tt, const Position& pos, const int depth)
     // Search info
     searchInfo info;
     info.start = clock();
-    info.end   = clock() + 20*CLOCKS_PER_SEC;
+    info.end = clock();
     info.nodes = 0ULL;
     info.leafNodes = 0ULL;
     info.depth = 0;
     info.selDepth = 0;
     info.tt = tt;
+
+    if(depth == 0)
+    {
+        depth = INT_MAX;
+        info.end = info.start + ((double)movetime/1000.0)*CLOCKS_PER_SEC;
+    }
+    else if(movetime == 0)
+    {
+        info.end = INT_MAX;
+    }
 
     for(int d = 1; d <= depth; ++d)
     {
