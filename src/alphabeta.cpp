@@ -77,7 +77,7 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
             scores[n] = countCaptures(pos, moves[n]);
         }
 
-        scores[n] += (moves[n].from == moves[n].to ? 1 : 0);
+        scores[n] += (isSingle(moves[n]) ? 1 : 0);
     }
 
     Move move;

@@ -18,7 +18,7 @@ void sortMoves(const Position& pos, Move *moves, const int numMoves, const Move&
             scores[n] = countCaptures(pos, moves[n]);
         }
 
-        scores[n] += (moves[n].from == moves[n].to ? 1 : 0);
+        scores[n] += (isSingle(moves[n]) ? 1 : 0);
     }
 
     // Sort

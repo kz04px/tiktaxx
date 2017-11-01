@@ -72,3 +72,13 @@ bool legalMove(const Position& pos, const Move& move)
 
     return false;
 }
+
+bool isSingle(const Move& move)
+{
+    return (move.from == move.to);
+}
+
+bool isDouble(const Move& move)
+{
+    return (move.from != move.to);
+}

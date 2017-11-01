@@ -225,8 +225,7 @@ void mctsUct(const Position& pos, int numSimulations, int movetime)
 
             for(unsigned int n = 0; n < root.children.size(); ++n)
             {
-                if(root.children[n].move.from != moves[0].from ||
-                   root.children[n].move.to   != moves[0].to)
+                if(root.children[n].move != moves[0])
                 {
                     continue;
                 }
