@@ -122,7 +122,7 @@ void search(Hashtable *tt, const Position& pos, int depth, int movetime)
 
         if(pv.numMoves == 0)
         {
-            std::cout << " pv pass";
+            std::cout << " pv none";
         }
         else
         {
@@ -140,12 +140,19 @@ void search(Hashtable *tt, const Position& pos, int depth, int movetime)
 
     if(lastPV.numMoves == 0)
     {
-        // If we somehow don't have a move from the PV, play a random one
+        // If we somehow don't have a move from the PV, try play a random one
         Move moves[256];
         int numMoves = movegen(pos, moves);
 
-        int n = rand() % numMoves;
-        std::cout << "bestmove " << moveString(moves[n]) << std::endl;
+        if(numMoves == 0)
+        {
+            std::cout << "bestmove none" << std::endl;
+        }
+        else
+        {
+            int n = rand() % numMoves;
+            std::cout << "bestmove " << moveString(moves[n]) << std::endl;
+        }
     }
     else
     {

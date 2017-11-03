@@ -2,10 +2,12 @@
 #include <ctime>
 
 #include "search.hpp"
+#include "movegen.hpp"
 #include "perft.hpp"
 #include "rollout.hpp"
 #include "eval.hpp"
 #include "makemove.hpp"
+#include "score.hpp"
 #include "other.hpp"
 
 void messageLoop()
@@ -131,6 +133,33 @@ void messageLoop()
 
                 perft(&tt, pos, depth);
             }
+            else if(tokens[n] == "result")
+            {
+                Move moves[256];
+                int numMoves = movegen(pos, moves);
+
+                if(numMoves > 0)
+                {
+                    std::cout << "result none" << std::endl;
+                }
+                else
+                {
+                    int r = score(pos);
+                    
+                    if(r == 0) {std::cout << "result draw" << std::endl; continue;}
+                    
+                    if(pos.turn == SIDE::CROSS)
+                    {
+                        if(r > 0) {std::cout << "result X" << std::endl;}
+                        else      {std::cout << "result O" << std::endl;}
+                    }
+                    else
+                    {
+                        if(r > 0) {std::cout << "result O" << std::endl;}
+                        else      {std::cout << "result X" << std::endl;}
+                    }
+                }
+            }
             else if(tokens[n] == "split")
             {
                 int depth = 5;
@@ -229,7 +258,9 @@ void messageLoop()
                 }
                 else if(n+1 < tokens.size())
                 {
-                    int r = setBoard(pos, tokens[n+1] + " X");
+                    if(tokens[n+1] != "startpos") {tokens[n+1] += " X";}
+
+                    int r = setBoard(pos, tokens[n+1]);
                     if(r != 0)
                     {
                         std::cout << "WARNING: set position error (" << r << ")" << std::endl;
