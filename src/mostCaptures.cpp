@@ -45,7 +45,7 @@ int mostCaptures(const Position& pos, searchInfo& info, searchStack *ss, PV& pv)
             Position newPos = pos;
             makemove(newPos, moves[n]);
             int r = -eval(newPos);
-            
+
             if(r > mostEval)
             {
                 mostEval = r;
