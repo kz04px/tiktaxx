@@ -233,7 +233,7 @@ void mctsUct(const Position& pos, int numSimulations, int movetime)
         Move moves[256];
         int numMoves = movegen(pos, moves);
 
-        if(numMoves >= 0)
+        if(numMoves > 0)
         {
             int n = rand() % numMoves;
 
