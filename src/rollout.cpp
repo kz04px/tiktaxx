@@ -48,3 +48,38 @@ int rollout(const Position& pos, const int maxDepth)
 
     return 0;
 }
+
+int rolloutHeavy(const Position& pos, const int maxDepth)
+{
+    Position newPos = pos;
+    Move moves[256];
+
+    int d = 0;
+    while(d < maxDepth)
+    {
+        int numMoves = movegen(newPos, moves);
+
+        int r = score(newPos);
+
+        if(numMoves == 0 || abs(r) > 5)
+        {
+                 if(r > 0) {r = 1;}
+            else if(r < 0) {r = -1;}
+
+            if(pos.turn == newPos.turn)
+            {
+                return r;
+            }
+            else
+            {
+                return -r;
+            }
+        }
+
+        int n = rand() % numMoves;
+        makemove(newPos, moves[n]);
+        d++;
+    }
+
+    return 0;
+}
