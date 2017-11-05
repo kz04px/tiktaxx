@@ -118,7 +118,7 @@ void search(Hashtable *tt, const Position& pos, int depth, int movetime)
                   << " depth " << d
                   << " nodes " << info.nodes
                   << " score " << score
-                  << " time " << 1000.0*timeSpent;
+                  << " time " << (uint64_t)(1000.0*timeSpent);
 
         if(pv.numMoves == 0)
         {
