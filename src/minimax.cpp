@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ctime>
+#include <cstring>
 
 #include "search.hpp"
 #include "makemove.hpp"
