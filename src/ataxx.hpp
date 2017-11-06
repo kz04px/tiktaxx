@@ -25,11 +25,6 @@ const std::string squares[49] = {"a1", "b1", "c1", "d1", "e1", "f1", "g1",
 typedef struct
 {
     int ply;
-} searchStack;
-
-typedef struct
-{
-    int ply;
     int turn;
     std::uint64_t blockers;
     std::uint64_t pieces[2];

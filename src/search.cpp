@@ -25,6 +25,9 @@ void splitSearch(Hashtable *tt, const Position& pos, const int depth)
     for(int n = 0; n < MAX_DEPTH; ++n)
     {
         ss[n].ply = n;
+#ifdef KILLER_MOVES
+        ss[n].killer = NO_MOVE;
+#endif
     }
 
     for(int n = 0; n < numMoves; ++n)
@@ -71,6 +74,9 @@ void search(Hashtable *tt, const Position& pos, int depth, int movetime)
     for(int n = 0; n < MAX_DEPTH; ++n)
     {
         ss[n].ply = n;
+#ifdef KILLER_MOVES
+        ss[n].killer = NO_MOVE;
+#endif
     }
 
     // Search info
