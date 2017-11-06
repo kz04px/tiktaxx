@@ -14,6 +14,7 @@
 #include "zobrist.hpp"
 #include "sorting.hpp"
 #include "nextMove.hpp"
+#include "searchstack.hpp"
 
 int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth)
 {
@@ -51,7 +52,7 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
     {
         ttMove = getMove(entry);
 
-        if(getDepth(entry) >= depth)
+        if(getDepth(entry) >= depth && legalMove(pos, ttMove) == true)
         {
             pv.numMoves = 1;
             pv.moves[0] = ttMove;
@@ -73,6 +74,12 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
         {
             scores[n] = 1000;
         }
+#ifdef KILLER_MOVES
+        else if(moves[n] == ss->killer)
+        {
+            scores[n] = 500;
+        }
+#endif
         else
         {
             scores[n] = countCaptures(pos, moves[n]);
@@ -94,7 +101,10 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
 
         if(score >= beta)
         {
-           return beta;
+#ifdef KILLER_MOVES
+            ss->killer = move;
+#endif
+            return beta;
         }
 
         if(score > alpha)

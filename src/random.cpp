@@ -6,6 +6,7 @@
 #include "searchinfo.hpp"
 #include "eval.hpp"
 #include "score.hpp"
+#include "searchstack.hpp"
 
 int random(const Position& pos, searchInfo& info, searchStack *ss, PV& pv)
 {

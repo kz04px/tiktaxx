@@ -4,5 +4,6 @@
 #include "ataxx.hpp"
 
 int rollout(const Position& pos, const int maxDepth);
+int rolloutHeavy(const Position& pos, const int maxDepth);
 
 #endif

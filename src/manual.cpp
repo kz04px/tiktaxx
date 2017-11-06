@@ -55,12 +55,13 @@ void manual()
 
     // Give the user the choice of either side
     char side = ' ';
-    while(side != 'X' && side != 'O' && side != 'x' && side != 'o')
+    do
     {
         std::cout << "Do you want to play X or O?" << std::endl;
         std::cin >> side;
         std::cout << std::endl;
     }
+    while(side != 'X' && side != 'O' && side != 'x' && side != 'o');
 
     bool engineTurn = false;
     if(side == 'x' || side == 'X')
@@ -85,7 +86,7 @@ void manual()
             std::cout << std::endl;
 
             makemove(pos, moveString);
-            engineTurn = !engineTurn;
+            engineTurn = false;
         }
         else
         {

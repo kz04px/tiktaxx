@@ -145,9 +145,9 @@ void messageLoop()
                 else
                 {
                     int r = score(pos);
-                    
+
                     if(r == 0) {std::cout << "result draw" << std::endl; continue;}
-                    
+
                     if(pos.turn == SIDE::CROSS)
                     {
                         if(r > 0) {std::cout << "result X" << std::endl;}
@@ -282,7 +282,7 @@ void messageLoop()
                 for(unsigned int i = n+1; i < tokens.size(); ++i)
                 {
                     if(legalMove(pos, tokens[i]) == false) {break;}
-                    
+
                     makemove(pos, tokens[i]);
                     n += 1;
                 }

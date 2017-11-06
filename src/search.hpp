@@ -5,6 +5,7 @@
 #include "searchinfo.hpp"
 #include "hashtable.hpp"
 #include "pv.hpp"
+#include "searchstack.hpp"
 
 #define INF (1000000)
 #define MAX_DEPTH (32)
