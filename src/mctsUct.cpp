@@ -35,7 +35,30 @@ typedef struct
 
 double UCT(const int numChildVisits, const int numChildWins, const int numParentVisits)
 {
+    if(numChildVisits == 0) {return 1000000.0;}
     return ((double)numChildWins/numChildVisits) + 1.41 * sqrt(log(numParentVisits) / (double)numChildVisits);
+}
+
+double getWinrate(const Node& node)
+{
+    return (double)node.numWins / node.numVisits;
+}
+
+int mostVisited(const Node& node)
+{
+    int bestIndex = -1;
+    int mostVisits = 0;
+
+    for(unsigned int n = 0; n < node.children.size(); ++n)
+    {
+        if(node.children[n].numVisits >= mostVisits)
+        {
+            mostVisits = node.children[n].numVisits;
+            bestIndex = n;
+        }
+    }
+
+    return bestIndex;
 }
 
 int getPV(Node *node, Move *moves)
@@ -45,15 +68,18 @@ int getPV(Node *node, Move *moves)
     {
         int bestIndex = 0;
         double bestWinrate = 0.0;
+        //int mostVisits = 0;
 
         for(unsigned int n = 0; n < node->children.size(); ++n)
         {
-            double winrate = (double)node->children[n].numWins / node->children[n].numVisits;
+            double winrate = getWinrate(node->children[n]);
 
             if(winrate >= bestWinrate)
+            //if(node->children[n].numVisits > mostVisits)
             {
                 bestIndex = n;
                 bestWinrate = winrate;
+                //mostVisits = node->children[n].numVisits;
             }
         }
 
@@ -77,7 +103,7 @@ int findBestNode(Node *node)
 
     for(unsigned int n = 0; n < node->children.size(); ++n)
     {
-        double score = UCT(node->children[n].numVisits+1, node->children[n].numWins, node->numVisits);
+        double score = UCT(node->children[n].numVisits, node->children[n].numWins, node->numVisits);
 
         if(score >= bestScore)
         {
@@ -138,17 +164,28 @@ void mctsUct(const Position& pos, int numSimulations, int movetime)
 
 
         // Step 1 -- Selection
-        do
+        while(selection->children.size() > 0)
         {
             int n = findBestNode(selection);
-            if(n == -1) {break;}
+
+            if(selection->parent != NULL)
+            {
+                double scoreParent = UCT(selection->numVisits,
+                                         selection->numWins,
+                                         selection->parent->numVisits);
+                double scoreChild = UCT(selection->children[n].numVisits,
+                                        selection->children[n].numWins,
+                                        selection->numVisits);
+
+                if(scoreParent > scoreChild) {break;}
+            }
+
             selection = &(selection->children[n]);
         }
-        while(selection->children.size() > 0);
 
 
         // Step 2 -- Expansion
-        if(selection->numVisits >= 10)
+        if(selection->numVisits >= 10 && selection->children.size() == 0)
         {
             expandNode(selection);
         }
@@ -210,7 +247,7 @@ void mctsUct(const Position& pos, int numSimulations, int movetime)
                           << " sims " << sims
                           << " score winchance " << (double)root.children[n].numWins/root.children[n].numVisits
                           << " sps " << (uint64_t)(sims/time)
-                          << " time " << 1000.0*time
+                          << " time " << (uint64_t)(1000.0*time)
                           << " pv " << pvString
                           << std::endl;
                 break;
