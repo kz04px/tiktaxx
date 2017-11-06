@@ -8,7 +8,7 @@
  */
 
 #include <iostream>
-#include <limits.h>
+#include <climits>
 
 #include "search.hpp"
 #include "movegen.hpp"
