@@ -26,13 +26,10 @@ void zobristInit()
 
     turnKey = dis(gen);
 
-    for(int n = 0; n < 2; ++n)
+    for(int sq = 0; sq < 49; ++sq)
     {
-        for(int sq = 0; sq < 49; ++sq)
-        {
-            pieceKeys[SIDE::CROSS][sq]  = dis(gen);
-            pieceKeys[SIDE::NOUGHT][sq] = dis(gen);
-        }
+        pieceKeys[SIDE::CROSS][sq]  = dis(gen);
+        pieceKeys[SIDE::NOUGHT][sq] = dis(gen);
     }
 }
 
