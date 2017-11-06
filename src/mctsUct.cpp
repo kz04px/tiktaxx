@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <climits>
 
 #include "search.hpp"
 #include "movegen.hpp"

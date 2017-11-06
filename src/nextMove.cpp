@@ -1,3 +1,5 @@
+#include <climits>
+
 #include "nextMove.hpp"
 
 bool nextMove(const Move *moves, const int numMoves, Move& move, int *scores)

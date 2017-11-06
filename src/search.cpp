@@ -1,4 +1,5 @@
 #include <iostream>
+#include <climits>
 
 #include "search.hpp"
 #include "movegen.hpp"
