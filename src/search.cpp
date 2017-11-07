@@ -29,6 +29,9 @@ void splitSearch(Hashtable *tt, const Position& pos, const int depth)
 #ifdef KILLER_MOVES
         ss[n].killer = NO_MOVE;
 #endif
+#ifdef NULLMOVE
+        ss[n].nullmove = true;
+#endif
     }
 
     for(int n = 0; n < numMoves; ++n)

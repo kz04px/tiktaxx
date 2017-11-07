@@ -9,6 +9,9 @@ typedef struct
 #ifdef KILLER_MOVES
     Move killer;
 #endif
+#ifdef NULLMOVE
+    bool nullmove;
+#endif
 } searchStack;
 
 #endif

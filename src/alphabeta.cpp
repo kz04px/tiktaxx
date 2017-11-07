@@ -60,6 +60,28 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
         }
     }
 
+#ifdef NULLMOVE
+    #define R (2)
+
+    if(ss->nullmove && depth > 2)
+    {
+        PV newPV;
+        newPV.numMoves = 0;
+
+        Position newPos = pos;
+        newPos.turn = !newPos.turn;
+
+        (ss+1)->nullmove = false;
+        int score = -alphaBeta(newPos, info, ss+1, newPV, -beta, -beta+1, depth-1-R);
+
+        if(score >= beta)
+        {
+            return score;
+        }
+    }
+    (ss+1)->nullmove = true;
+#endif
+
     PV newPV;
     newPV.numMoves = 0;
     Move bestMove = NO_MOVE;
