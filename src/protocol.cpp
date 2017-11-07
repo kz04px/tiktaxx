@@ -33,6 +33,11 @@ void messageLoop()
             {
                 std::cout << "readyok" << std::endl;
             }
+            else if(tokens[n] == "newgame")
+            {
+                setBoard(pos, "startpos");
+                clear(&tt);
+            }
             else if(tokens[n] == "go")
             {
                 // Default subcommands
