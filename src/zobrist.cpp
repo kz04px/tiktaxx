@@ -1,6 +1,7 @@
 #include <random>
 
 #include "zobrist.hpp"
+#include "other.hpp"
 
 uint64_t turnKey;
 uint64_t pieceKeys[2][49];
@@ -42,18 +43,20 @@ uint64_t generateKey(const Position pos)
         key ^= turnKey;
     }
 
-    for(int sq = 0; sq < 49; ++sq)
+    uint64_t copy = pos.pieces[SIDE::CROSS];
+    while(copy)
     {
-        uint64_t bb = (1ULL)<<sq;
+        int sq = lsb(copy);
+        key ^= pieceKeys[SIDE::CROSS][sq];
+        copy &= copy - 1;
+    }
 
-        if(bb & pos.pieces[SIDE::CROSS])
-        {
-            key ^= pieceKeys[SIDE::CROSS][sq];
-        }
-        else if(bb & pos.pieces[SIDE::NOUGHT])
-        {
-            key ^= pieceKeys[SIDE::NOUGHT][sq];
-        }
+    copy = pos.pieces[SIDE::NOUGHT];
+    while(copy)
+    {
+        int sq = lsb(copy);
+        key ^= pieceKeys[SIDE::NOUGHT][sq];
+        copy &= copy - 1;
     }
 
     return key;
