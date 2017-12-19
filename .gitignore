@@ -6,3 +6,4 @@
 *.ods
 !LICENSE.txt
 !README.txt
+bin/

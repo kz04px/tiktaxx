@@ -33,7 +33,7 @@ void messageLoop()
             {
                 std::cout << "readyok" << std::endl;
             }
-            else if(tokens[n] == "newgame")
+            else if(tokens[n] == "uainewgame")
             {
                 setBoard(pos, "startpos");
                 clear(&tt);
@@ -249,29 +249,39 @@ void messageLoop()
             {
                 print(pos);
             }
-            else if(tokens[n] == "setpos")
+            else if(tokens[n] == "position")
             {
-                if(n+2 < tokens.size())
+                if(n+1 < tokens.size())
                 {
-                    int r = setBoard(pos, tokens[n+1] + " " + tokens[n+2]);
-                    if(r != 0)
-                    {
-                        std::cout << "WARNING: set position error (" << r << ")" << std::endl;
-                    }
-
-                    n += 2;
-                }
-                else if(n+1 < tokens.size())
-                {
-                    if(tokens[n+1] != "startpos") {tokens[n+1] += " X";}
-
-                    int r = setBoard(pos, tokens[n+1]);
-                    if(r != 0)
-                    {
-                        std::cout << "WARNING: set position error (" << r << ")" << std::endl;
-                    }
-
                     n += 1;
+                    if(tokens[n] == "startpos")
+                    {
+                        int r = setBoard(pos, "startpos");
+                        if(r != 0)
+                        {
+                            std::cout << "WARNING: set position error (" << r << ")" << std::endl;
+                        }
+                    }
+                    else if(tokens[n] == "fen")
+                    {
+                        if(n+1 < tokens.size())
+                        {
+                            n += 1;
+                            std::string fenString = tokens[n];
+
+                            while(n+1 < tokens.size() && tokens[n+1] != "moves")
+                            {
+                                n += 1;
+                                fenString += " " + tokens[n];
+                            }
+
+                            int r = setBoard(pos, fenString);
+                            if(r != 0)
+                            {
+                                std::cout << "WARNING: set position error (" << r << ")" << std::endl;
+                            }
+                        }
+                    }
                 }
             }
             else if(tokens[n] == "eval")

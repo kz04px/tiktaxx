@@ -15,7 +15,7 @@ int main()
     {
         manual();
     }
-    else if(mode == "uat")
+    else if(mode == "uai")
     {
         messageLoop();
     }
