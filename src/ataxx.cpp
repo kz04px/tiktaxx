@@ -4,6 +4,7 @@
 #include "ataxx.hpp"
 #include "score.hpp"
 #include "eval.hpp"
+#include "phase.hpp"
 #include "other.hpp"
 
 #define STARTPOS "x5o/7/2-1-2/7/2-1-2/7/o5x x"
@@ -111,15 +112,17 @@ void print(const Position& pos)
     std::cout << "Ply: " << pos.ply << std::endl;
     std::cout << "Eval: " << eval(pos) << std::endl;
     std::cout << "Score: " << score(pos) << std::endl;
+    std::cout << "Phase: " << phase(pos) << std::endl;
+    std::cout << "Endgame: " << (isEndgame(pos) == true ? "true" : "false") << std::endl;
 
     int validCode = valid(pos);
     if(validCode)
     {
-        std::cout << "Valid: no (" << validCode << ")" << std::endl;
+        std::cout << "Valid: false (" << validCode << ")" << std::endl;
     }
     else
     {
-        std::cout << "Valid: yes" << std::endl;
+        std::cout << "Valid: true" << std::endl;
     }
 }
 
