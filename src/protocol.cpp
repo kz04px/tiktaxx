@@ -337,6 +337,13 @@ void messageLoop()
         }
     }
 
+    if(searchThread.joinable())
+    {
+        stop = true;
+        searchThread.join();
+        stop = false;
+    }
+
     clear(&tt);
     tableRemove(&tt);
 }
