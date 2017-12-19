@@ -2,7 +2,7 @@ CC         = g++
 CFLAGS     = -std=c++14 -Wall -Wextra -O3
 
 LINKER     = g++ -o
-LFLAGS     = 
+LFLAGS     = -pthread
 
 TARGET     = main
 SRCDIR     = src

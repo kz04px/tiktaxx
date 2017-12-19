@@ -10,7 +10,7 @@
 #define INF (1000000)
 #define MAX_DEPTH (32)
 
-void search(Hashtable *tt, const Position& pos, int depth, int movetime);
+void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movetime);
 void splitSearch(Hashtable *tt, const Position& pos, const int depth);
 
 // Alpha Beta

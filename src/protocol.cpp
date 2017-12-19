@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ctime>
+#include <thread>
 
 #include "search.hpp"
 #include "movegen.hpp"
@@ -18,6 +19,9 @@ void messageLoop()
     Hashtable tt;
     tableInit(&tt);
     create(&tt, 128);
+
+    bool stop = false;
+    std::thread searchThread;
 
     bool quit = false;
     while(quit == false)
@@ -40,6 +44,14 @@ void messageLoop()
             }
             else if(tokens[n] == "go")
             {
+                // Stop the search if there's already one going
+                if(searchThread.joinable())
+                {
+                    stop = true;
+                    searchThread.join();
+                    stop = false;
+                }
+
                 // Default subcommands
                 int depth = 5;
                 int movetime = 0;
@@ -68,7 +80,13 @@ void messageLoop()
                     }
                 }
 
-                search(&tt, pos, depth, movetime);
+                searchThread = std::thread(search, &tt, pos, &stop, depth, movetime);
+            }
+            else if(tokens[n] == "stop")
+            {
+                stop = true;
+                searchThread.join();
+                stop = false;
             }
             else if(tokens[n] == "mcts")
             {
@@ -301,24 +319,6 @@ void messageLoop()
                     makemove(pos, tokens[i]);
                     n += 1;
                 }
-            }
-            else if(tokens[n] == "help")
-            {
-                std::cout << "Commands:" << std::endl;
-                std::cout << "-- go [depth] [movetime]" << std::endl;
-                std::cout << "-- perft [depth]" << std::endl;
-                std::cout << "-- split [depth]" << std::endl;
-                std::cout << "-- rollout [games]" << std::endl;
-                std::cout << "-- hashtable [clear/print]" << std::endl;
-                std::cout << "-- print" << std::endl;
-                std::cout << "-- setpos [position]" << std::endl;
-                std::cout << "-- eval" << std::endl;
-                std::cout << "-- movegen" << std::endl;
-                std::cout << "-- moves [moves]" << std::endl;
-                std::cout << "-- isready" << std::endl;
-                std::cout << "-- help" << std::endl;
-                std::cout << "-- about" << std::endl;
-                std::cout << "-- quit" << std::endl;
             }
             else if(tokens[n] == "about")
             {

@@ -14,6 +14,7 @@ typedef struct
     int selDepth;
     clock_t start;
     clock_t end;
+    bool *stop;
     Hashtable *tt;
 } searchInfo;
 

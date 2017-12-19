@@ -64,7 +64,7 @@ void splitSearch(Hashtable *tt, const Position& pos, const int depth)
     }
 }
 
-void search(Hashtable *tt, const Position& pos, int depth, int movetime)
+void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movetime)
 {
     uint64_t nodeTotal = 0ULL;
 
@@ -91,6 +91,7 @@ void search(Hashtable *tt, const Position& pos, int depth, int movetime)
     info.leafNodes = 0ULL;
     info.depth = 0;
     info.selDepth = 0;
+    info.stop = stop;
     info.tt = tt;
 
     if(depth == 0)
@@ -116,8 +117,8 @@ void search(Hashtable *tt, const Position& pos, int depth, int movetime)
         clock_t end = clock();
         double timeSpent = (double)(end - info.start)/CLOCKS_PER_SEC;
 
-        // Throw away the result if we ran out of time
-        if(end >= info.end)
+        // Throw away the result if we ran out of time or were asked to stop
+        if(*info.stop == true || end >= info.end)
         {
             break;
         }

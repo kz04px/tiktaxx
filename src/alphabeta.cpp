@@ -28,13 +28,13 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
     if(info.nodes != 0)
     {
         // Stop searching if we've ran out of time
-        if(clock() >= info.end)
+        if(*info.stop == true || clock() >= info.end)
         {
             return 0;
         }
 
         // Send an update on what we're doing
-        if(info.nodes % 500000 == 0)
+        if(info.nodes % 2000000 == 0)
         {
             double timeSpent = (double)(clock() - info.start)/CLOCKS_PER_SEC;
             std::cout << "info"

@@ -15,7 +15,8 @@ std::string getEngineMove(Hashtable *tt, Position& pos, int depth, int movetime,
     std::stringstream buffer;
     std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
 
-    search(tt, pos, depth, movetime);
+    bool stop = false;
+    search(tt, pos, &stop, depth, movetime);
 
     // Restore the normal output
     std::cout.rdbuf(old);
