@@ -16,6 +16,15 @@
 #include "nextMove.hpp"
 #include "searchstack.hpp"
 
+int reduction(const int moveNum, const int depth)
+{
+    if(moveNum < 4 || depth < 3)
+    {
+        return 0;
+    }
+    return 1;
+}
+
 int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth)
 {
     if(depth == 0 || info.depth >= MAX_DEPTH)
@@ -110,6 +119,7 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
         scores[n] += (isSingle(moves[n]) ? 1 : 0);
     }
 
+    int moveNum = 0;
     Move move;
     while(nextMove(moves, numMoves, move, scores))
     {
@@ -119,7 +129,22 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
 
         info.nodes++;
 
+#ifdef LMR
+        int r = reduction(moveNum, depth);
+        int score = -alphaBeta(newPos, info, ss+1, newPV, -beta, -alpha, depth-1-r);
+
+        // Re-search
+        if(score > alpha && score < beta)
+        {
+            score = -alphaBeta(newPos, info, ss+1, newPV, -beta, -alpha, depth-1);
+            if(score > alpha)
+            {
+                alpha = score;
+            }
+        }
+#else
         int score = -alphaBeta(newPos, info, ss+1, newPV, -beta, -alpha, depth-1);
+#endif
 
         if(score >= beta)
         {
@@ -140,6 +165,8 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
             memcpy(pv.moves + 1, newPV.moves, newPV.numMoves * sizeof(Move));
             pv.numMoves = newPV.numMoves + 1;
         }
+
+        moveNum++;
     }
 
     if(numMoves == 0)
