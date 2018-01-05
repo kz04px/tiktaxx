@@ -131,7 +131,7 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
 
 #ifdef LMR
         int r = reduction(moveNum, depth);
-        int score = -alphaBeta(newPos, info, ss+1, newPV, -beta, -alpha, depth-1-r);
+        int score = -alphaBeta(newPos, info, ss+1, newPV, -alpha-1, -alpha, depth-1-r);
 
         // Re-search
         if(score > alpha && score < beta)
