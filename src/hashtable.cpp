@@ -2,7 +2,7 @@
 
 #include "hashtable.hpp"
 
-#define MAX_BYTES (1024*1024*1024)
+#define MAX_MEGABYTES (4*1024)
 
 // Entry.data item layout:
 //   Search -- [8 empty] [move] [eval] [depth]
@@ -72,7 +72,7 @@ void printDetails(Hashtable *table)
     std::cout << "Total size:  " << sizeof(Entry)*table->maxEntries << std::endl;
 }
 
-bool clear(Hashtable *table)
+bool tableClear(Hashtable *table)
 {
     table->numEntries = 0;
     for(int n = 0; n < table->maxEntries; ++n)
@@ -91,25 +91,41 @@ bool clear(Hashtable *table)
     return true;
 }
 
-int create(Hashtable *table, const int megabytes)
+int tableCreate(Hashtable *table, int megabytes)
 {
     if(table->entries)
     {
         tableRemove(table);
     }
 
-    int bytes = megabytes * 1024 * 1024;
-
-    if(bytes > MAX_BYTES)
+    if(megabytes > MAX_MEGABYTES)
     {
-        bytes = MAX_BYTES;
+        megabytes = MAX_MEGABYTES;
+    }
+    else if(megabytes < 1)
+    {
+        megabytes = 1;
     }
 
     table->numEntries = 0;
-    table->maxEntries = bytes/sizeof(Entry);
-    table->entries = new Entry[table->maxEntries];
 
-    return bytes;
+    while(megabytes > 0)
+    {
+        uint64_t bytes = megabytes * 1024 * 1024;
+        table->maxEntries = bytes/sizeof(Entry);
+
+        try
+        {
+            table->entries = new Entry[table->maxEntries];
+            break;
+        }
+        catch (...)
+        {
+            megabytes = megabytes>>1;
+        }
+    }
+
+    return megabytes;
 }
 
 void tableRemove(Hashtable *table)

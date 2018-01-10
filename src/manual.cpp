@@ -52,7 +52,7 @@ void manual()
 
     Hashtable tt;
     tableInit(&tt);
-    create(&tt, 128);
+    tableCreate(&tt, 128);
 
     // Give the user the choice of either side
     char side = ' ';

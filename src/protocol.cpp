@@ -18,7 +18,7 @@ void messageLoop()
 
     Hashtable tt;
     tableInit(&tt);
-    create(&tt, 128);
+    tableCreate(&tt, 128);
 
     bool stop = false;
     std::thread searchThread;
@@ -40,7 +40,7 @@ void messageLoop()
             else if(tokens[n] == "uainewgame")
             {
                 setBoard(pos, "startpos");
-                clear(&tt);
+                tableClear(&tt);
             }
             else if(tokens[n] == "go")
             {
@@ -255,7 +255,7 @@ void messageLoop()
                 if(tokens[n+1] == "clear")
                 {
                     n += 1;
-                    clear(&tt);
+                    tableClear(&tt);
                 }
                 else if(tokens[n+1] == "print")
                 {
@@ -344,6 +344,6 @@ void messageLoop()
         stop = false;
     }
 
-    clear(&tt);
+    tableClear(&tt);
     tableRemove(&tt);
 }
