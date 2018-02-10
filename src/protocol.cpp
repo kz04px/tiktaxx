@@ -130,7 +130,7 @@ void messageLoop()
                 }
                 else if(searchType == 1)
                 {
-                    mctsUct(pos, numSimulations, movetime);
+                    mctsUCT(pos, numSimulations, movetime);
                 }
             }
             else if(tokens[n] == "perft")

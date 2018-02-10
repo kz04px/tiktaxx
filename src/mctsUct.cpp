@@ -1,8 +1,8 @@
 /*
  * Monte Carlo Tree Search -- Upper Confidence Bound applied to Trees (UCT)
- * -- 
- * -- 
- * -- 
+ * --
+ * --
+ * --
  *
  *
  */
@@ -11,6 +11,7 @@
 #include <vector>
 #include <cmath>
 #include <climits>
+#include <cassert>
 
 #include "search.hpp"
 #include "movegen.hpp"
@@ -18,68 +19,176 @@
 #include "makemove.hpp"
 #include "rollout.hpp"
 
-typedef struct Node
+typedef struct State
 {
     Position pos;
+    int numMoves;
+    int currMove;
+    Move moves[256];
+
+    int moves_left()
+    {
+        return numMoves - currMove;
+    }
+
+    Move next()
+    {
+        currMove++;
+        return moves[currMove-1];
+    }
+
+    void move(const Move move)
+    {
+        makemove(pos, move);
+    }
+
+    State()
+    {
+    }
+
+    State(Position position)
+    {
+        pos = position;
+        numMoves = movegen(position, moves);
+        currMove = 0;
+    }
+} State;
+
+typedef struct Node
+{
+    State state;
     Move move;
-    int numWins;
-    int numVisits;
+    int wins;
+    int visits;
     Node *parent;
     std::vector<Node> children;
+
+    Node* expand()
+    {
+        assert(state.moves_left() > 0);
+
+        Move move = state.next();
+        Position npos = state.pos;
+        makemove(npos, move);
+
+        State nstate = State(npos);
+        Node child = Node(nstate, this, move);
+        children.push_back(child);
+        return &children[children.size()-1];
+    }
+
+    bool terminal()
+    {
+        return children.size() == 0 && state.moves_left() == 0;
+    }
+
+    Node(State s, Node *p, Move m)
+    {
+        state = s;
+        parent = p;
+        wins = 0;
+        visits = 1;
+        move = m;
+        children.clear();
+    }
 } Node;
 
-typedef struct
-{
-    Node root;
-} Tree;
 
-double UCT(const int numChildVisits, const int numChildWins, const int numParentVisits)
+Node* best_child(Node *node, float c)
 {
-    if(numChildVisits == 0) {return 1000000.0;}
-    return ((double)numChildWins/numChildVisits) + 1.41 * sqrt(log(numParentVisits) / (double)numChildVisits);
-}
+    assert(node != NULL);
 
-double getWinrate(const Node& node)
-{
-    return (double)node.numWins / node.numVisits;
-}
-
-int mostVisited(const Node& node)
-{
-    int bestIndex = -1;
-    int mostVisits = 0;
-
-    for(unsigned int n = 0; n < node.children.size(); ++n)
+    int best = -10000;
+    std::vector<Node> best_children;
+    for(auto child : node->children)
     {
-        if(node.children[n].numVisits >= mostVisits)
+        int score = child.wins / child.visits + c * sqrt(2 * log(child.parent->visits));
+        if(score > best)
         {
-            mostVisits = node.children[n].numVisits;
-            bestIndex = n;
+            best = score;
+            best_children.clear();
+            best_children.push_back(child);
+        }
+        else if(score == best)
+        {
+            best_children.push_back(child);
         }
     }
 
-    return bestIndex;
+    assert(best_children.size() > 0);
+
+    int index = rand() % best_children.size();
+    for(unsigned int i = 0; i < node->children.size(); ++i)
+    {
+        if(best_children[index].move == node->children[i].move)
+        {
+            return &node->children[i];
+        }
+    }
+
+    return NULL;
 }
+
+
+Node* tree_policy(Node *node)
+{
+    assert(node != NULL);
+
+    while(node->terminal() == false)
+    {
+        if(node->state.moves_left() > 0)
+        {
+            return node->expand();
+        }
+        else
+        {
+            node = best_child(node, sqrt(2));
+        }
+    }
+
+    return node;
+}
+
+
+int default_policy(Position &pos)
+{
+    return rollout(pos, 400);
+}
+
+
+void backup_negamax(Node *node, int delta)
+{
+    assert(node != NULL);
+
+    while(node != NULL)
+    {
+        node->visits += 1;
+        node->wins += delta;
+        delta = -delta;
+        node = node->parent;
+    }
+}
+
 
 int getPV(Node *node, Move *moves)
 {
+    assert(node != NULL);
+    assert(moves != NULL);
+
     int pvLength = 0;
     while(node->children.size())
     {
         int bestIndex = 0;
-        double bestWinrate = 0.0;
-        //int mostVisits = 0;
+        double bestScore = 0.0;
 
         for(unsigned int n = 0; n < node->children.size(); ++n)
         {
-            double winrate = getWinrate(node->children[n]);
+            double score = node->children[n].wins / node->children[n].visits;
 
-            if(winrate >= bestWinrate)
-            //if(node->children[n].numVisits > mostVisits)
+            if(score >= bestScore)
             {
                 bestIndex = n;
-                bestWinrate = winrate;
-                //mostVisits = node->children[n].numVisits;
+                bestScore = score;
             }
         }
 
@@ -96,53 +205,34 @@ int getPV(Node *node, Move *moves)
     return pvLength;
 }
 
-int findBestNode(Node *node)
+
+void printTree(Node node, int depth)
 {
-    int bestIndex = -1;
-    double bestScore = 0.0;
-
-    for(unsigned int n = 0; n < node->children.size(); ++n)
+    if(depth > 8)
     {
-        double score = UCT(node->children[n].numVisits, node->children[n].numWins, node->numVisits);
+        return;
+    }
 
-        if(score >= bestScore)
+    for(auto child : node.children)
+    {
+        for(int i = 0; i < depth; ++i)
         {
-            bestIndex = n;
-            bestScore = score;
+            std::cout << "            ";
+        }
+        std::cout << moveString(child.move) << " (" << child.wins << "/" << child.visits << ")" << std::endl;
+
+        if(child.children.size() > 0)
+        {
+            printTree(child, depth+1);
         }
     }
-
-    return bestIndex;
 }
 
-int expandNode(Node *node)
+
+void mctsUCT(const Position &pos, int numSimulations, int movetime)
 {
-    Move moves[256];
-    int numMoves = movegen(node->pos, moves);
-
-    for(int n = 0; n < numMoves; ++n)
-    {
-        Node newNode;
-        newNode.pos = node->pos;
-        newNode.move = moves[n];
-        makemove(newNode.pos, moves[n]);
-        newNode.numWins = 0;
-        newNode.numVisits = 0;
-        newNode.parent = node;
-
-        node->children.push_back(newNode);
-    }
-
-    return numMoves;
-}
-
-void mctsUct(const Position& pos, int numSimulations, int movetime)
-{
-    Node root;
-    root.pos = pos;
-    root.numWins = 0;
-    root.numVisits = 0;
-    root.parent = NULL;
+    Node root = Node(pos, NULL, NO_MOVE);
+    int iteration = 0;
 
     clock_t start = clock();
     clock_t endTarget = clock();
@@ -157,101 +247,26 @@ void mctsUct(const Position& pos, int numSimulations, int movetime)
         endTarget = INT_MAX;
     }
 
-    int sims = 0;
-    while(sims < numSimulations && clock() < endTarget)
+    while(iteration < numSimulations && clock() < endTarget)
     {
-        Node *selection = &root;
+        Node *node = tree_policy(&root);
+        int score = default_policy(node->state.pos);
+        backup_negamax(node, score);
+        iteration++;
 
-
-        // Step 1 -- Selection
-        while(selection->children.size() > 0)
+        if(iteration == 1 || iteration % 1000 == 0)
         {
-            int n = findBestNode(selection);
-
-            if(selection->parent != NULL)
-            {
-                double scoreParent = UCT(selection->numVisits,
-                                         selection->numWins,
-                                         selection->parent->numVisits);
-                double scoreChild = UCT(selection->children[n].numVisits,
-                                        selection->children[n].numWins,
-                                        selection->numVisits);
-
-                if(scoreParent > scoreChild) {break;}
-            }
-
-            selection = &(selection->children[n]);
-        }
-
-
-        // Step 2 -- Expansion
-        if(selection->numVisits >= 10 && selection->children.size() == 0)
-        {
-            expandNode(selection);
-        }
-
-
-        // Step 2.a -- Reselection
-        int n = findBestNode(selection);
-        if(n != -1)
-        {
-            selection = &(selection->children[n]);
-        }
-
-
-        // Step 3 -- Simulation
-        int result = -rollout(selection->pos, 400);
-        sims++;
-
-
-        // Step 4 -- Backpropagation
-        while(selection != NULL)
-        {
-            if(selection->pos.turn == root.pos.turn)
-            {
-                if(result == 1)
-                {
-                    selection->numWins++;
-                }
-            }
-            else
-            {
-                if(result == -1)
-                {
-                    selection->numWins++;
-                }
-            }
-
-            selection->numVisits++;
-
-            selection = selection->parent;
-        }
-
-
-        // Details
-        if(sims%10000 == 0)
-        {
+            double time = (double)(clock() - start)/CLOCKS_PER_SEC;
             Move moves[64];
             int pvLength = getPV(&root, moves);
             std::string pvString = getPvString(moves, pvLength);
-            double time = (double)(clock() - start)/CLOCKS_PER_SEC;
 
-            for(unsigned int n = 0; n < root.children.size(); ++n)
-            {
-                if(root.children[n].move != moves[0])
-                {
-                    continue;
-                }
-
-                std::cout << "info"
-                          << " sims " << sims
-                          << " score winchance " << (double)root.children[n].numWins/root.children[n].numVisits
-                          << " sps " << (uint64_t)(sims/time)
-                          << " time " << (uint64_t)(1000.0*time)
-                          << " pv " << pvString
-                          << std::endl;
-                break;
-            }
+            std::cout << "info"
+                      << " sims " << iteration
+                      << " sps " << (uint64_t)(iteration/time)
+                      << " time " << (uint64_t)(1000.0*time)
+                      << " pv " << pvString
+                      << std::endl;
         }
     }
 
@@ -281,7 +296,7 @@ void mctsUct(const Position& pos, int numSimulations, int movetime)
         }
         else
         {
-            std::cout << "bestmove none" << std::endl;
+            std::cout << "bestmove 0000" << std::endl;
         }
     }
 }

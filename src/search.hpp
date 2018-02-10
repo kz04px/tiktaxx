@@ -19,7 +19,7 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
 
 // MCTS
 void mctsPure(const Position& pos, int numSimulations, int movetime);
-void mctsUct(const Position& pos, int numSimulations, int movetime);
+void mctsUCT(const Position& pos, int numSimulations, int movetime);
 
 // Other
 int mostCaptures(const Position& pos, searchInfo& info, searchStack *ss, PV& pv);
