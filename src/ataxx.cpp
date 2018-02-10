@@ -89,40 +89,48 @@ int setBoard(Position& pos, std::string fen)
     return 0;
 }
 
-void print(const Position& pos)
+void print(const Position& pos, bool details)
 {
-    const char pieceChars[4] = {'X', 'O', ' ', '-'};
-
+    std::cout << "  a b c d e f g" << std::endl;
+    std::cout << " ╔═╦═╦═╦═╦═╦═╦═╗" << std::endl;
     for(int y = 6; y >= 0; --y)
     {
+        std::cout << y + 1 << "║";
         for(int x = 0; x < 7; ++x)
         {
             int sq = 7*y + x;
             std::uint64_t bb = 1ULL<<sq;
 
-                 if(pos.pieces[PIECE::CROSS]&bb)  {std::cout << pieceChars[PIECE::CROSS];}
-            else if(pos.pieces[PIECE::NOUGHT]&bb) {std::cout << pieceChars[PIECE::NOUGHT];}
-            else if(pos.blockers&bb)              {std::cout << pieceChars[PIECE::BLOCKER];}
-            else                                  {std::cout << pieceChars[PIECE::EMPTY];}
+                 if(pos.pieces[PIECE::CROSS]&bb)  {std::cout << "X";}
+            else if(pos.pieces[PIECE::NOUGHT]&bb) {std::cout << "O";}
+            else if(pos.blockers&bb)              {std::cout << "#";}
+            else                                  {std::cout << " ";}
+            std::cout << "║";
         }
-        std::cout << std::endl;
+        std::cout << y + 1 << std::endl;
+        if(y > 0) {std::cout << " ╠═╬═╬═╬═╬═╬═╬═╣" << std::endl;}
     }
+    std::cout << " ╚═╩═╩═╩═╩═╩═╩═╝" << std::endl;
+    std::cout << "  a b c d e f g" << std::endl;
 
-    std::cout << "Turn: " << (pos.turn == SIDE::CROSS ? 'X' : 'O') << std::endl;
-    std::cout << "Ply: " << pos.ply << std::endl;
-    std::cout << "Eval: " << eval(pos) << std::endl;
-    std::cout << "Score: " << score(pos) << std::endl;
-    std::cout << "Phase: " << phase(pos) << std::endl;
-    std::cout << "Endgame: " << (isEndgame(pos) == true ? "true" : "false") << std::endl;
+    if(details == true)
+    {
+        std::cout << "Turn: " << (pos.turn == SIDE::CROSS ? 'X' : 'O') << std::endl;
+        std::cout << "Ply: " << pos.ply << std::endl;
+        std::cout << "Eval: " << eval(pos) << std::endl;
+        std::cout << "Score: " << score(pos) << std::endl;
+        std::cout << "Phase: " << phase(pos) << std::endl;
+        std::cout << "Endgame: " << (isEndgame(pos) == true ? "true" : "false") << std::endl;
 
-    int validCode = valid(pos);
-    if(validCode)
-    {
-        std::cout << "Valid: false (" << validCode << ")" << std::endl;
-    }
-    else
-    {
-        std::cout << "Valid: true" << std::endl;
+        int validCode = valid(pos);
+        if(validCode)
+        {
+            std::cout << "Valid: false (" << validCode << ")" << std::endl;
+        }
+        else
+        {
+            std::cout << "Valid: true" << std::endl;
+        }
     }
 }
 

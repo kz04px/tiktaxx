@@ -265,7 +265,7 @@ void messageLoop()
             }
             else if(tokens[n] == "print")
             {
-                print(pos);
+                print(pos, true);
             }
             else if(tokens[n] == "position")
             {

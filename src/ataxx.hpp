@@ -31,7 +31,7 @@ typedef struct
 } Position;
 
 int setBoard(Position& pos, std::string fen);
-void print(const Position& pos);
+void print(const Position& pos, bool details);
 int valid(const Position& pos);
 
 #endif

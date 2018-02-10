@@ -91,7 +91,7 @@ void manual()
         }
         else
         {
-            print(pos);
+            print(pos, false);
 
             std::cout << "Enter move: ";
             std::string moveString;
