@@ -22,11 +22,11 @@ $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	@echo "Compiled "$<" successfully!"
 
 bin:
-	mkdir -p bin
+	mkdir -p $(BINDIR)
 obj:
-	mkdir -p obj
+	mkdir -p $(OBJDIR)
 
 clean:
-	rm -r obj
+	rm -r $(OBJDIR)
 
 .PHONY: clean
