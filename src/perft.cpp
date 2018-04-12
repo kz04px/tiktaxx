@@ -71,10 +71,11 @@ void splitPerft(Hashtable *tt, const Position& pos, const int depth)
 void perft(Hashtable *tt, const Position& pos, const int depth)
 {
     tableClear(tt);
+    uint64_t nodes = 0ULL;
     for(int n = 1; n <= depth; ++n)
     {
         clock_t start = clock();
-        uint64_t nodes = perftSearch(tt, pos, n);
+        nodes = perftSearch(tt, pos, n);
         clock_t end = clock();
         double timeSpent = (double)(end-start)/CLOCKS_PER_SEC;
 
@@ -88,4 +89,5 @@ void perft(Hashtable *tt, const Position& pos, const int depth)
         }
         std::cout << std::endl;
     }
+    std::cout << "nodes " << nodes << std::endl;
 }

@@ -169,5 +169,4 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
     {
         std::cout << "bestmove " << moveString(lastPV.moves[0]) << std::endl;
     }
-    std::cout << std::endl;
 }
