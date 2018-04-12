@@ -46,6 +46,7 @@ uint64_t perftSearch(Hashtable *tt, const Position& pos, const int depth)
 void splitPerft(Hashtable *tt, const Position& pos, const int depth)
 {
     tableClear(tt);
+    uint64_t total = 0ULL;
     Move moves[256];
     int numMoves = movegen(pos, moves);
 
@@ -64,8 +65,10 @@ void splitPerft(Hashtable *tt, const Position& pos, const int depth)
 
         std::cout << nodes
                   << std::endl;
+        total += nodes;
     }
     tableClear(tt);
+    std::cout << "nodes " << total << std::endl;
 }
 
 void perft(Hashtable *tt, const Position& pos, const int depth)
