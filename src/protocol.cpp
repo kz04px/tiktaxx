@@ -84,9 +84,13 @@ void messageLoop()
             }
             else if(tokens[n] == "stop")
             {
-                stop = true;
-                searchThread.join();
-                stop = false;
+                // Stop the search if there's already one going
+                if(searchThread.joinable())
+                {
+                    stop = true;
+                    searchThread.join();
+                    stop = false;
+                }
             }
             else if(tokens[n] == "mcts")
             {
