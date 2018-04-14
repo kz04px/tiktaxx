@@ -26,7 +26,7 @@ typedef struct State
     int currMove;
     Move moves[256];
 
-    int moves_left()
+    int moves_left() const
     {
         return numMoves - currMove;
     }
@@ -37,18 +37,17 @@ typedef struct State
         return moves[currMove-1];
     }
 
-    void move(const Move move)
+    void move(const Move& move)
     {
         makemove(pos, move);
     }
 
-    State()
+    State() : pos(), numMoves(0), currMove(0)
     {
     }
 
-    State(Position position)
+    State(Position position) : pos(position)
     {
-        pos = position;
         numMoves = movegen(position, moves);
         currMove = 0;
     }
@@ -77,7 +76,7 @@ typedef struct Node
         return &children[children.size()-1];
     }
 
-    bool terminal()
+    bool terminal() const
     {
         return children.size() == 0 && state.moves_left() == 0;
     }

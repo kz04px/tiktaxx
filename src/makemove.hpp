@@ -6,10 +6,10 @@
 #include "ataxx.hpp"
 #include "move.hpp"
 
-void makemove(Position& pos, const Move n);
+void makemove(Position& pos, const Move& n);
 void makemove(Position& pos, const int to);
 void makemove(Position& pos, const int from, const int to);
-void makemove(Position& pos, const std::string moveString);
-bool makemoves(Position& pos, const std::string movesString);
+void makemove(Position& pos, const std::string& moveString);
+bool makemoves(Position& pos, const std::string& movesString);
 
 #endif

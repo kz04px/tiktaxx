@@ -156,7 +156,7 @@ Entry probe(Hashtable *table, const uint64_t key)
     return table->entries[key % table->maxEntries];
 }
 
-void add(Hashtable *table, const uint64_t key, const int depth, const int eval, const Move move)
+void add(Hashtable *table, const uint64_t key, const int depth, const int eval, const Move& move)
 {
     assert(table != NULL);
 

@@ -5,7 +5,7 @@
 #include "bitboards.hpp"
 #include "other.hpp"
 
-std::string moveString(const Move n)
+std::string moveString(const Move& n)
 {
     if(isSingle(n))
     {
@@ -33,7 +33,7 @@ void printMoves(const Position& pos)
     }
 }
 
-int countCaptures(const Position& pos, const Move n)
+int countCaptures(const Position& pos, const Move& n)
 {
     uint64_t toBB = (1ULL) << n.to;
     uint64_t near = singleJump(toBB);

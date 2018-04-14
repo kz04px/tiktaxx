@@ -14,7 +14,7 @@ void makemove(Position& pos, const int from, const int to)
     makemove(pos, (Move){.from=from, .to=to});
 }
 
-void makemove(Position& pos, const std::string moveString)
+void makemove(Position& pos, const std::string& moveString)
 {
     int from = 0;
     int to = 0;
@@ -48,7 +48,7 @@ void makemove(Position& pos, const std::string moveString)
     makemove(pos, (Move){.from=from, .to=to});
 }
 
-void makemove(Position& pos, const Move n)
+void makemove(Position& pos, const Move& n)
 {
     uint64_t toBB = (1ULL)<<(n.to);
     uint64_t fromBB = (1ULL)<<(n.from);
@@ -68,7 +68,7 @@ void makemove(Position& pos, const Move n)
     pos.ply++;
 }
 
-bool makemoves(Position& pos, const std::string movesString)
+bool makemoves(Position& pos, const std::string& movesString)
 {
     std::vector<std::string> tokens = split(movesString, ' ');
 

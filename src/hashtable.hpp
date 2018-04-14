@@ -31,7 +31,7 @@ void tableInit(Hashtable *table);
 int tableCreate(Hashtable *table, int megabytes);
 bool tableClear(Hashtable *table);
 Entry probe(Hashtable *table, const uint64_t key);
-void add(Hashtable *table, const uint64_t key, const int depth, const int eval, const Move move);
+void add(Hashtable *table, const uint64_t key, const int depth, const int eval, const Move& move);
 void addPerft(Hashtable *table, const uint64_t key, const int depth, const uint64_t nodes);
 void printDetails(Hashtable *table);
 void tableRemove(Hashtable *table);
