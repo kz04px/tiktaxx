@@ -77,11 +77,7 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
                   << " score " << score
                   << " time " << (uint64_t)(1000.0*timeSpent);
 
-        if(pv.numMoves == 0)
-        {
-            std::cout << " pv 0000";
-        }
-        else
+        if(pv.numMoves > 0)
         {
             std::cout << " pv";
             for(int n = 0; n < pv.numMoves; ++n)
