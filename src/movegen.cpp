@@ -1,9 +1,13 @@
+#include <cassert>
+
 #include "movegen.hpp"
 #include "bitboards.hpp"
 #include "other.hpp"
 
 int movegen(const Position& pos, Move *moves)
 {
+    assert(moves != NULL);
+
     int numMoves = 0;
 
     // Create double moves
@@ -58,6 +62,26 @@ int movegen(const Position& pos, Move *moves)
 
         singles &= singles - 1;
     }
+
+    assert(numMoves >= 0);
+    assert(numMoves < 256);
+
+#ifndef NDEBUG
+    for(int i = 0; i < numMoves; ++i)
+    {
+        // Either one or the other
+        assert((isSingle(moves[i]) ^ isDouble(moves[i])) != 0);
+
+        // Destination needs to be empty
+        assert(((pos.pieces[pos.turn] | pos.pieces[!pos.turn] | pos.blockers) & ((1ULL)<<moves[i].to)) == 0ULL);
+
+        if(isDouble(moves[i]) == true)
+        {
+            // Source needs to have our stone on it
+            assert((pos.pieces[pos.turn] & ((1ULL)<<moves[i].from)) != 0ULL);
+        }
+    }
+#endif
 
     return numMoves;
 }

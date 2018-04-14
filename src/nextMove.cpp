@@ -1,9 +1,13 @@
 #include <climits>
+#include <cassert>
 
 #include "nextMove.hpp"
 
 bool nextMove(const Move *moves, const int numMoves, Move& move, int *scores)
 {
+    assert(moves != NULL);
+    assert(scores != NULL);
+
     int bestIndex = 0;
     int bestScore = INT_MIN;
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 
 #include "hashtable.hpp"
 
@@ -55,6 +56,8 @@ uint64_t getNodes(const Entry& n)
 
 void tableInit(Hashtable *table)
 {
+    assert(table != NULL);
+
     table->numEntries = 0;
     table->maxEntries = 0;
     table->entries = NULL;
@@ -62,6 +65,8 @@ void tableInit(Hashtable *table)
 
 void printDetails(Hashtable *table)
 {
+    assert(table != NULL);
+
     std::cout << "Num entries: " << table->numEntries << std::endl;
     std::cout << "Max entries: " << table->maxEntries << std::endl;
     std::cout << "Entry size:  " << sizeof(Entry) << std::endl;
@@ -74,6 +79,8 @@ void printDetails(Hashtable *table)
 
 bool tableClear(Hashtable *table)
 {
+    assert(table != NULL);
+
     table->numEntries = 0;
     for(int n = 0; n < table->maxEntries; ++n)
     {
@@ -93,6 +100,8 @@ bool tableClear(Hashtable *table)
 
 int tableCreate(Hashtable *table, int megabytes)
 {
+    assert(table != NULL);
+
     if(table->entries)
     {
         tableRemove(table);
@@ -130,6 +139,8 @@ int tableCreate(Hashtable *table, int megabytes)
 
 void tableRemove(Hashtable *table)
 {
+    assert(table != NULL);
+
     if(table->entries)
     {
         table->numEntries = 0;
@@ -140,11 +151,15 @@ void tableRemove(Hashtable *table)
 
 Entry probe(Hashtable *table, const uint64_t key)
 {
+    assert(table != NULL);
+
     return table->entries[key % table->maxEntries];
 }
 
 void add(Hashtable *table, const uint64_t key, const int depth, const int eval, const Move move)
 {
+    assert(table != NULL);
+
     int index = key % table->maxEntries;
 
     if(table->entries[index].key == 0ULL)
@@ -172,6 +187,8 @@ void add(Hashtable *table, const uint64_t key, const int depth, const int eval, 
 
 void addPerft(Hashtable *table, const uint64_t key, const int depth, const uint64_t nodes)
 {
+    assert(table != NULL);
+
     int index = key % table->maxEntries;
 
     if(table->entries[index].key == 0ULL)

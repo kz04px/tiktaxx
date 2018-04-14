@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "ataxx.hpp"
 #include "movegen.hpp"
 #include "move.hpp"
@@ -10,6 +12,8 @@
 
 int random(const Position& pos, searchInfo& info, searchStack *ss, PV& pv)
 {
+    assert(ss != NULL);
+
     pv.numMoves = 0;
     Move moves[256];
     int numMoves = movegen(pos, moves);

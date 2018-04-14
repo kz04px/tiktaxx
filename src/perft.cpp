@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ctime>
+#include <cassert>
 
 #include "perft.hpp"
 #include "makemove.hpp"
@@ -9,6 +10,8 @@
 
 uint64_t perftSearch(Hashtable *tt, const Position& pos, const int depth)
 {
+    assert(tt != NULL);
+
     Move moves[256];
     int numMoves = movegen(pos, moves);
 
@@ -45,6 +48,8 @@ uint64_t perftSearch(Hashtable *tt, const Position& pos, const int depth)
 
 void splitPerft(Hashtable *tt, const Position& pos, const int depth)
 {
+    assert(tt != NULL);
+
     tableClear(tt);
     uint64_t total = 0ULL;
     Move moves[256];
@@ -73,6 +78,8 @@ void splitPerft(Hashtable *tt, const Position& pos, const int depth)
 
 void perft(Hashtable *tt, const Position& pos, const int depth)
 {
+    assert(tt != NULL);
+
     tableClear(tt);
     uint64_t nodes = 0ULL;
     for(int n = 1; n <= depth; ++n)

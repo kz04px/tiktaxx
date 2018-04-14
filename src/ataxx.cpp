@@ -123,7 +123,7 @@ void print(const Position& pos, bool details)
         std::cout << "Endgame: " << (isEndgame(pos) == true ? "true" : "false") << std::endl;
 
         int validCode = valid(pos);
-        if(validCode)
+        if(validCode != 0)
         {
             std::cout << "Valid: false (" << validCode << ")" << std::endl;
         }

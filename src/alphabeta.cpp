@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <cassert>
 
 #include "ataxx.hpp"
 #include "search.hpp"
@@ -18,6 +19,9 @@
 
 int reduction(const int moveNum, const int depth)
 {
+    assert(moveNum >= 0);
+    assert(depth >= 0);
+
     if(moveNum < 4 || depth < 3)
     {
         return 0;
@@ -27,6 +31,10 @@ int reduction(const int moveNum, const int depth)
 
 int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth)
 {
+    assert(ss != NULL);
+    assert(depth >= 0);
+    assert(beta >= alpha);
+
     if(depth == 0 || info.depth >= MAX_DEPTH)
     {
         pv.numMoves = 0;

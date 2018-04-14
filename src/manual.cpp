@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <cassert>
 
 #include "ataxx.hpp"
 #include "hashtable.hpp"
@@ -11,6 +12,8 @@
 
 std::string getEngineMove(Hashtable *tt, Position& pos, int depth, int movetime, bool verbose=false)
 {
+    assert(tt != NULL);
+
     // We need to eat the output of the search because the user doesn't want to read it
     std::stringstream buffer;
     std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
@@ -28,7 +31,7 @@ std::string getEngineMove(Hashtable *tt, Position& pos, int depth, int movetime,
         std::string line;
         std::getline(buffer, line, '\n');
 
-        if(verbose)
+        if(verbose == true)
         {
             std::cout << line << std::endl;
         }

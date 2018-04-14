@@ -82,14 +82,8 @@ typedef struct Node
         return children.size() == 0 && state.moves_left() == 0;
     }
 
-    Node(State s, Node *p, Move m)
+    Node(State s, Node *p, Move m) : state(s), move(m), wins(0), visits(1), parent(p), children({})
     {
-        state = s;
-        parent = p;
-        wins = 0;
-        visits = 1;
-        move = m;
-        children.clear();
     }
 } Node;
 

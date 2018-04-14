@@ -1,7 +1,10 @@
+#include <cassert>
 #include "pv.hpp"
 
 std::string getPvString(const Move *moves, const int pvLength)
 {
+    assert(moves != NULL);
+
     std::string pvString = "";
 
     for(int n = 0; n < pvLength; ++n)

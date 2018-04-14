@@ -1,9 +1,13 @@
+#include <cassert>
+
 #include "sorting.hpp"
 
 #define INF (999999)
 
 void sortMoves(const Position& pos, Move *moves, const int numMoves, const Move& ttMove)
 {
+    assert(moves != NULL);
+
     int scores[256] = {0};
 
     // Score
@@ -44,4 +48,11 @@ void sortMoves(const Position& pos, Move *moves, const int numMoves, const Move&
         scores[bestIndex] = scores[a];
         scores[a] = tempScore;
     }
+
+#ifndef NDEBUG
+    for(int i = 0; i < numMoves-1; ++i)
+    {
+        assert(scores[i] >= scores[i+1]);
+    }
+#endif
 }

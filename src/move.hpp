@@ -8,6 +8,14 @@ struct Move
     int from;
     int to;
 
+    Move()
+    {
+    }
+
+    Move(int from, int to) : from(from), to(to)
+    {
+    }
+
     bool operator==(const Move& n) const
     {
         return (from == n.from && to == n.to);

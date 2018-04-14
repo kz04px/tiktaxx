@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cassert>
 
 #include "search.hpp"
 #include "movegen.hpp"
@@ -9,6 +10,8 @@
 
 int mostCaptures(const Position& pos, searchInfo& info, searchStack *ss, PV& pv)
 {
+    assert(ss != NULL);
+
     Move moves[256];
     int numMoves = movegen(pos, moves);
 

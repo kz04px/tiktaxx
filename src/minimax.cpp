@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstring>
+#include <cassert>
 
 #include "search.hpp"
 #include "makemove.hpp"
@@ -11,6 +12,8 @@
 
 int minimax(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, const int depth)
 {
+    assert(ss != NULL);
+
     if(depth == 0 || info.depth >= MAX_DEPTH)
     {
         pv.numMoves = 0;

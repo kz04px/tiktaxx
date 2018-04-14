@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <climits>
+#include <cassert>
 
 #include "search.hpp"
 #include "movegen.hpp"
@@ -18,6 +19,11 @@
 
 int findBestmove(const int numMoves, const int *wins, const int *draws, const int *losses)
 {
+    assert(numMoves >= 0);
+    assert(wins != NULL);
+    assert(draws != NULL);
+    assert(losses != NULL);
+
     int bestIndex = 0;
     double bestScore = -INF;
 
