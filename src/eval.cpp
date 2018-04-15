@@ -64,7 +64,7 @@ int eval(const Position& pos)
 
     int ourPST = 0;
     int theirPST = 0;
-/*
+
     uint64_t copy = pos.pieces[PIECE::CROSS];
     while(copy)
     {
@@ -84,7 +84,6 @@ int eval(const Position& pos)
 
         copy &= copy - 1;
     }
-*/
 
     int score =   TURN_BONUS*(pos.turn == SIDE::CROSS ? 1 : -1)
                 + PIECE_VALUE*numFriendly
