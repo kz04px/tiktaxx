@@ -22,6 +22,20 @@ int main()
         std::cout << "uaiok" << std::endl;
         messageLoop();
     }
+    else if(mode == "about")
+    {
+        std::cout << "An Ataxx engine written in C++" << std::endl;
+        std::cout << "https://github.com/kz04px/ataxx-engine" << std::endl;
+#ifdef NULLMOVE
+        std::cout << "NULLMOVE enabled" << std::endl;
+#endif
+#ifdef KILLER_MOVES
+        std::cout << "KILLER_MOVES enabled" << std::endl;
+#endif
+#ifdef LMR
+        std::cout << "LMR enabled" << std::endl;
+#endif
+    }
     else
     {
         std::cout << "ERROR: Unknown protocol " << mode << std::endl;

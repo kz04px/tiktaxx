@@ -324,11 +324,6 @@ void messageLoop()
                     n += 1;
                 }
             }
-            else if(tokens[n] == "about")
-            {
-                std::cout << "An Ataxx engine written in C++" << std::endl;
-                std::cout << "https://github.com/kz04px/ataxx-engine" << std::endl;
-            }
             else if(tokens[n] == "quit")
             {
                 quit = true;
