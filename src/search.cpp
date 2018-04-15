@@ -39,6 +39,12 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
     info.selDepth = 0;
     info.stop = stop;
     info.tt = tt;
+#ifndef NDEBUG
+    for(int i = 0; i < 256; ++i)
+    {
+        info.cutoffs[i] = 0ULL;
+    }
+#endif
 
     if(depth == 0)
     {
@@ -90,6 +96,22 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
 
         lastPV = pv;
     }
+
+#ifndef NDEBUG
+    uint64_t total = 0ULL;
+    for(int i = 0; i < 256; ++i)
+    {
+        total += info.cutoffs[i];
+    }
+    for(int i = 0; i < 8; ++i)
+    {
+        std::cout << "info "
+                  << "move " << i+1 << " "
+                  << "cutoffs " << info.cutoffs[i] << " "
+                  << "(" << 100.0*info.cutoffs[i]/total << "%)"
+                  << std::endl;
+    }
+#endif
 
     if(lastPV.numMoves == 0)
     {

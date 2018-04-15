@@ -16,6 +16,9 @@ typedef struct
     clock_t end;
     bool *stop;
     Hashtable *tt;
+#ifndef NDEBUG
+    uint64_t cutoffs[256];
+#endif
 } searchInfo;
 
 #endif

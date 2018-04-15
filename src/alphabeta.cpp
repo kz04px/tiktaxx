@@ -159,6 +159,9 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
 #ifdef KILLER_MOVES
             ss->killer = move;
 #endif
+#ifndef NDEBUG
+            info.cutoffs[moveNum] += 1;
+#endif
             return beta;
         }
 
