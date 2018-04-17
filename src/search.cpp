@@ -140,7 +140,7 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
 
     std::cout << "Hash table hits: " << info.hashHits << std::endl;
     std::cout << "Collisions: " << info.hashCollisions << std::endl;
-    std::cout << "Percent: " << 100.0*(double)info.hashHits/(info.hashHits + info.hashCollisions) << "%" <<  std::endl;
+    std::cout << "Percent: " << 100.0*(double)info.hashCollisions/info.hashHits << "%" <<  std::endl;
     std::cout << std::endl;
 
     std::cout << "tt->numEntries: " << tt->numEntries << std::endl;
