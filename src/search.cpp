@@ -72,9 +72,11 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
         {
             for(auto r : {50, 200, INF})
             {
-                score = alphaBeta(pos, info, ss, pv, lastScore - r, lastScore + r, d);
+                int lower = lastScore - r;
+                int upper = lastScore + r;
+                score = alphaBeta(pos, info, ss, pv, lower, upper, d);
 
-                if(lastScore - r < score && score < lastScore + r)
+                if(lower < score && score < upper)
                 {
                     break;
                 }
