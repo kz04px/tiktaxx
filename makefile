@@ -1,5 +1,5 @@
 CC         = g++
-CFLAGS     = -std=c++14 -Wall -Wextra -O3 -flto
+CFLAGS     = -std=c++14 -Wall -Wextra -O3 -flto -DNDEBUG -DNULLMOVE
 
 LINKER     = g++ -o
 LFLAGS     = -pthread

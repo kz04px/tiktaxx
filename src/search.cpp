@@ -56,15 +56,34 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
         info.end = INT_MAX;
     }
 
+    int lastScore = 0;
     for(int d = 1; d <= depth; ++d)
     {
         PV pv;
         pv.numMoves = 0;
 
-        //int score = random(pos, info, ss, pv);
-        //int score = mostCaptures(pos, info, ss, pv);
-        //int score = minimax(pos, info, ss, pv, d);
+#ifdef ASPIRATION_WINDOWS
+        int score = 0;
+        if(depth < 3)
+        {
+            score = alphaBeta(pos, info, ss, pv, -INF, INF, d);
+        }
+        else
+        {
+            for(auto r : {50, 200, INF})
+            {
+                score = alphaBeta(pos, info, ss, pv, lastScore - r, lastScore + r, d);
+
+                if(lastScore - r < score && score < lastScore + r)
+                {
+                    break;
+                }
+            }
+        }
+#else
         int score = alphaBeta(pos, info, ss, pv, -INF, INF, d);
+#endif
+        lastScore = score;
 
         clock_t end = clock();
         double timeSpent = (double)(end - info.start)/CLOCKS_PER_SEC;

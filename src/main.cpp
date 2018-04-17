@@ -26,6 +26,10 @@ int main()
     {
         std::cout << "An Ataxx engine written in C++" << std::endl;
         std::cout << "https://github.com/kz04px/ataxx-engine" << std::endl;
+        std::cout << "Compiled: " <<   __TIME__ << " " << __DATE__ <<std::endl;
+#ifdef NDEBUG
+        std::cout << "NDEBUG enabled" << std::endl;
+#endif
 #ifdef NULLMOVE
         std::cout << "NULLMOVE enabled" << std::endl;
 #endif
@@ -34,6 +38,9 @@ int main()
 #endif
 #ifdef LMR
         std::cout << "LMR enabled" << std::endl;
+#endif
+#ifdef ASPIRATION_WINDOWS
+        std::cout << "ASPIRATION_WINDOWS enabled" << std::endl;
 #endif
     }
     else
