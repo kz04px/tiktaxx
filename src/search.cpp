@@ -44,6 +44,8 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
     {
         info.cutoffs[i] = 0ULL;
     }
+    info.hashHits = 0ULL;
+    info.hashCollisions = 0ULL;
 #endif
 
     if(depth == 0)
@@ -119,6 +121,8 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
     }
 
 #ifndef NDEBUG
+    std::cout << std::endl;
+
     uint64_t total = 0ULL;
     for(int i = 0; i < 256; ++i)
     {
@@ -132,6 +136,16 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
                   << "(" << 100.0*info.cutoffs[i]/total << "%)"
                   << std::endl;
     }
+    std::cout << std::endl;
+
+    std::cout << "Hash table hits: " << info.hashHits << std::endl;
+    std::cout << "Collisions: " << info.hashCollisions << std::endl;
+    std::cout << "Percent: " << 100.0*(double)info.hashHits/(info.hashHits + info.hashCollisions) << "%" <<  std::endl;
+    std::cout << std::endl;
+
+    std::cout << "tt->numEntries: " << tt->numEntries << std::endl;
+    std::cout << "tt->maxEntries: " << tt->maxEntries << std::endl;
+    std::cout << std::endl;
 #endif
 
     if(lastPV.numMoves == 0)

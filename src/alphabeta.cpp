@@ -60,6 +60,7 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
         }
     }
 
+    int alphaOrig = alpha;
     uint64_t key = generateKey(pos);
     Move ttMove = NO_MOVE;
 
@@ -69,11 +70,40 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
     {
         ttMove = getMove(entry);
 
+#ifndef NDEBUG
+        info.hashHits++;
+        if(legalMove(pos, ttMove) == false)
+        {
+            info.hashCollisions++;
+        }
+#endif
+
         if(getDepth(entry) >= depth && legalMove(pos, ttMove) == true)
         {
-            pv.numMoves = 1;
-            pv.moves[0] = ttMove;
-            return getEval(entry);
+            switch(getFlag(entry))
+            {
+                case EXACT:
+                    pv.numMoves = 1;
+                    pv.moves[0] = ttMove;
+                    return getEval(entry);
+                    break;
+                case LOWERBOUND:
+                    alpha = (alpha > getEval(entry) ? alpha : getEval(entry));
+                    break;
+                case UPPERBOUND:
+                    beta = (beta < getEval(entry) ? beta : getEval(entry));
+                    break;
+                default:
+                    assert(false);
+                    break;
+            }
+
+            if(alpha >= beta)
+            {
+                pv.numMoves = 1;
+                pv.moves[0] = ttMove;
+                return getEval(entry);
+            }
         }
     }
 
@@ -102,6 +132,7 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
     PV newPV;
     newPV.numMoves = 0;
     Move bestMove = NO_MOVE;
+    int bestScore = -INF;
     Move moves[256];
     int numMoves = movegen(pos, moves);
 
@@ -128,9 +159,10 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
     }
 
     int moveNum = 0;
-    Move move;
+    Move move = NO_MOVE;
     while(nextMove(moves, numMoves, move, scores))
     {
+        assert(move != NO_MOVE);
         Position newPos = pos;
 
         makemove(newPos, move);
@@ -154,27 +186,34 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
         int score = -alphaBeta(newPos, info, ss+1, newPV, -beta, -alpha, depth-1);
 #endif
 
-        if(score >= beta)
+        if(score > bestScore)
         {
-#ifdef KILLER_MOVES
-            ss->killer = move;
-#endif
-#ifndef NDEBUG
-            info.cutoffs[moveNum] += 1;
-#endif
-            return beta;
+            bestMove = move;
+            bestScore = score;
         }
 
         if(score > alpha)
         {
             alpha = score;
 
-            bestMove = move;
-
             // Update PV
             pv.moves[0] = move;
             memcpy(pv.moves + 1, newPV.moves, newPV.numMoves * sizeof(Move));
             pv.numMoves = newPV.numMoves + 1;
+        }
+
+        if(alpha >= beta)
+        {
+#ifdef KILLER_MOVES
+            if(countCaptures(pos, move) == 0)
+            {
+                ss->killer = move;
+            }
+#endif
+#ifndef NDEBUG
+            info.cutoffs[moveNum] += 1;
+#endif
+            break;
         }
 
         moveNum++;
@@ -199,8 +238,30 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
         }
     }
 
-    // Add the hash table entry
-    add(info.tt, key, depth, alpha, bestMove);
+    uint8_t flag;
+    if(bestScore <= alphaOrig)
+    {
+        flag = UPPERBOUND;
+    }
+    else if(bestScore >= beta)
+    {
+        flag = LOWERBOUND;
+    }
+    else
+    {
+        flag = EXACT;
+    }
 
-    return alpha;
+    add(info.tt, key, depth, bestScore, bestMove, flag);
+
+#ifndef NDEBUG
+    Entry testEntry = probe(info.tt, key);
+    assert(testEntry.key == key);
+    assert(testEntry.depth == depth);
+    assert(testEntry.eval == bestScore);
+    assert(testEntry.move == bestMove);
+    assert(testEntry.flag == flag);
+#endif
+
+    return bestScore;
 }

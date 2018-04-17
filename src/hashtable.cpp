@@ -54,6 +54,18 @@ uint64_t getNodes(const Entry& n)
     #endif
 }
 
+uint8_t getFlag(const Entry& n)
+{
+    #ifdef HASHTABLE_PACKED
+        // TO DO:
+        // Implement this
+        assert(false);
+        return EXACT;
+    #else
+        return n.flag;
+    #endif
+}
+
 void tableInit(Hashtable *table)
 {
     assert(table != NULL);
@@ -91,7 +103,8 @@ bool tableClear(Hashtable *table)
             table->entries[n].key = 0ULL;
             table->entries[n].depth = 0;
             table->entries[n].eval = 0;
-            table->entries[n].move = (Move){.from=0, .to=0};
+            table->entries[n].move = NO_MOVE;
+            table->entries[n].flag = EXACT;
         #endif
     }
 
@@ -156,7 +169,7 @@ Entry probe(Hashtable *table, const uint64_t key)
     return table->entries[key % table->maxEntries];
 }
 
-void add(Hashtable *table, const uint64_t key, const int depth, const int eval, const Move& move)
+void add(Hashtable *table, const uint64_t key, const int depth, const int eval, const Move& move, const uint8_t flag)
 {
     assert(table != NULL);
 
@@ -182,6 +195,7 @@ void add(Hashtable *table, const uint64_t key, const int depth, const int eval, 
         table->entries[index].depth = depth;
         table->entries[index].eval = eval;
         table->entries[index].move = move;
+        table->entries[index].flag = flag;
     #endif
 }
 

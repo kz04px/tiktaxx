@@ -6,6 +6,9 @@
 #include "move.hpp"
 
 //#define HASHTABLE_PACKED
+#define EXACT 0
+#define LOWERBOUND 1
+#define UPPERBOUND 2
 
 typedef struct
 {
@@ -17,6 +20,7 @@ typedef struct
         int eval;
         Move move;
         uint64_t nodes;
+        uint8_t flag;
     #endif
 } Entry;
 
@@ -31,7 +35,7 @@ void tableInit(Hashtable *table);
 int tableCreate(Hashtable *table, int megabytes);
 bool tableClear(Hashtable *table);
 Entry probe(Hashtable *table, const uint64_t key);
-void add(Hashtable *table, const uint64_t key, const int depth, const int eval, const Move& move);
+void add(Hashtable *table, const uint64_t key, const int depth, const int eval, const Move& move, const uint8_t flag);
 void addPerft(Hashtable *table, const uint64_t key, const int depth, const uint64_t nodes);
 void printDetails(Hashtable *table);
 void tableRemove(Hashtable *table);
@@ -40,5 +44,6 @@ int getDepth(const Entry& n);
 int getEval(const Entry& n);
 Move getMove(const Entry& n);
 uint64_t getNodes(const Entry& n);
+uint8_t getFlag(const Entry& n);
 
 #endif

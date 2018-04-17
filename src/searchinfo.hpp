@@ -18,6 +18,8 @@ typedef struct
     Hashtable *tt;
 #ifndef NDEBUG
     uint64_t cutoffs[256];
+    uint64_t hashHits;
+    uint64_t hashCollisions;
 #endif
 } searchInfo;
 
