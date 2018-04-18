@@ -2,10 +2,11 @@
 
 #include "eval.hpp"
 #include "bitboards.hpp"
+#include "phase.hpp"
 #include "other.hpp"
 
 #define INF (1000000)
-#define TURN_BONUS (10)
+#define TURN_BONUS (300)
 #define PIECE_VALUE (100)
 #define MOBILITY_VALUE (10)
 
@@ -35,6 +36,7 @@ int eval(const Position& pos)
     int numUnfriendly = popcountll(pos.pieces[PIECE::NOUGHT]);
     int ourMobility = 0;
     int theirMobility = 0;
+    float p = phase(pos);
 
 /*
     // Win condition
@@ -85,7 +87,7 @@ int eval(const Position& pos)
         copy &= copy - 1;
     }
 
-    int score =   TURN_BONUS*(pos.turn == SIDE::CROSS ? 1 : -1)
+    int score =   (p*TURN_BONUS + 200)*(pos.turn == SIDE::CROSS ? 1 : -1)
                 + PIECE_VALUE*numFriendly
                 - PIECE_VALUE*numUnfriendly
                 + MOBILITY_VALUE*ourMobility
