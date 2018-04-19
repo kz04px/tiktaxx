@@ -219,7 +219,16 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
             }
 #endif
 #ifndef NDEBUG
-            info.cutoffs[moveNum] += 1;
+            info.cutoffs[moveNum]++;
+
+            if(isSingle(move) == true)
+            {
+                info.singleCutoffs++;
+            }
+            else
+            {
+                info.doubleCutoffs++;
+            }
 #endif
             break;
         }

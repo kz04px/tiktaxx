@@ -46,6 +46,8 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
     }
     info.hashHits = 0ULL;
     info.hashCollisions = 0ULL;
+    info.singleCutoffs = 0ULL;
+    info.doubleCutoffs = 0ULL;
 #endif
 
     if(depth == 0)
@@ -136,6 +138,10 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
                   << "(" << 100.0*info.cutoffs[i]/total << "%)"
                   << std::endl;
     }
+    std::cout << std::endl;
+
+    std::cout << "Single cutoffs: " << info.singleCutoffs << std::endl;
+    std::cout << "Double cutoffs: " << info.doubleCutoffs << std::endl;
     std::cout << std::endl;
 
     std::cout << "Hash table hits: " << info.hashHits << std::endl;
