@@ -22,11 +22,23 @@ int reduction(const int moveNum, const int depth)
     assert(moveNum >= 0);
     assert(depth >= 0);
 
-    if(moveNum < 4 || depth < 3)
+    if(moveNum < 2 || depth < 3)
     {
         return 0;
     }
-    return 1;
+
+    if(moveNum < 6)
+    {
+        return 1;
+    }
+    else if(moveNum < 12)
+    {
+        return depth / 3;
+    }
+    else
+    {
+        return depth / 2;
+    }
 }
 
 int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth)
@@ -142,20 +154,20 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
     {
         if(moves[n] == ttMove)
         {
-            scores[n] = 1000;
+            scores[n] = 10001;
         }
 #ifdef KILLER_MOVES
         else if(moves[n] == ss->killer)
         {
-            scores[n] = 500;
+            scores[n] = 10000;
         }
 #endif
         else
         {
             scores[n] = countCaptures(pos, moves[n]);
-        }
 
-        scores[n] += (isSingle(moves[n]) ? 1 : 0);
+            scores[n] += (isSingle(moves[n]) ? 1 : 0);
+        }
     }
 
     int moveNum = 0;
@@ -174,13 +186,9 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
         int score = -alphaBeta(newPos, info, ss+1, newPV, -alpha-1, -alpha, depth-1-r);
 
         // Re-search
-        if(score > alpha && score < beta)
+        if(score > alpha)
         {
             score = -alphaBeta(newPos, info, ss+1, newPV, -beta, -alpha, depth-1);
-            if(score > alpha)
-            {
-                alpha = score;
-            }
         }
 #else
         int score = -alphaBeta(newPos, info, ss+1, newPV, -beta, -alpha, depth-1);
