@@ -40,10 +40,10 @@ void add_perft(Hashtable *table, const uint64_t key, const int depth, const uint
 void print_details(Hashtable *table);
 void table_remove(Hashtable *table);
 
-int get_depth(const Entry & n);
-int get_eval(const Entry & n);
-Move get_move(const Entry & n);
-uint64_t get_nodes(const Entry & n);
-uint8_t get_flag(const Entry & n);
+int get_depth(const Entry &n);
+int get_eval(const Entry &n);
+Move get_move(const Entry &n);
+uint64_t get_nodes(const Entry &n);
+uint8_t get_flag(const Entry &n);
 
 #endif

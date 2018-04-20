@@ -16,7 +16,7 @@
 //   nodes -- 56 bits (72,057,594,037,927,936 max)
 //
 
-int get_depth(const Entry & n)
+int get_depth(const Entry &n)
 {
     #ifdef HASHTABLE_PACKED
         return (n.data) & 0xFF;
@@ -25,7 +25,7 @@ int get_depth(const Entry & n)
     #endif
 }
 
-int get_eval(const Entry & n)
+int get_eval(const Entry &n)
 {
     #ifdef HASHTABLE_PACKED
         return (n.data >> 8) & 0xFFFFFFFF;
@@ -34,7 +34,7 @@ int get_eval(const Entry & n)
     #endif
 }
 
-Move get_move(const Entry & n)
+Move get_move(const Entry &n)
 {
     #ifdef HASHTABLE_PACKED
         int from = (n.data >> 48) & 0xFF;
@@ -45,7 +45,7 @@ Move get_move(const Entry & n)
     #endif
 }
 
-uint64_t get_nodes(const Entry & n)
+uint64_t get_nodes(const Entry &n)
 {
     #ifdef HASHTABLE_PACKED
         return (n.data >> 8) & 0x1FFFFFFFFFFFFFF;
@@ -54,7 +54,7 @@ uint64_t get_nodes(const Entry & n)
     #endif
 }
 
-uint8_t get_flag(const Entry & n)
+uint8_t get_flag(const Entry &n)
 {
     #ifdef HASHTABLE_PACKED
         // TO DO:
