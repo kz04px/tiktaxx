@@ -5,6 +5,10 @@
 
 struct PV
 {
+    PV() : num_moves(0)
+    {
+    }
+
     int num_moves;
     Move moves[64];
 };

@@ -49,7 +49,6 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
 
     if(depth == 0 || info.depth >= MAX_DEPTH)
     {
-        pv.num_moves = 0;
         info.leaf_nodes++;
         return eval(pos);
     }
@@ -125,7 +124,6 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
     if(ss->nullmove && depth > 2)
     {
         PV new_pv;
-        new_pv.num_moves = 0;
 
         Position new_pos = pos;
         new_pos.turn = !new_pos.turn;
@@ -142,7 +140,6 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
 #endif
 
     PV new_pv;
-    new_pv.num_moves = 0;
     Move best_move = NO_MOVE;
     int best_score = -INF;
     Move moves[256];
@@ -238,7 +235,6 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
 
     if(num_moves == 0)
     {
-        pv.num_moves = 0;
         int val = score(pos);
 
         if(val > 0)

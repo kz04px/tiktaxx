@@ -16,7 +16,6 @@ int minimax(const Position &pos, search_info &info, search_stack *ss, PV &pv, co
 
     if(depth == 0 || info.depth >= MAX_DEPTH)
     {
-        pv.num_moves = 0;
         info.leaf_nodes++;
         return eval(pos);
     }
@@ -42,7 +41,6 @@ int minimax(const Position &pos, search_info &info, search_stack *ss, PV &pv, co
     int best_score = -INF;
 
     PV new_pv;
-    new_pv.num_moves = 0;
     Move moves[256];
     int num_moves = movegen(pos, moves);
 
@@ -67,7 +65,6 @@ int minimax(const Position &pos, search_info &info, search_stack *ss, PV &pv, co
 
     if(num_moves == 0)
     {
-        pv.num_moves = 0;
         int val = score(pos);
 
         if(val > 0)

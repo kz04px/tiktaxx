@@ -15,8 +15,6 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
     uint64_t node_total = 0ULL;
 
     PV last_pv;
-    last_pv.num_moves = 0;
-    last_pv.moves[0] = NO_MOVE;
 
     search_stack ss[MAX_DEPTH];
     for(int n = 0; n < MAX_DEPTH; ++n)
@@ -51,7 +49,6 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
     for(int d = 1; d <= depth; ++d)
     {
         PV pv;
-        pv.num_moves = 0;
 
 #ifdef ASPIRATION_WINDOWS
         int score = 0;
