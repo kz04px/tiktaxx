@@ -28,7 +28,7 @@ void print_moves(const Position &pos)
                   << ") "
                   << move_string(moves[n])
                   << " "
-                  << (moves[n].to == moves[n].from ? "single" : "double")
+                  << (is_single(moves[n]) ? "single" : "double")
                   << std::endl;
     }
 }

@@ -63,7 +63,7 @@ void split_perft(Hashtable *tt, const Position &pos, const int depth)
 
         std::cout << move_string(moves[n])
                   << " "
-                  << (moves[n].to == moves[n].from ? "single" : "double")
+                  << (is_single(moves[n]) ? "single" : "double")
                   << "   ";
 
         uint64_t nodes = perft_search(tt, new_pos, depth-1);
