@@ -15,9 +15,8 @@ int movegen(const Position &pos, Move *moves)
     while(copy)
     {
         int from = lsb(copy);
-        uint64_t from_bb = (1ULL)<<from;
 
-        uint64_t to_bb = double_jump(from_bb);
+        uint64_t to_bb = double_jump_sq(from);
 
         // Can't move onto friendly pos.pieces
         to_bb &= ~pos.pieces[pos.turn];
@@ -41,7 +40,7 @@ int movegen(const Position &pos, Move *moves)
         copy &= copy - 1;
     }
 
-    uint64_t singles = single_jump(pos.pieces[pos.turn]);
+    uint64_t singles = single_jump_bb(pos.pieces[pos.turn]);
 
     // Can't move onto friendly pos.pieces
     singles &= ~pos.pieces[pos.turn];

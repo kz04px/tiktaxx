@@ -52,7 +52,7 @@ void makemove(Position &pos, const Move &n)
 {
     uint64_t to_bb = (1ULL)<<(n.to);
     uint64_t from_bb = (1ULL)<<(n.from);
-    uint64_t captured = single_jump(to_bb) & pos.pieces[!pos.turn];
+    uint64_t captured = single_jump_sq(n.to) & pos.pieces[!pos.turn];
 
     // If there's a piece on the from square, remove it
     pos.pieces[pos.turn] &= ~from_bb;

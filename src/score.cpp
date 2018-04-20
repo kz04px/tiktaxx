@@ -11,12 +11,12 @@ int score(const Position &pos)
     int num_blockers = popcountll(pos.blockers);
     int num_empty = popcountll(empty);
 
-    uint64_t cross_moves = single_jump(pos.pieces[PIECE::CROSS]);
-    cross_moves = single_jump(cross_moves);
+    uint64_t cross_moves = single_jump_bb(pos.pieces[PIECE::CROSS]);
+    cross_moves = single_jump_bb(cross_moves);
     cross_moves &= empty;
 
-    uint64_t nought_moves = single_jump(pos.pieces[PIECE::NOUGHT]);
-    nought_moves = single_jump(nought_moves);
+    uint64_t nought_moves = single_jump_bb(pos.pieces[PIECE::NOUGHT]);
+    nought_moves = single_jump_bb(nought_moves);
     nought_moves &= empty;
 
     if(cross_moves == 0ULL && nought_moves != 0ULL)

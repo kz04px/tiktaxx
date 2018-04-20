@@ -40,12 +40,12 @@ int eval(const Position &pos)
     uint64_t empty = U64_BOARD & ~(pos.pieces[PIECE::CROSS] | pos.pieces[PIECE::NOUGHT] | pos.blockers);
     float p = phase(pos);
 
-    uint64_t cross_moves = single_jump(pos.pieces[PIECE::CROSS]);
-    cross_moves = single_jump(cross_moves);
+    uint64_t cross_moves = single_jump_bb(pos.pieces[PIECE::CROSS]);
+    cross_moves = single_jump_bb(cross_moves);
     cross_moves &= empty;
 
-    uint64_t nought_moves = single_jump(pos.pieces[PIECE::NOUGHT]);
-    nought_moves = single_jump(nought_moves);
+    uint64_t nought_moves = single_jump_bb(pos.pieces[PIECE::NOUGHT]);
+    nought_moves = single_jump_bb(nought_moves);
     nought_moves &= empty;
 
     // Win condition

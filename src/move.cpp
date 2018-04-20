@@ -35,8 +35,7 @@ void print_moves(const Position &pos)
 
 int count_captures(const Position &pos, const Move &n)
 {
-    uint64_t to_bb = (1ULL) << n.to;
-    uint64_t near = single_jump(to_bb);
+    uint64_t near = single_jump_sq(n.to);
     uint64_t captured = near & pos.pieces[!pos.turn];
     return popcountll(captured);
 }
