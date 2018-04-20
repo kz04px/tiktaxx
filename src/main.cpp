@@ -16,9 +16,6 @@ int main()
     }
     else if(mode == "uai")
     {
-        std::cout << "id name ataxx-engine" << std::endl;
-        std::cout << "id author kz04px" << std::endl;
-        std::cout << "uaiok" << std::endl;
         messageLoop();
     }
     else if(mode == "about")

@@ -9,16 +9,29 @@
 #include "eval.hpp"
 #include "makemove.hpp"
 #include "score.hpp"
+#include "options.hpp"
 #include "other.hpp"
 
 void messageLoop()
 {
+    Options options;
+
+    std::cout << "id name Tiktaxx" << std::endl;
+    std::cout << "id author kz04px" << std::endl;
+
+    std::cout << "option name Hash type spin default " << options.hash << " min 1 max 1024" << std::endl;
+    std::cout << "option name Threads type spin default " << options.threads << " min 1 max 1" << std::endl;
+    std::cout << "option name Contempt type spin default " << options.contempt << " min -1000000 max 1000000" << std::endl;
+    //std::cout << "option name Ponder type check default " << (options.ponder ? "true" : "false") << std::endl;
+
+    std::cout << "uaiok" << std::endl;
+
     Position pos;
     setBoard(pos, "startpos");
 
     Hashtable tt;
     tableInit(&tt);
-    tableCreate(&tt, 128);
+    tableCreate(&tt, options.hash);
 
     bool stop = false;
     std::thread searchThread;
@@ -55,6 +68,7 @@ void messageLoop()
                 // Default subcommands
                 int depth = 5;
                 int movetime = 0;
+                int numSimulations = 1000;
 
                 // Subcommands
                 for(unsigned int i = n+1; i < tokens.size(); ++i)
@@ -78,47 +92,6 @@ void messageLoop()
                         n += 2;
                         i += 1;
                     }
-                }
-
-                searchThread = std::thread(search, &tt, pos, &stop, depth, movetime);
-            }
-            else if(tokens[n] == "stop")
-            {
-                // Stop the search if there's already one going
-                if(searchThread.joinable())
-                {
-                    stop = true;
-                    searchThread.join();
-                    stop = false;
-                }
-            }
-            else if(tokens[n] == "mcts")
-            {
-                // Default subcommands
-                int numSimulations = 100000;
-                int movetime = 0;
-                int searchType = 1;
-
-                // Subcommands
-                for(unsigned int i = n+1; i < tokens.size(); ++i)
-                {
-                    if(tokens[i] == "pure")
-                    {
-                        searchType = 0;
-                        n += 1;
-                    }
-                    else if(tokens[i] == "uct")
-                    {
-                        searchType = 1;
-                        n += 1;
-                    }
-                    else if(tokens[i] == "movetime")
-                    {
-                        numSimulations = 0;
-                        movetime = stoi(tokens[i+1]);
-                        n += 2;
-                        i += 1;
-                    }
                     else if(tokens[i] == "simulations")
                     {
                         numSimulations = stoi(tokens[i+1]);
@@ -128,13 +101,39 @@ void messageLoop()
                     }
                 }
 
-                if(searchType == 0)
+                if(options.search == "mcts-uct")
                 {
-                    mctsPure(pos, numSimulations, movetime);
+                    searchThread = std::thread(mctsUCT, pos, numSimulations, movetime);
                 }
-                else if(searchType == 1)
+                else if(options.search == "mcts-pure")
                 {
-                    mctsUCT(pos, numSimulations, movetime);
+                    searchThread = std::thread(mctsPure, pos, numSimulations, movetime);
+                }
+                else if(options.search == "most-captures")
+                {
+                    searchThread = std::thread(mostCaptures, pos);
+                }
+                else if(options.search == "minimax")
+                {
+                    //searchThread = std::thread(minimax, &tt, &options, pos, &stop, depth, movetime);
+                }
+                else if(options.search == "random")
+                {
+                    //searchThread = std::thread(random, pos);
+                }
+                else
+                {
+                    searchThread = std::thread(alphabeta, &tt, &options, pos, &stop, depth, movetime);
+                }
+            }
+            else if(tokens[n] == "stop")
+            {
+                // Stop the search if there's already one going
+                if(searchThread.joinable())
+                {
+                    stop = true;
+                    searchThread.join();
+                    stop = false;
                 }
             }
             else if(tokens[n] == "perft")
@@ -152,10 +151,6 @@ void messageLoop()
                 if(depth < 1)
                 {
                     depth = 1;
-                }
-                else if(depth > 12)
-                {
-                    std::cout << "WARNING: perft(" << depth << ") may take a long time to finish" << std::endl;
                 }
 
                 perft(&tt, pos, depth);
@@ -202,10 +197,6 @@ void messageLoop()
                 if(depth < 1)
                 {
                     depth = 1;
-                }
-                else if(depth > 12)
-                {
-                    std::cout << "WARNING: split perft(" << depth << ") may take a long time to finish" << std::endl;
                 }
 
                 splitPerft(&tt, pos, depth);
@@ -323,6 +314,47 @@ void messageLoop()
                     makemove(pos, tokens[i]);
                     n += 1;
                 }
+            }
+            else if(tokens[n] == "options")
+            {
+                options.print();
+            }
+            else if(tokens[n] == "setoption")
+            {
+                if(n+4 >= tokens.size() || tokens[n+1] != "name" || tokens[n+3] != "value")
+                {
+                    continue;
+                }
+
+                std::string option = tokens[n+2];
+
+                if(option == "Hash")
+                {
+                    int value = stoi(tokens[n+4]);
+
+                    if(value < 1) {value = 1;}
+                    else if(value > 1024) {value = 1024;}
+
+                    options.hash = tableCreate(&tt, value);
+                }
+                else if(option == "Search")
+                {
+                    options.search = tokens[n+4];
+                }
+                else if(option == "Contempt")
+                {
+                    options.contempt = stoi(tokens[n+4]);
+                }
+                else if(option == "Threads")
+                {
+                    options.threads = stoi(tokens[n+4]);
+                }
+                else if(option == "Ponder")
+                {
+                    options.ponder = false;
+                }
+
+                n += 4;
             }
             else if(tokens[n] == "quit")
             {

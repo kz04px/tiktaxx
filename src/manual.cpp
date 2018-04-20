@@ -9,8 +9,9 @@
 #include "move.hpp"
 #include "search.hpp"
 #include "protocol.hpp"
+#include "options.hpp"
 
-std::string getEngineMove(Hashtable *tt, Position& pos, int depth, int movetime, bool verbose=false)
+std::string getEngineMove(Hashtable *tt, Options *options, Position& pos, int depth, int movetime, bool verbose=false)
 {
     assert(tt != NULL);
 
@@ -19,7 +20,7 @@ std::string getEngineMove(Hashtable *tt, Position& pos, int depth, int movetime,
     std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
 
     bool stop = false;
-    search(tt, pos, &stop, depth, movetime);
+    alphabeta(tt, options, pos, &stop, depth, movetime);
 
     // Restore the normal output
     std::cout.rdbuf(old);
@@ -53,9 +54,11 @@ void manual()
     Position pos;
     setBoard(pos, "startpos");
 
+    Options options;
+
     Hashtable tt;
     tableInit(&tt);
-    tableCreate(&tt, 128);
+    tableCreate(&tt, options.hash);
 
     // Give the user the choice of either side
     char side = ' ';
@@ -84,7 +87,7 @@ void manual()
         if(engineTurn == true)
         {
             std::cout << "Thinking..." << std::endl;
-            std::string moveString = getEngineMove(&tt, pos, 0, 5000);
+            std::string moveString = getEngineMove(&tt, &options, pos, 0, 5000);
             std::cout << "Engine move: " << moveString << std::endl;
             std::cout << std::endl;
             std::cout << std::endl;

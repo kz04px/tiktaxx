@@ -1,5 +1,6 @@
 #include <cassert>
 
+#include "search.hpp"
 #include "ataxx.hpp"
 #include "movegen.hpp"
 #include "move.hpp"
@@ -10,25 +11,29 @@
 #include "score.hpp"
 #include "searchstack.hpp"
 
-int random(const Position& pos, searchInfo& info, searchStack *ss, PV& pv)
+void random(const Position& pos)
 {
-    assert(ss != NULL);
-
-    pv.numMoves = 0;
+    Move move = NO_MOVE;
+    int score = 0;
     Move moves[256];
     int numMoves = movegen(pos, moves);
-    info.nodes++;
 
     if(numMoves > 0)
     {
-        int n = rand()%numMoves;
-        pv.numMoves = 1;
-        pv.moves[0] = moves[n];
         Position newPos = pos;
 
-        makemove(newPos, moves[n]);
-        return -eval(newPos);
+        int n = rand()%numMoves;
+        move = moves[n];
+
+        makemove(newPos, move);
+        score = -eval(newPos);
     }
 
-    return score(pos);
+    std::cout << "info"
+              << " nodes " << 1
+              << " score " << score
+              << std::endl;
+
+    assert(legalMove(pos, move) == true);
+    std::cout << "bestmove " << moveString(move) << std::endl;
 }

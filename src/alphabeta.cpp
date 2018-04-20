@@ -41,7 +41,7 @@ int reduction(const int moveNum, const int depth)
     }
 }
 
-int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth)
+int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth)
 {
     assert(ss != NULL);
     assert(depth >= 0);
@@ -131,7 +131,7 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
         newPos.turn = !newPos.turn;
 
         (ss+1)->nullmove = false;
-        int score = -alphaBeta(newPos, info, ss+1, newPV, -beta, -beta+1, depth-1-R);
+        int score = -alphabetaSearch(newPos, info, ss+1, newPV, -beta, -beta+1, depth-1-R);
 
         if(score >= beta)
         {
@@ -183,15 +183,15 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
 
 #ifdef LMR
         int r = reduction(moveNum, depth);
-        int score = -alphaBeta(newPos, info, ss+1, newPV, -alpha-1, -alpha, depth-1-r);
+        int score = -alphabetaSearch(newPos, info, ss+1, newPV, -alpha-1, -alpha, depth-1-r);
 
         // Re-search
         if(score > alpha)
         {
-            score = -alphaBeta(newPos, info, ss+1, newPV, -beta, -alpha, depth-1);
+            score = -alphabetaSearch(newPos, info, ss+1, newPV, -beta, -alpha, depth-1);
         }
 #else
-        int score = -alphaBeta(newPos, info, ss+1, newPV, -beta, -alpha, depth-1);
+        int score = -alphabetaSearch(newPos, info, ss+1, newPV, -beta, -alpha, depth-1);
 #endif
 
         if(score > bestScore)
@@ -251,7 +251,7 @@ int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, in
         }
         else
         {
-            return 0;
+            return (*info.options).contempt;
         }
     }
 

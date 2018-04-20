@@ -10,18 +10,18 @@
 #define INF (1000000)
 #define MAX_DEPTH (32)
 
-void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movetime);
+void alphabeta(Hashtable *tt, Options *options, const Position& pos, bool *stop, int depth, int movetime);
 
 // Alpha Beta
 int minimax(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, const int depth);
-int alphaBeta(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth);
+int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth);
 
 // MCTS
 void mctsPure(const Position& pos, int numSimulations, int movetime);
 void mctsUCT(const Position& pos, int numSimulations, int movetime);
 
 // Other
-int mostCaptures(const Position& pos, searchInfo& info, searchStack *ss, PV& pv);
-int random(const Position& pos, searchInfo& info, searchStack *ss, PV& pv);
+void mostCaptures(const Position& pos);
+void random(const Position& pos);
 
 #endif

@@ -8,9 +8,11 @@
 #include "searchinfo.hpp"
 #include "eval.hpp"
 
-int mostCaptures(const Position& pos, searchInfo& info, searchStack *ss, PV& pv)
+void mostCaptures(const Position& pos)
 {
     assert(ss != NULL);
+
+    searchInfo info;
 
     Move moves[256];
     int numMoves = movegen(pos, moves);
@@ -65,26 +67,22 @@ int mostCaptures(const Position& pos, searchInfo& info, searchStack *ss, PV& pv)
 
     if(numMoves == 0)
     {
-        pv.numMoves = 0;
-        return 0;
+        std::cout << "bestmove 0000" << std::endl;
+        return;
     }
+
+    Move move = NO_MOVE;
 
     if(mostCaptures > 0)
     {
         int n = rand() % captures.size();
-        pv.numMoves = 1;
-        pv.moves[0] = captures[n];
-
-        Position newPos = pos;
-        makemove(newPos, captures[n]);
-        return -eval(newPos);
+        move = captures[n];
     }
     else
     {
         int n = rand() % noncaptures.size();
-        pv.numMoves = 1;
-        pv.moves[0] = noncaptures[n];
-
-        return mostEval;
+        move = noncaptures[n];
     }
+
+    std::cout << "bestmove " << moveString(move) << std::endl;
 }

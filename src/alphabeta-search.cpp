@@ -5,21 +5,19 @@
 #include "search.hpp"
 #include "movegen.hpp"
 #include "move.hpp"
-#include "makemove.hpp"
+#include "options.hpp"
 
-void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movetime)
+void alphabeta(Hashtable *tt, Options *options, const Position& pos, bool *stop, int depth, int movetime)
 {
     assert(tt != NULL);
     assert(stop != NULL);
 
     uint64_t nodeTotal = 0ULL;
 
-    // PV
     PV lastPV;
     lastPV.numMoves = 0;
     lastPV.moves[0] = NO_MOVE;
 
-    // Search stack
     searchStack ss[MAX_DEPTH];
     for(int n = 0; n < MAX_DEPTH; ++n)
     {
@@ -27,28 +25,17 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
 #ifdef KILLER_MOVES
         ss[n].killer = NO_MOVE;
 #endif
+#ifdef NULLMOVE
+        ss[n].nullmove = true;
+#endif
     }
 
-    // Search info
     searchInfo info;
     info.start = clock();
     info.end = clock();
-    info.nodes = 0ULL;
-    info.leafNodes = 0ULL;
-    info.depth = 0;
-    info.selDepth = 0;
     info.stop = stop;
     info.tt = tt;
-#ifndef NDEBUG
-    for(int i = 0; i < 256; ++i)
-    {
-        info.cutoffs[i] = 0ULL;
-    }
-    info.hashHits = 0ULL;
-    info.hashCollisions = 0ULL;
-    info.singleCutoffs = 0ULL;
-    info.doubleCutoffs = 0ULL;
-#endif
+    info.options = options;
 
     if(depth == 0)
     {
@@ -70,7 +57,7 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
         int score = 0;
         if(depth < 3)
         {
-            score = alphaBeta(pos, info, ss, pv, -INF, INF, d);
+            score = alphabetaSearch(pos, info, ss, pv, -INF, INF, d);
         }
         else
         {
@@ -78,7 +65,7 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
             {
                 int lower = lastScore - r;
                 int upper = lastScore + r;
-                score = alphaBeta(pos, info, ss, pv, lower, upper, d);
+                score = alphabetaSearch(pos, info, ss, pv, lower, upper, d);
 
                 if(lower < score && score < upper)
                 {
@@ -87,7 +74,7 @@ void search(Hashtable *tt, const Position& pos, bool *stop, int depth, int movet
             }
         }
 #else
-        int score = alphaBeta(pos, info, ss, pv, -INF, INF, d);
+        int score = alphabetaSearch(pos, info, ss, pv, -INF, INF, d);
 #endif
         lastScore = score;
 

@@ -54,7 +54,7 @@ void mctsPure(const Position& pos, int numSimulations, int movetime)
 
     if(numMoves == 0)
     {
-        std::cout << "bestmove none" << std::endl;
+        std::cout << "bestmove 0000" << std::endl;
         return;
     }
 
