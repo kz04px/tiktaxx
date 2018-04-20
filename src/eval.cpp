@@ -3,6 +3,7 @@
 #include "eval.hpp"
 #include "bitboards.hpp"
 #include "phase.hpp"
+#include "score.hpp"
 #include "other.hpp"
 
 #define INF 1000000
@@ -36,21 +37,40 @@ int eval(const Position &pos)
     int num_unfriendly = popcountll(pos.pieces[PIECE::NOUGHT]);
     int our_mobility = 0;
     int their_mobility = 0;
-    uint64_t empty = ~(pos.pieces[PIECE::CROSS] | pos.pieces[PIECE::NOUGHT] | pos.blockers);
+    uint64_t empty = U64_BOARD & ~(pos.pieces[PIECE::CROSS] | pos.pieces[PIECE::NOUGHT] | pos.blockers);
     float p = phase(pos);
 
-/*
+    uint64_t cross_moves = single_jump(pos.pieces[PIECE::CROSS]);
+    cross_moves = single_jump(cross_moves);
+    cross_moves &= empty;
+
+    uint64_t nought_moves = single_jump(pos.pieces[PIECE::NOUGHT]);
+    nought_moves = single_jump(nought_moves);
+    nought_moves &= empty;
+
     // Win condition
-    if(empty == 0ULL)
+    if(cross_moves == 0ULL || nought_moves == 0ULL)
     {
-        int score = 0;
-        if(num_friendly > num_unfriendly)
+        int num_empty = popcountll(empty);
+
+        int score = num_friendly - num_unfriendly;
+
+        if(cross_moves == 0ULL)
         {
-            score =  INF;
+            score -= num_empty;
         }
-        else if(num_friendly < num_unfriendly)
+        else if(nought_moves == 0ULL)
         {
-            score =  -INF;
+            score += num_empty;
+        }
+
+        if(score > 0)
+        {
+            score = INF;
+        }
+        else
+        {
+            score = -INF;
         }
 
         if(pos.turn == SIDE::CROSS)
@@ -62,7 +82,6 @@ int eval(const Position &pos)
             return -score;
         }
     }
-*/
 
     int ourPST = 0;
     int theirPST = 0;
