@@ -7,18 +7,18 @@
 #include "move.hpp"
 #include "options.hpp"
 
-void alphabeta(Hashtable *tt, Options *options, const Position& pos, bool *stop, int depth, int movetime)
+void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop, int depth, int movetime)
 {
     assert(tt != NULL);
     assert(stop != NULL);
 
-    uint64_t nodeTotal = 0ULL;
+    uint64_t node_total = 0ULL;
 
-    PV lastPV;
-    lastPV.numMoves = 0;
-    lastPV.moves[0] = NO_MOVE;
+    PV last_pv;
+    last_pv.num_moves = 0;
+    last_pv.moves[0] = NO_MOVE;
 
-    searchStack ss[MAX_DEPTH];
+    search_stack ss[MAX_DEPTH];
     for(int n = 0; n < MAX_DEPTH; ++n)
     {
         ss[n].ply = n;
@@ -30,7 +30,7 @@ void alphabeta(Hashtable *tt, Options *options, const Position& pos, bool *stop,
 #endif
     }
 
-    searchInfo info;
+    search_info info;
     info.start = clock();
     info.end = clock();
     info.stop = stop;
@@ -47,25 +47,25 @@ void alphabeta(Hashtable *tt, Options *options, const Position& pos, bool *stop,
         info.end = INT_MAX;
     }
 
-    int lastScore = 0;
+    int last_score = 0;
     for(int d = 1; d <= depth; ++d)
     {
         PV pv;
-        pv.numMoves = 0;
+        pv.num_moves = 0;
 
 #ifdef ASPIRATION_WINDOWS
         int score = 0;
         if(depth < 3)
         {
-            score = alphabetaSearch(pos, info, ss, pv, -INF, INF, d);
+            score = alphabeta_search(pos, info, ss, pv, -INF, INF, d);
         }
         else
         {
             for(auto r : {50, 200, INF})
             {
-                int lower = lastScore - r;
-                int upper = lastScore + r;
-                score = alphabetaSearch(pos, info, ss, pv, lower, upper, d);
+                int lower = last_score - r;
+                int upper = last_score + r;
+                score = alphabeta_search(pos, info, ss, pv, lower, upper, d);
 
                 if(lower < score && score < upper)
                 {
@@ -74,12 +74,12 @@ void alphabeta(Hashtable *tt, Options *options, const Position& pos, bool *stop,
             }
         }
 #else
-        int score = alphabetaSearch(pos, info, ss, pv, -INF, INF, d);
+        int score = alphabeta_search(pos, info, ss, pv, -INF, INF, d);
 #endif
-        lastScore = score;
+        last_score = score;
 
         clock_t end = clock();
-        double timeSpent = (double)(end - info.start)/CLOCKS_PER_SEC;
+        double time_spent = (double)(end - info.start)/CLOCKS_PER_SEC;
 
         // Throw away the result if we ran out of time or were asked to stop
         if(*info.stop == true || end >= info.end)
@@ -87,26 +87,26 @@ void alphabeta(Hashtable *tt, Options *options, const Position& pos, bool *stop,
             break;
         }
 
-        nodeTotal += info.nodes;
+        node_total += info.nodes;
 
         std::cout << "info"
                   << " depth " << d
                   << " nodes " << info.nodes
                   << " score " << score
-                  << " time " << (uint64_t)(1000.0*timeSpent);
+                  << " time " << (uint64_t)(1000.0*time_spent);
 
-        if(pv.numMoves > 0)
+        if(pv.num_moves > 0)
         {
             std::cout << " pv";
-            for(int n = 0; n < pv.numMoves; ++n)
+            for(int n = 0; n < pv.num_moves; ++n)
             {
-                std::cout << " " << moveString(pv.moves[n]);
+                std::cout << " " << move_string(pv.moves[n]);
             }
         }
 
         std::cout << std::endl;
 
-        lastPV = pv;
+        last_pv = pv;
     }
 
 #ifndef NDEBUG
@@ -127,40 +127,40 @@ void alphabeta(Hashtable *tt, Options *options, const Position& pos, bool *stop,
     }
     std::cout << std::endl;
 
-    std::cout << "Single cutoffs: " << info.singleCutoffs << std::endl;
-    std::cout << "Double cutoffs: " << info.doubleCutoffs << std::endl;
+    std::cout << "Single cutoffs: " << info.single_cutoffs << std::endl;
+    std::cout << "Double cutoffs: " << info.double_cutoffs << std::endl;
     std::cout << std::endl;
 
-    std::cout << "Hash table hits: " << info.hashHits << std::endl;
-    std::cout << "Collisions: " << info.hashCollisions << std::endl;
-    std::cout << "Percent: " << 100.0*(double)info.hashCollisions/info.hashHits << "%" <<  std::endl;
+    std::cout << "Hash table hits: " << info.hash_hits << std::endl;
+    std::cout << "Collisions: " << info.hash_collisions << std::endl;
+    std::cout << "Percent: " << 100.0*(double)info.hash_collisions/info.hash_hits << "%" <<  std::endl;
     std::cout << std::endl;
 
-    std::cout << "tt->numEntries: " << tt->numEntries << std::endl;
-    std::cout << "tt->maxEntries: " << tt->maxEntries << std::endl;
+    std::cout << "tt->num_entries: " << tt->num_entries << std::endl;
+    std::cout << "tt->max_entries: " << tt->max_entries << std::endl;
     std::cout << std::endl;
 #endif
 
-    if(lastPV.numMoves == 0)
+    if(last_pv.num_moves == 0)
     {
         // If we somehow don't have a move from the PV, try play a random one
         Move moves[256];
-        int numMoves = movegen(pos, moves);
+        int num_moves = movegen(pos, moves);
 
-        if(numMoves == 0)
+        if(num_moves == 0)
         {
             std::cout << "bestmove 0000" << std::endl;
         }
         else
         {
-            int n = rand() % numMoves;
-            assert(legalMove(pos, moves[n]) == true);
-            std::cout << "bestmove " << moveString(moves[n]) << std::endl;
+            int n = rand() % num_moves;
+            assert(legal_move(pos, moves[n]) == true);
+            std::cout << "bestmove " << move_string(moves[n]) << std::endl;
         }
     }
     else
     {
-        assert(legalMove(pos, lastPV.moves[0]) == true);
-        std::cout << "bestmove " << moveString(lastPV.moves[0]) << std::endl;
+        assert(legal_move(pos, last_pv.moves[0]) == true);
+        std::cout << "bestmove " << move_string(last_pv.moves[0]) << std::endl;
     }
 }

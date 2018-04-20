@@ -2,7 +2,7 @@
 #include "phase.hpp"
 #include "other.hpp"
 
-float phase(const Position& pos)
+float phase(const Position &pos)
 {
     float p = (float)popcountll(pos.pieces[PIECE::CROSS] | pos.pieces[PIECE::NOUGHT]) / (49 - popcountll(pos.blockers));
     assert(p >= 0.0);
@@ -10,7 +10,7 @@ float phase(const Position& pos)
     return p;
 }
 
-bool isEndgame(const Position& pos)
+bool is_endgame(const Position &pos)
 {
     return phase(pos) >= 0.75;
 }

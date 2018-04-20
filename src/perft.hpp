@@ -6,7 +6,7 @@
 #include "ataxx.hpp"
 #include "hashtable.hpp"
 
-void perft(Hashtable *tt, const Position& pos, const int depth);
-void splitPerft(Hashtable *tt, const Position& pos, const int depth);
+void perft(Hashtable *tt, const Position &pos, const int depth);
+void split_perft(Hashtable *tt, const Position &pos, const int depth);
 
 #endif

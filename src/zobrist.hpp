@@ -5,9 +5,9 @@
 
 #include "ataxx.hpp"
 
-void zobristInit();
-uint64_t generateKey(const Position& pos);
-uint64_t getTurnKey();
-uint64_t getPieceKey(const int side, const int sq);
+void zobrist_init();
+uint64_t generate_key(const Position &pos);
+uint64_t get_turn_key();
+uint64_t get_piece_key(const int side, const int sq);
 
 #endif

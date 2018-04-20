@@ -3,12 +3,12 @@
 
 #include "move.hpp"
 
-typedef struct
+struct PV
 {
-    int numMoves;
+    int num_moves;
     Move moves[64];
-} PV;
+};
 
-std::string getPvString(const Move *moves, const int pvLength);
+std::string get_pv_string(const Move *moves, const int pv_length);
 
 #endif

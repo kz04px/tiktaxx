@@ -11,22 +11,22 @@
 #include "score.hpp"
 #include "searchstack.hpp"
 
-void random(const Position& pos)
+void random(const Position &pos)
 {
     Move move = NO_MOVE;
     int score = 0;
     Move moves[256];
-    int numMoves = movegen(pos, moves);
+    int num_moves = movegen(pos, moves);
 
-    if(numMoves > 0)
+    if(num_moves > 0)
     {
-        Position newPos = pos;
+        Position new_pos = pos;
 
-        int n = rand()%numMoves;
+        int n = rand()%num_moves;
         move = moves[n];
 
-        makemove(newPos, move);
-        score = -eval(newPos);
+        makemove(new_pos, move);
+        score = -eval(new_pos);
     }
 
     std::cout << "info"
@@ -34,6 +34,6 @@ void random(const Position& pos)
               << " score " << score
               << std::endl;
 
-    assert(legalMove(pos, move) == true);
-    std::cout << "bestmove " << moveString(move) << std::endl;
+    assert(legal_move(pos, move) == true);
+    std::cout << "bestmove " << move_string(move) << std::endl;
 }

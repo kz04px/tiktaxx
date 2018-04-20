@@ -10,14 +10,14 @@
 #include "eval.hpp"
 #include "score.hpp"
 
-int minimax(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, const int depth)
+int minimax(const Position &pos, search_info &info, search_stack *ss, PV &pv, const int depth)
 {
     assert(ss != NULL);
 
     if(depth == 0 || info.depth >= MAX_DEPTH)
     {
-        pv.numMoves = 0;
-        info.leafNodes++;
+        pv.num_moves = 0;
+        info.leaf_nodes++;
         return eval(pos);
     }
 
@@ -32,42 +32,42 @@ int minimax(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, cons
         // Send an update on what we're doing
         if(info.nodes % 500000 == 0)
         {
-            double timeSpent = (double)(clock() - info.start)/CLOCKS_PER_SEC;
+            double time_spent = (double)(clock() - info.start)/CLOCKS_PER_SEC;
             std::cout << "info"
-                      << " nps " << (uint64_t)(info.nodes/timeSpent)
+                      << " nps " << (uint64_t)(info.nodes/time_spent)
                       << std::endl;
         }
     }
 
-    int bestScore = -INF;
+    int best_score = -INF;
 
-    PV newPV;
-    newPV.numMoves = 0;
+    PV new_pv;
+    new_pv.num_moves = 0;
     Move moves[256];
-    int numMoves = movegen(pos, moves);
+    int num_moves = movegen(pos, moves);
 
-    for(int n = 0; n < numMoves; ++n)
+    for(int n = 0; n < num_moves; ++n)
     {
-        Position newPos = pos;
+        Position new_pos = pos;
 
-        makemove(newPos, moves[n]);
+        makemove(new_pos, moves[n]);
 
         info.nodes++;
 
-        int score = -minimax(newPos, info, ss+1, newPV, depth-1);
+        int score = -minimax(new_pos, info, ss+1, new_pv, depth-1);
 
-        if(score > bestScore)
+        if(score > best_score)
         {
-            bestScore = score;
+            best_score = score;
             pv.moves[0] = moves[n];
-            memcpy(pv.moves + 1, newPV.moves, newPV.numMoves * sizeof(Move));
-            pv.numMoves = newPV.numMoves + 1;
+            memcpy(pv.moves + 1, new_pv.moves, new_pv.num_moves * sizeof(Move));
+            pv.num_moves = new_pv.num_moves + 1;
         }
     }
 
-    if(numMoves == 0)
+    if(num_moves == 0)
     {
-        pv.numMoves = 0;
+        pv.num_moves = 0;
         int val = score(pos);
 
         if(val > 0)
@@ -84,5 +84,5 @@ int minimax(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, cons
         }
     }
 
-    return bestScore;
+    return best_score;
 }

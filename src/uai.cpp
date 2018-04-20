@@ -12,7 +12,7 @@
 #include "options.hpp"
 #include "other.hpp"
 
-void messageLoop()
+void uai()
 {
     Options options;
 
@@ -27,14 +27,14 @@ void messageLoop()
     std::cout << "uaiok" << std::endl;
 
     Position pos;
-    setBoard(pos, "startpos");
+    set_board(pos, "startpos");
 
     Hashtable tt;
-    tableInit(&tt);
-    tableCreate(&tt, options.hash);
+    table_init(&tt);
+    table_create(&tt, options.hash);
 
     bool stop = false;
-    std::thread searchThread;
+    std::thread search_thread;
 
     bool quit = false;
     while(quit == false)
@@ -52,23 +52,23 @@ void messageLoop()
             }
             else if(tokens[n] == "uainewgame")
             {
-                setBoard(pos, "startpos");
-                tableClear(&tt);
+                set_board(pos, "startpos");
+                table_clear(&tt);
             }
             else if(tokens[n] == "go")
             {
                 // Stop the search if there's already one going
-                if(searchThread.joinable())
+                if(search_thread.joinable())
                 {
                     stop = true;
-                    searchThread.join();
+                    search_thread.join();
                     stop = false;
                 }
 
                 // Default subcommands
                 int depth = 5;
                 int movetime = 0;
-                int numSimulations = 1000;
+                int num_simulations = 1000;
 
                 // Subcommands
                 for(unsigned int i = n+1; i < tokens.size(); ++i)
@@ -94,7 +94,7 @@ void messageLoop()
                     }
                     else if(tokens[i] == "simulations")
                     {
-                        numSimulations = stoi(tokens[i+1]);
+                        num_simulations = stoi(tokens[i+1]);
                         movetime = 0;
                         n += 2;
                         i += 1;
@@ -103,36 +103,36 @@ void messageLoop()
 
                 if(options.search == "mcts-uct")
                 {
-                    searchThread = std::thread(mctsUCT, pos, numSimulations, movetime);
+                    search_thread = std::thread(mcts_uct, pos, num_simulations, movetime);
                 }
                 else if(options.search == "mcts-pure")
                 {
-                    searchThread = std::thread(mctsPure, pos, numSimulations, movetime);
+                    search_thread = std::thread(mcts_pure, pos, num_simulations, movetime);
                 }
                 else if(options.search == "most-captures")
                 {
-                    searchThread = std::thread(mostCaptures, pos);
+                    search_thread = std::thread(most_captures, pos);
                 }
                 else if(options.search == "minimax")
                 {
-                    //searchThread = std::thread(minimax, &tt, &options, pos, &stop, depth, movetime);
+                    //search_thread = std::thread(minimax, &tt, &options, pos, &stop, depth, movetime);
                 }
                 else if(options.search == "random")
                 {
-                    //searchThread = std::thread(random, pos);
+                    //search_thread = std::thread(random, pos);
                 }
                 else
                 {
-                    searchThread = std::thread(alphabeta, &tt, &options, pos, &stop, depth, movetime);
+                    search_thread = std::thread(alphabeta, &tt, &options, pos, &stop, depth, movetime);
                 }
             }
             else if(tokens[n] == "stop")
             {
                 // Stop the search if there's already one going
-                if(searchThread.joinable())
+                if(search_thread.joinable())
                 {
                     stop = true;
-                    searchThread.join();
+                    search_thread.join();
                     stop = false;
                 }
             }
@@ -158,9 +158,9 @@ void messageLoop()
             else if(tokens[n] == "result")
             {
                 Move moves[256];
-                int numMoves = movegen(pos, moves);
+                int num_moves = movegen(pos, moves);
 
-                if(numMoves > 0)
+                if(num_moves > 0)
                 {
                     std::cout << "result none" << std::endl;
                 }
@@ -199,20 +199,20 @@ void messageLoop()
                     depth = 1;
                 }
 
-                splitPerft(&tt, pos, depth);
+                split_perft(&tt, pos, depth);
             }
             else if(tokens[n] == "rollout")
             {
                 if(n+1 >= tokens.size()) {continue;}
 
                 // Subcommands
-                int numGames = stoi(tokens[n+1]);
+                int num_games = stoi(tokens[n+1]);
                 n += 1;
 
                 // Subcommand checking
-                if(numGames <= 1)
+                if(num_games <= 1)
                 {
-                    numGames = 1;
+                    num_games = 1;
                 }
 
                 int wins = 0;
@@ -220,7 +220,7 @@ void messageLoop()
                 int draws = 0;
 
                 clock_t start = clock();
-                for(int g = 0; g < numGames; ++g)
+                for(int g = 0; g < num_games; ++g)
                 {
                     int r = rollout(pos, 300);
                          if(r == 1)  {wins++;}
@@ -250,12 +250,12 @@ void messageLoop()
                 if(tokens[n+1] == "clear")
                 {
                     n += 1;
-                    tableClear(&tt);
+                    table_clear(&tt);
                 }
                 else if(tokens[n+1] == "print")
                 {
                     n += 1;
-                    printDetails(&tt);
+                    print_details(&tt);
                 }
             }
             else if(tokens[n] == "print")
@@ -269,7 +269,7 @@ void messageLoop()
                     n += 1;
                     if(tokens[n] == "startpos")
                     {
-                        int r = setBoard(pos, "startpos");
+                        int r = set_board(pos, "startpos");
                         if(r != 0)
                         {
                             std::cout << "WARNING: set position error (" << r << ")" << std::endl;
@@ -280,15 +280,15 @@ void messageLoop()
                         if(n+1 < tokens.size())
                         {
                             n += 1;
-                            std::string fenString = tokens[n];
+                            std::string fen_string = tokens[n];
 
                             while(n+1 < tokens.size() && tokens[n+1] != "moves")
                             {
                                 n += 1;
-                                fenString += " " + tokens[n];
+                                fen_string += " " + tokens[n];
                             }
 
-                            int r = setBoard(pos, fenString);
+                            int r = set_board(pos, fen_string);
                             if(r != 0)
                             {
                                 std::cout << "WARNING: set position error (" << r << ")" << std::endl;
@@ -299,17 +299,17 @@ void messageLoop()
             }
             else if(tokens[n] == "eval")
             {
-                splitEval(pos);
+                split_eval(pos);
             }
             else if(tokens[n] == "movegen")
             {
-                printMoves(pos);
+                print_moves(pos);
             }
             else if(tokens[n] == "moves")
             {
                 for(unsigned int i = n+1; i < tokens.size(); ++i)
                 {
-                    if(legalMove(pos, tokens[i]) == false) {break;}
+                    if(legal_move(pos, tokens[i]) == false) {break;}
 
                     makemove(pos, tokens[i]);
                     n += 1;
@@ -335,7 +335,7 @@ void messageLoop()
                     if(value < 1) {value = 1;}
                     else if(value > 1024) {value = 1024;}
 
-                    options.hash = tableCreate(&tt, value);
+                    options.hash = table_create(&tt, value);
                 }
                 else if(option == "Search")
                 {
@@ -368,13 +368,13 @@ void messageLoop()
         }
     }
 
-    if(searchThread.joinable())
+    if(search_thread.joinable())
     {
         stop = true;
-        searchThread.join();
+        search_thread.join();
         stop = false;
     }
 
-    tableClear(&tt);
-    tableRemove(&tt);
+    table_clear(&tt);
+    table_remove(&tt);
 }

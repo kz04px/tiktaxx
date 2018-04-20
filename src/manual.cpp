@@ -8,10 +8,10 @@
 #include "makemove.hpp"
 #include "move.hpp"
 #include "search.hpp"
-#include "protocol.hpp"
+#include "uai.hpp"
 #include "options.hpp"
 
-std::string getEngineMove(Hashtable *tt, Options *options, Position& pos, int depth, int movetime, bool verbose=false)
+std::string get_engine_move(Hashtable *tt, Options *options, Position &pos, int depth, int movetime, bool verbose=false)
 {
     assert(tt != NULL);
 
@@ -26,7 +26,7 @@ std::string getEngineMove(Hashtable *tt, Options *options, Position& pos, int de
     std::cout.rdbuf(old);
 
     // Looking for the "bestmove" line so we can play the move the search returns
-    std::string bestMove = "";
+    std::string best_move = "";
     while(!buffer.eof())
     {
         std::string line;
@@ -41,24 +41,24 @@ std::string getEngineMove(Hashtable *tt, Options *options, Position& pos, int de
 
         if(line.substr(0, line.find_first_of(' ')) == "bestmove")
         {
-            bestMove = line.substr(9);
+            best_move = line.substr(9);
             break;
         }
     }
 
-    return bestMove;
+    return best_move;
 }
 
 void manual()
 {
     Position pos;
-    setBoard(pos, "startpos");
+    set_board(pos, "startpos");
 
     Options options;
 
     Hashtable tt;
-    tableInit(&tt);
-    tableCreate(&tt, options.hash);
+    table_init(&tt);
+    table_create(&tt, options.hash);
 
     // Give the user the choice of either side
     char side = ' ';
@@ -70,44 +70,44 @@ void manual()
     }
     while(side != 'X' && side != 'O' && side != 'x' && side != 'o');
 
-    bool engineTurn = false;
+    bool engine_turn = false;
     if(side == 'x' || side == 'X')
     {
-        engineTurn = false;
+        engine_turn = false;
     }
     else
     {
-        engineTurn = true;
+        engine_turn = true;
     }
 
     std::cout << std::endl;
 
     while(true)
     {
-        if(engineTurn == true)
+        if(engine_turn == true)
         {
             std::cout << "Thinking..." << std::endl;
-            std::string moveString = getEngineMove(&tt, &options, pos, 0, 5000);
-            std::cout << "Engine move: " << moveString << std::endl;
+            std::string move_string = get_engine_move(&tt, &options, pos, 0, 5000);
+            std::cout << "Engine move: " << move_string << std::endl;
             std::cout << std::endl;
             std::cout << std::endl;
 
-            makemove(pos, moveString);
-            engineTurn = false;
+            makemove(pos, move_string);
+            engine_turn = false;
         }
         else
         {
             print(pos, false);
 
             std::cout << "Enter move: ";
-            std::string moveString;
-            std::cin >> moveString;
+            std::string move_string;
+            std::cin >> move_string;
 
-            if(moveString == "quit")
+            if(move_string == "quit")
             {
                 break;
             }
-            else if(legalMove(pos, moveString) == false)
+            else if(legal_move(pos, move_string) == false)
             {
                 std::cout << std::endl;
                 std::cout << std::endl;
@@ -115,8 +115,8 @@ void manual()
             }
             else
             {
-                makemove(pos, moveString);
-                engineTurn = !engineTurn;
+                makemove(pos, move_string);
+                engine_turn = !engine_turn;
             }
 
             std::cout << std::endl;
@@ -124,5 +124,5 @@ void manual()
         }
     }
 
-    tableRemove(&tt);
+    table_remove(&tt);
 }

@@ -3,7 +3,7 @@
 
 #include "move.hpp"
 
-typedef struct
+struct search_stack
 {
     int ply;
 #ifdef KILLER_MOVES
@@ -12,6 +12,6 @@ typedef struct
 #ifdef NULLMOVE
     bool nullmove;
 #endif
-} searchStack;
+};
 
 #endif

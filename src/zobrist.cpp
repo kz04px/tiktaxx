@@ -3,20 +3,20 @@
 #include "zobrist.hpp"
 #include "other.hpp"
 
-uint64_t turnKey;
-uint64_t pieceKeys[2][49];
+uint64_t turn_key;
+uint64_t piece_keys[2][49];
 
-uint64_t getTurnKey()
+uint64_t get_turn_key()
 {
-    return turnKey;
+    return turn_key;
 }
 
-uint64_t getPieceKey(const int side, const int sq)
+uint64_t get_piece_key(const int side, const int sq)
 {
-    return pieceKeys[side][sq];
+    return piece_keys[side][sq];
 }
 
-void zobristInit()
+void zobrist_init()
 {
     // Initialise
     auto seed = 1927725765;
@@ -25,29 +25,29 @@ void zobristInit()
     // Define the number generator type
     std::uniform_int_distribution<uint64_t> dis;
 
-    turnKey = dis(gen);
+    turn_key = dis(gen);
 
     for(int sq = 0; sq < 49; ++sq)
     {
-        pieceKeys[SIDE::CROSS][sq]  = dis(gen);
-        pieceKeys[SIDE::NOUGHT][sq] = dis(gen);
+        piece_keys[SIDE::CROSS][sq]  = dis(gen);
+        piece_keys[SIDE::NOUGHT][sq] = dis(gen);
     }
 }
 
-uint64_t generateKey(const Position& pos)
+uint64_t generate_key(const Position &pos)
 {
     uint64_t key = 0ULL;
 
     if(pos.turn == SIDE::CROSS)
     {
-        key ^= turnKey;
+        key ^= turn_key;
     }
 
     uint64_t copy = pos.pieces[SIDE::CROSS];
     while(copy)
     {
         int sq = lsb(copy);
-        key ^= pieceKeys[SIDE::CROSS][sq];
+        key ^= piece_keys[SIDE::CROSS][sq];
         copy &= copy - 1;
     }
 
@@ -55,7 +55,7 @@ uint64_t generateKey(const Position& pos)
     while(copy)
     {
         int sq = lsb(copy);
-        key ^= pieceKeys[SIDE::NOUGHT][sq];
+        key ^= piece_keys[SIDE::NOUGHT][sq];
         copy &= copy - 1;
     }
 

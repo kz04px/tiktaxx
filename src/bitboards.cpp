@@ -1,6 +1,6 @@
 #include "bitboards.hpp"
 
-uint64_t singleJump(uint64_t n)
+uint64_t single_jump(uint64_t n)
 {
     return U64_BOARD & (((n>>1) & (U64_NOT_FILE_G)) | // Left 1
                         ((n<<1) & (U64_NOT_FILE_A)) | // Right 1
@@ -12,7 +12,7 @@ uint64_t singleJump(uint64_t n)
                         ((n>>6) & (U64_NOT_FILE_A))); // Down 1 right 1
 }
 
-uint64_t doubleJump(uint64_t n)
+uint64_t double_jump(uint64_t n)
 {
     return U64_BOARD & (((n<<12) & (U64_NOT_FILE_G & U64_NOT_FILE_F)) | // Up 2 left 2
                         ((n<<13) & (U64_NOT_FILE_G)) |                  // Up 2 left 1

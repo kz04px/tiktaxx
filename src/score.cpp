@@ -1,14 +1,14 @@
 #include "score.hpp"
 #include "other.hpp"
 
-int score(const Position& pos)
+int score(const Position &pos)
 {
-    int numCross = popcountll(pos.pieces[PIECE::CROSS]);
-    int numNought = popcountll(pos.pieces[PIECE::NOUGHT]);
-    int numBlockers = popcountll(pos.blockers);
-    int numFree = 49 - (numCross + numNought + numBlockers);
+    int num_cross = popcountll(pos.pieces[PIECE::CROSS]);
+    int num_nought = popcountll(pos.pieces[PIECE::NOUGHT]);
+    int num_blockers = popcountll(pos.blockers);
+    int num_empty = 49 - (num_cross + num_nought + num_blockers);
 
-    int score = numCross - numNought;
+    int score = num_cross - num_nought;
 
     if(pos.turn == SIDE::CROSS)
     {

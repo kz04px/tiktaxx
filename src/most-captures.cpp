@@ -8,64 +8,62 @@
 #include "searchinfo.hpp"
 #include "eval.hpp"
 
-void mostCaptures(const Position& pos)
+void most_captures(const Position &pos)
 {
-    assert(ss != NULL);
-
-    searchInfo info;
+    search_info info;
 
     Move moves[256];
-    int numMoves = movegen(pos, moves);
+    int num_moves = movegen(pos, moves);
 
-    int mostCaptures = 0;
-    int mostEval = -INF;
+    int most_captures = 0;
+    int most_eval = -INF;
     std::vector<Move> captures;
     std::vector<Move> noncaptures;
 
     captures.clear();
     noncaptures.clear();
 
-    for(int n = 0; n < numMoves; ++n)
+    for(int n = 0; n < num_moves; ++n)
     {
-        int numCaptures = countCaptures(pos, moves[n]);
+        int num_captures = count_captures(pos, moves[n]);
 
         info.nodes++;
 
-        if(numCaptures > 0)
+        if(num_captures > 0)
         {
-            if(numCaptures > mostCaptures)
+            if(num_captures > most_captures)
             {
-                mostCaptures = numCaptures;
+                most_captures = num_captures;
 
                 captures.clear();
                 captures.push_back(moves[n]);
             }
-            else if(numCaptures == mostCaptures)
+            else if(num_captures == most_captures)
             {
                 captures.push_back(moves[n]);
             }
         }
         else
         {
-            Position newPos = pos;
-            makemove(newPos, moves[n]);
-            int r = -eval(newPos);
+            Position new_pos = pos;
+            makemove(new_pos, moves[n]);
+            int r = -eval(new_pos);
 
-            if(r > mostEval)
+            if(r > most_eval)
             {
-                mostEval = r;
+                most_eval = r;
 
                 noncaptures.clear();
                 noncaptures.push_back(moves[n]);
             }
-            else if(r == mostEval)
+            else if(r == most_eval)
             {
                 noncaptures.push_back(moves[n]);
             }
         }
     }
 
-    if(numMoves == 0)
+    if(num_moves == 0)
     {
         std::cout << "bestmove 0000" << std::endl;
         return;
@@ -73,7 +71,7 @@ void mostCaptures(const Position& pos)
 
     Move move = NO_MOVE;
 
-    if(mostCaptures > 0)
+    if(most_captures > 0)
     {
         int n = rand() % captures.size();
         move = captures[n];
@@ -84,5 +82,5 @@ void mostCaptures(const Position& pos)
         move = noncaptures[n];
     }
 
-    std::cout << "bestmove " << moveString(move) << std::endl;
+    std::cout << "bestmove " << move_string(move) << std::endl;
 }

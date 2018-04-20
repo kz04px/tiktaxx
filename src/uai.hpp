@@ -2,6 +2,6 @@
 #define PROTOCOL_HPP_INCLUDED
 
 void manual();
-void messageLoop();
+void uai();
 
 #endif

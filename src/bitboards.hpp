@@ -21,12 +21,12 @@
 #define U64_NOT_FILE_F (0x17efdfbf7efdf)
 #define U64_NOT_FILE_G (0xfdfbf7efdfbf)
 
-//const uint64_t singleJump[64] = {0ULL};
-//const uint64_t doubleJump[64] = {0ULL};
+//const uint64_t single_jump[64] = {0ULL};
+//const uint64_t double_jump[64] = {0ULL};
 const uint64_t file[7] = {U64_FILE_A, U64_FILE_B, U64_FILE_C, U64_FILE_D, U64_FILE_E, U64_FILE_F, U64_FILE_G};
 //const uint64_t rank[7] = {U64_RANK_1, U64_RANK_2, U64_RANK_3, U64_RANK_4, U64_RANK_5, U64_RANK_6, U64_RANK_7};
 
-uint64_t singleJump(uint64_t n);
-uint64_t doubleJump(uint64_t n);
+uint64_t single_jump(uint64_t n);
+uint64_t double_jump(uint64_t n);
 
 #endif

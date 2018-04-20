@@ -3,7 +3,7 @@
 
 #include "ataxx.hpp"
 
-int eval(const Position& pos);
-void splitEval(const Position& pos);
+int eval(const Position &pos);
+void split_eval(const Position &pos);
 
 #endif

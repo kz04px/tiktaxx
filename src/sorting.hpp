@@ -4,6 +4,6 @@
 #include "ataxx.hpp"
 #include "move.hpp"
 
-void sortMoves(const Position& pos, Move *moves, const int numMoves, const Move& ttMove);
+void sort_moves(const Position &pos, Move *moves, const int num_moves, const Move &tt_move);
 
 #endif

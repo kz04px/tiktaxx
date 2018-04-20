@@ -14,24 +14,24 @@
 #include "score.hpp"
 #include "zobrist.hpp"
 #include "sorting.hpp"
-#include "nextMove.hpp"
+#include "next-move.hpp"
 #include "searchstack.hpp"
 
-int reduction(const int moveNum, const int depth)
+int reduction(const int move_num, const int depth)
 {
-    assert(moveNum >= 0);
+    assert(move_num >= 0);
     assert(depth >= 0);
 
-    if(moveNum < 2 || depth < 3)
+    if(move_num < 2 || depth < 3)
     {
         return 0;
     }
 
-    if(moveNum < 6)
+    if(move_num < 6)
     {
         return 1;
     }
-    else if(moveNum < 12)
+    else if(move_num < 12)
     {
         return depth / 3;
     }
@@ -41,7 +41,7 @@ int reduction(const int moveNum, const int depth)
     }
 }
 
-int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& pv, int alpha, int beta, int depth)
+int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, PV &pv, int alpha, int beta, int depth)
 {
     assert(ss != NULL);
     assert(depth >= 0);
@@ -49,8 +49,8 @@ int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& 
 
     if(depth == 0 || info.depth >= MAX_DEPTH)
     {
-        pv.numMoves = 0;
-        info.leafNodes++;
+        pv.num_moves = 0;
+        info.leaf_nodes++;
         return eval(pos);
     }
 
@@ -65,45 +65,45 @@ int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& 
         // Send an update on what we're doing
         if(info.nodes % 2000000 == 0)
         {
-            double timeSpent = (double)(clock() - info.start)/CLOCKS_PER_SEC;
+            double time_spent = (double)(clock() - info.start)/CLOCKS_PER_SEC;
             std::cout << "info"
-                      << " nps " << (uint64_t)(info.nodes/timeSpent)
+                      << " nps " << (uint64_t)(info.nodes/time_spent)
                       << std::endl;
         }
     }
 
-    int alphaOrig = alpha;
-    uint64_t key = generateKey(pos);
-    Move ttMove = NO_MOVE;
+    int alpha_original = alpha;
+    uint64_t key = generate_key(pos);
+    Move tt_move = NO_MOVE;
 
     // Check the hash table
     Entry entry = probe(info.tt, key);
     if(key == entry.key)
     {
-        ttMove = getMove(entry);
+        tt_move = get_move(entry);
 
 #ifndef NDEBUG
-        info.hashHits++;
-        if(legalMove(pos, ttMove) == false)
+        info.hash_hits++;
+        if(legal_move(pos, tt_move) == false)
         {
-            info.hashCollisions++;
+            info.hash_collisions++;
         }
 #endif
 
-        if(getDepth(entry) >= depth && legalMove(pos, ttMove) == true)
+        if(get_depth(entry) >= depth && legal_move(pos, tt_move) == true)
         {
-            switch(getFlag(entry))
+            switch(get_flag(entry))
             {
                 case EXACT:
-                    pv.numMoves = 1;
-                    pv.moves[0] = ttMove;
-                    return getEval(entry);
+                    pv.num_moves = 1;
+                    pv.moves[0] = tt_move;
+                    return get_eval(entry);
                     break;
                 case LOWERBOUND:
-                    alpha = (alpha > getEval(entry) ? alpha : getEval(entry));
+                    alpha = (alpha > get_eval(entry) ? alpha : get_eval(entry));
                     break;
                 case UPPERBOUND:
-                    beta = (beta < getEval(entry) ? beta : getEval(entry));
+                    beta = (beta < get_eval(entry) ? beta : get_eval(entry));
                     break;
                 default:
                     assert(false);
@@ -112,9 +112,9 @@ int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& 
 
             if(alpha >= beta)
             {
-                pv.numMoves = 1;
-                pv.moves[0] = ttMove;
-                return getEval(entry);
+                pv.num_moves = 1;
+                pv.moves[0] = tt_move;
+                return get_eval(entry);
             }
         }
     }
@@ -124,14 +124,14 @@ int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& 
 
     if(ss->nullmove && depth > 2)
     {
-        PV newPV;
-        newPV.numMoves = 0;
+        PV new_pv;
+        new_pv.num_moves = 0;
 
-        Position newPos = pos;
-        newPos.turn = !newPos.turn;
+        Position new_pos = pos;
+        new_pos.turn = !new_pos.turn;
 
         (ss+1)->nullmove = false;
-        int score = -alphabetaSearch(newPos, info, ss+1, newPV, -beta, -beta+1, depth-1-R);
+        int score = -alphabeta_search(new_pos, info, ss+1, new_pv, -beta, -beta+1, depth-1-R);
 
         if(score >= beta)
         {
@@ -141,18 +141,18 @@ int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& 
     (ss+1)->nullmove = true;
 #endif
 
-    PV newPV;
-    newPV.numMoves = 0;
-    Move bestMove = NO_MOVE;
-    int bestScore = -INF;
+    PV new_pv;
+    new_pv.num_moves = 0;
+    Move best_move = NO_MOVE;
+    int best_score = -INF;
     Move moves[256];
-    int numMoves = movegen(pos, moves);
+    int num_moves = movegen(pos, moves);
 
     // Score moves
     int scores[256] = {0};
-    for(int n = 0; n < numMoves; ++n)
+    for(int n = 0; n < num_moves; ++n)
     {
-        if(moves[n] == ttMove)
+        if(moves[n] == tt_move)
         {
             scores[n] = 10001;
         }
@@ -164,40 +164,40 @@ int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& 
 #endif
         else
         {
-            scores[n] = countCaptures(pos, moves[n]);
+            scores[n] = count_captures(pos, moves[n]);
 
-            scores[n] += (isSingle(moves[n]) ? 1 : 0);
+            scores[n] += (is_single(moves[n]) ? 1 : 0);
         }
     }
 
-    int moveNum = 0;
+    int move_num = 0;
     Move move = NO_MOVE;
-    while(nextMove(moves, numMoves, move, scores))
+    while(next_move(moves, num_moves, move, scores))
     {
         assert(move != NO_MOVE);
-        Position newPos = pos;
+        Position new_pos = pos;
 
-        makemove(newPos, move);
+        makemove(new_pos, move);
 
         info.nodes++;
 
 #ifdef LMR
-        int r = reduction(moveNum, depth);
-        int score = -alphabetaSearch(newPos, info, ss+1, newPV, -alpha-1, -alpha, depth-1-r);
+        int r = reduction(move_num, depth);
+        int score = -alphabeta_search(new_pos, info, ss+1, new_pv, -alpha-1, -alpha, depth-1-r);
 
         // Re-search
         if(score > alpha)
         {
-            score = -alphabetaSearch(newPos, info, ss+1, newPV, -beta, -alpha, depth-1);
+            score = -alphabeta_search(new_pos, info, ss+1, new_pv, -beta, -alpha, depth-1);
         }
 #else
-        int score = -alphabetaSearch(newPos, info, ss+1, newPV, -beta, -alpha, depth-1);
+        int score = -alphabeta_search(new_pos, info, ss+1, new_pv, -beta, -alpha, depth-1);
 #endif
 
-        if(score > bestScore)
+        if(score > best_score)
         {
-            bestMove = move;
-            bestScore = score;
+            best_move = move;
+            best_score = score;
         }
 
         if(score > alpha)
@@ -206,39 +206,39 @@ int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& 
 
             // Update PV
             pv.moves[0] = move;
-            memcpy(pv.moves + 1, newPV.moves, newPV.numMoves * sizeof(Move));
-            pv.numMoves = newPV.numMoves + 1;
+            memcpy(pv.moves + 1, new_pv.moves, new_pv.num_moves * sizeof(Move));
+            pv.num_moves = new_pv.num_moves + 1;
         }
 
         if(alpha >= beta)
         {
 #ifdef KILLER_MOVES
-            if(countCaptures(pos, move) == 0)
+            if(count_captures(pos, move) == 0)
             {
                 ss->killer = move;
             }
 #endif
 #ifndef NDEBUG
-            info.cutoffs[moveNum]++;
+            info.cutoffs[move_num]++;
 
-            if(isSingle(move) == true)
+            if(is_single(move) == true)
             {
-                info.singleCutoffs++;
+                info.single_cutoffs++;
             }
             else
             {
-                info.doubleCutoffs++;
+                info.double_cutoffs++;
             }
 #endif
             break;
         }
 
-        moveNum++;
+        move_num++;
     }
 
-    if(numMoves == 0)
+    if(num_moves == 0)
     {
-        pv.numMoves = 0;
+        pv.num_moves = 0;
         int val = score(pos);
 
         if(val > 0)
@@ -256,11 +256,11 @@ int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& 
     }
 
     uint8_t flag;
-    if(bestScore <= alphaOrig)
+    if(best_score <= alpha_original)
     {
         flag = UPPERBOUND;
     }
-    else if(bestScore >= beta)
+    else if(best_score >= beta)
     {
         flag = LOWERBOUND;
     }
@@ -269,16 +269,16 @@ int alphabetaSearch(const Position& pos, searchInfo& info, searchStack *ss, PV& 
         flag = EXACT;
     }
 
-    add(info.tt, key, depth, bestScore, bestMove, flag);
+    add(info.tt, key, depth, best_score, best_move, flag);
 
 #ifndef NDEBUG
     Entry testEntry = probe(info.tt, key);
     assert(testEntry.key == key);
     assert(testEntry.depth == depth);
-    assert(testEntry.eval == bestScore);
-    assert(testEntry.move == bestMove);
+    assert(testEntry.eval == best_score);
+    assert(testEntry.move == best_move);
     assert(testEntry.flag == flag);
 #endif
 
-    return bestScore;
+    return best_score;
 }

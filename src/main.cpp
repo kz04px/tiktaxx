@@ -2,11 +2,11 @@
 #include <ctime>
 
 #include "zobrist.hpp"
-#include "protocol.hpp"
+#include "uai.hpp"
 
 int main()
 {
-    zobristInit();
+    zobrist_init();
 
     std::string mode;
     std::cin >> mode;
@@ -16,7 +16,7 @@ int main()
     }
     else if(mode == "uai")
     {
-        messageLoop();
+        uai();
     }
     else if(mode == "about")
     {

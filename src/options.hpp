@@ -9,7 +9,7 @@ struct Options
     {
     }
 
-    void print()
+    void print() const
     {
         std::cout << "Contempt: " << contempt << std::endl;
         std::cout << "Threads: " << threads << std::endl;

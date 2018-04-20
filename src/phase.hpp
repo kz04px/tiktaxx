@@ -3,7 +3,7 @@
 
 #include "ataxx.hpp"
 
-float phase(const Position& pos);
-bool isEndgame(const Position& pos);
+float phase(const Position &pos);
+bool is_endgame(const Position &pos);
 
 #endif

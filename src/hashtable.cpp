@@ -16,7 +16,7 @@
 //   nodes -- 56 bits (72,057,594,037,927,936 max)
 //
 
-int getDepth(const Entry& n)
+int get_depth(const Entry & n)
 {
     #ifdef HASHTABLE_PACKED
         return (n.data) & 0xFF;
@@ -25,7 +25,7 @@ int getDepth(const Entry& n)
     #endif
 }
 
-int getEval(const Entry& n)
+int get_eval(const Entry & n)
 {
     #ifdef HASHTABLE_PACKED
         return (n.data >> 8) & 0xFFFFFFFF;
@@ -34,7 +34,7 @@ int getEval(const Entry& n)
     #endif
 }
 
-Move getMove(const Entry& n)
+Move get_move(const Entry & n)
 {
     #ifdef HASHTABLE_PACKED
         int from = (n.data >> 48) & 0xFF;
@@ -45,7 +45,7 @@ Move getMove(const Entry& n)
     #endif
 }
 
-uint64_t getNodes(const Entry& n)
+uint64_t get_nodes(const Entry & n)
 {
     #ifdef HASHTABLE_PACKED
         return (n.data >> 8) & 0x1FFFFFFFFFFFFFF;
@@ -54,7 +54,7 @@ uint64_t getNodes(const Entry& n)
     #endif
 }
 
-uint8_t getFlag(const Entry& n)
+uint8_t get_flag(const Entry & n)
 {
     #ifdef HASHTABLE_PACKED
         // TO DO:
@@ -66,35 +66,35 @@ uint8_t getFlag(const Entry& n)
     #endif
 }
 
-void tableInit(Hashtable *table)
+void table_init(Hashtable *table)
 {
     assert(table != NULL);
 
-    table->numEntries = 0;
-    table->maxEntries = 0;
+    table->num_entries = 0;
+    table->max_entries = 0;
     table->entries = NULL;
 }
 
-void printDetails(Hashtable *table)
+void print_details(Hashtable *table)
 {
     assert(table != NULL);
 
-    std::cout << "Num entries: " << table->numEntries << std::endl;
-    std::cout << "Max entries: " << table->maxEntries << std::endl;
+    std::cout << "Num entries: " << table->num_entries << std::endl;
+    std::cout << "Max entries: " << table->max_entries << std::endl;
     std::cout << "Entry size:  " << sizeof(Entry) << std::endl;
-    if(table->maxEntries > 0)
+    if(table->max_entries > 0)
     {
-        std::cout << "Fullness:    " << 100.0*(double)table->numEntries/table->maxEntries << "%" << std::endl;
+        std::cout << "Fullness:    " << 100.0*(double)table->num_entries/table->max_entries << "%" << std::endl;
     }
-    std::cout << "Total size:  " << sizeof(Entry)*table->maxEntries << std::endl;
+    std::cout << "Total size:  " << sizeof(Entry)*table->max_entries << std::endl;
 }
 
-bool tableClear(Hashtable *table)
+bool table_clear(Hashtable *table)
 {
     assert(table != NULL);
 
-    table->numEntries = 0;
-    for(int n = 0; n < table->maxEntries; ++n)
+    table->num_entries = 0;
+    for(int n = 0; n < table->max_entries; ++n)
     {
         #ifdef HASHTABLE_PACKED
             table->entries[n].key = 0ULL;
@@ -111,13 +111,13 @@ bool tableClear(Hashtable *table)
     return true;
 }
 
-int tableCreate(Hashtable *table, int megabytes)
+int table_create(Hashtable *table, int megabytes)
 {
     assert(table != NULL);
 
     if(table->entries)
     {
-        tableRemove(table);
+        table_remove(table);
     }
 
     if(megabytes > MAX_MEGABYTES)
@@ -129,16 +129,16 @@ int tableCreate(Hashtable *table, int megabytes)
         megabytes = 1;
     }
 
-    table->numEntries = 0;
+    table->num_entries = 0;
 
     while(megabytes > 0)
     {
         uint64_t bytes = megabytes * 1024 * 1024;
-        table->maxEntries = bytes/sizeof(Entry);
+        table->max_entries = bytes/sizeof(Entry);
 
         try
         {
-            table->entries = new Entry[table->maxEntries];
+            table->entries = new Entry[table->max_entries];
             break;
         }
         catch (...)
@@ -150,14 +150,14 @@ int tableCreate(Hashtable *table, int megabytes)
     return megabytes;
 }
 
-void tableRemove(Hashtable *table)
+void table_remove(Hashtable *table)
 {
     assert(table != NULL);
 
     if(table->entries)
     {
-        table->numEntries = 0;
-        table->maxEntries = 0;
+        table->num_entries = 0;
+        table->max_entries = 0;
         delete table->entries;
     }
 }
@@ -166,30 +166,30 @@ Entry probe(Hashtable *table, const uint64_t key)
 {
     assert(table != NULL);
 
-    return table->entries[key % table->maxEntries];
+    return table->entries[key % table->max_entries];
 }
 
-void add(Hashtable *table, const uint64_t key, const int depth, const int eval, const Move& move, const uint8_t flag)
+void add(Hashtable *table, const uint64_t key, const int depth, const int eval, const Move &move, const uint8_t flag)
 {
     assert(table != NULL);
 
-    int index = key % table->maxEntries;
+    int index = key % table->max_entries;
 
     if(table->entries[index].key == 0ULL)
     {
-        table->numEntries++;
+        table->num_entries++;
     }
 
     #ifdef HASHTABLE_PACKED
-        uint64_t tempDepth = (uint64_t)depth & 0xFF;
-        uint64_t tempEval = ((uint64_t)eval & 0xFFFFFFFF) << 8;
+        uint64_t temp_depth = (uint64_t)depth & 0xFF;
+        uint64_t temp_eval = ((uint64_t)eval & 0xFFFFFFFF) << 8;
 
         uint64_t from = (move.from & 0xFF);
         uint64_t to = (move.to & 0xFF);
-        uint64_t tempMove = ((from<<8) | to) << 40;
+        uint64_t temp_move = ((from<<8) | to) << 40;
 
         table->entries[index].key = key;
-        table->entries[index].data = tempDepth | tempEval | tempMove;
+        table->entries[index].data = temp_depth | temp_eval | temp_move;
     #else
         table->entries[index].key = key;
         table->entries[index].depth = depth;
@@ -199,15 +199,15 @@ void add(Hashtable *table, const uint64_t key, const int depth, const int eval, 
     #endif
 }
 
-void addPerft(Hashtable *table, const uint64_t key, const int depth, const uint64_t nodes)
+void add_perft(Hashtable *table, const uint64_t key, const int depth, const uint64_t nodes)
 {
     assert(table != NULL);
 
-    int index = key % table->maxEntries;
+    int index = key % table->max_entries;
 
     if(table->entries[index].key == 0ULL)
     {
-        table->numEntries++;
+        table->num_entries++;
     }
 
     #ifdef HASHTABLE_PACKED

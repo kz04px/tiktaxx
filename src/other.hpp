@@ -7,6 +7,6 @@
 std::vector<std::string> split(const std::string &s, char delim);
 int popcountll(const uint64_t n);
 int lsb(const uint64_t n);
-void printU64(const uint64_t n);
+void print_u64(const uint64_t n);
 
 #endif

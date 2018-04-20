@@ -14,24 +14,24 @@
 #include "makemove.hpp"
 #include "score.hpp"
 
-int rollout(const Position& pos, const int maxDepth)
+int rollout(const Position &pos, const int max_depth)
 {
-    Position newPos = pos;
+    Position new_pos = pos;
     Move moves[256];
 
     int d = 0;
-    while(d < maxDepth)
+    while(d < max_depth)
     {
-        int numMoves = movegen(newPos, moves);
+        int num_moves = movegen(new_pos, moves);
 
-        if(numMoves == 0)
+        if(num_moves == 0)
         {
-            int r = score(newPos);
+            int r = score(new_pos);
 
                  if(r > 0) {r = 1;}
             else if(r < 0) {r = -1;}
 
-            if(pos.turn == newPos.turn)
+            if(pos.turn == new_pos.turn)
             {
                 return r;
             }
@@ -41,32 +41,32 @@ int rollout(const Position& pos, const int maxDepth)
             }
         }
 
-        int n = rand() % numMoves;
-        makemove(newPos, moves[n]);
+        int n = rand() % num_moves;
+        makemove(new_pos, moves[n]);
         d++;
     }
 
     return 0;
 }
 
-int rolloutHeavy(const Position& pos, const int maxDepth)
+int rollout_heavy(const Position &pos, const int max_depth)
 {
-    Position newPos = pos;
+    Position new_pos = pos;
     Move moves[256];
 
     int d = 0;
-    while(d < maxDepth)
+    while(d < max_depth)
     {
-        int numMoves = movegen(newPos, moves);
+        int num_moves = movegen(new_pos, moves);
 
-        int r = score(newPos);
+        int r = score(new_pos);
 
-        if(numMoves == 0 || abs(r) > 5)
+        if(num_moves == 0 || abs(r) > 5)
         {
                  if(r > 0) {r = 1;}
             else if(r < 0) {r = -1;}
 
-            if(pos.turn == newPos.turn)
+            if(pos.turn == new_pos.turn)
             {
                 return r;
             }
@@ -76,8 +76,8 @@ int rolloutHeavy(const Position& pos, const int maxDepth)
             }
         }
 
-        int n = rand() % numMoves;
-        makemove(newPos, moves[n]);
+        int n = rand() % num_moves;
+        makemove(new_pos, moves[n]);
         d++;
     }
 

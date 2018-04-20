@@ -17,70 +17,70 @@
 #include "makemove.hpp"
 #include "rollout.hpp"
 
-int findBestmove(const int numMoves, const int *wins, const int *draws, const int *losses)
+int find_best_move(const int num_moves, const int *wins, const int *draws, const int *losses)
 {
-    assert(numMoves >= 0);
+    assert(num_moves >= 0);
     assert(wins != NULL);
     assert(draws != NULL);
     assert(losses != NULL);
 
-    int bestIndex = 0;
-    double bestScore = -INF;
+    int best_index = 0;
+    double best_score = -INF;
 
-    for(int n = 0; n < numMoves; ++n)
+    for(int n = 0; n < num_moves; ++n)
     {
         if(wins[n] + draws[n] + losses[n] == 0) {continue;}
 
         double score = (double)wins[n]/(wins[n] + draws[n] + losses[n]);
 
-        if(score >= bestScore)
+        if(score >= best_score)
         {
-            bestScore = score;
-            bestIndex = n;
+            best_score = score;
+            best_index = n;
         }
     }
 
-    return bestIndex;
+    return best_index;
 }
 
-void mctsPure(const Position& pos, int numSimulations, int movetime)
+void mcts_pure(const Position &pos, int num_simulations, int movetime)
 {
     int win[256] = {0};
     int draw[256] = {0};
     int loss[256] = {0};
 
     Move moves[256];
-    int numMoves = movegen(pos, moves);
+    int num_moves = movegen(pos, moves);
 
-    if(numMoves == 0)
+    if(num_moves == 0)
     {
         std::cout << "bestmove 0000" << std::endl;
         return;
     }
 
     clock_t start = clock();
-    clock_t endTarget = clock();
+    clock_t end_target = clock();
 
-    if(numSimulations == 0)
+    if(num_simulations == 0)
     {
-        numSimulations = INT_MAX;
-        endTarget = start + ((double)movetime/1000.0)*CLOCKS_PER_SEC;
+        num_simulations = INT_MAX;
+        end_target = start + ((double)movetime/1000.0)*CLOCKS_PER_SEC;
     }
     else if(movetime == 0)
     {
-        endTarget = INT_MAX;
+        end_target = INT_MAX;
     }
 
     int n = 0;
     int sims = 0;
-    while(sims < numSimulations && clock() < endTarget)
+    while(sims < num_simulations && clock() < end_target)
     {
         // Set position
-        Position newPos = pos;
-        makemove(newPos, moves[n]);
+        Position new_pos = pos;
+        makemove(new_pos, moves[n]);
 
         // Do rollouts
-        int result = -rollout(newPos, 400);
+        int result = -rollout(new_pos, 400);
         sims++;
 
         // Score
@@ -99,7 +99,7 @@ void mctsPure(const Position& pos, int numSimulations, int movetime)
 
         // Next move
         n++;
-        if(n >= numMoves)
+        if(n >= num_moves)
         {
             n = 0;
         }
@@ -108,20 +108,20 @@ void mctsPure(const Position& pos, int numSimulations, int movetime)
         if(sims % 10000 == 0)
         {
             double time = (double)(clock() - start)/CLOCKS_PER_SEC;
-            int bestIndex = findBestmove(numMoves, win, draw, loss);
+            int best_index = find_best_move(num_moves, win, draw, loss);
 
             std::cout << "info"
                       << " sims " << sims
-                      << " score winchance " << (double)win[bestIndex]/(win[bestIndex] + draw[bestIndex] + loss[bestIndex])
+                      << " score winchance " << (double)win[best_index]/(win[best_index] + draw[best_index] + loss[best_index])
                       << " sps " << (uint64_t)((double)sims/time)
                       << " time " << 1000.0*time
-                      << " pv " << moveString(moves[bestIndex])
+                      << " pv " << move_string(moves[best_index])
                       << std::endl;
         }
     }
 
     // Find best move
-    int bestIndex = findBestmove(numMoves, win, draw, loss);
+    int best_index = find_best_move(num_moves, win, draw, loss);
 
-    std::cout << "bestmove " << moveString(moves[bestIndex]) << std::endl;
+    std::cout << "bestmove " << move_string(moves[best_index]) << std::endl;
 }

@@ -9,7 +9,7 @@
 
 #define STARTPOS "x5o/7/2-1-2/7/2-1-2/7/o5x x"
 
-int setBoard(Position& pos, std::string fen)
+int set_board(Position &pos, std::string fen)
 {
     if(fen == "startpos") {fen = STARTPOS;}
 
@@ -30,7 +30,7 @@ int setBoard(Position& pos, std::string fen)
 
     int sq = SQUARE::a7;
 
-    for(char& c : tokens[0])
+    for(char &c : tokens[0])
     {
         switch(c)
         {
@@ -89,7 +89,7 @@ int setBoard(Position& pos, std::string fen)
     return 0;
 }
 
-void print(const Position& pos, bool details)
+void print(const Position &pos, bool details)
 {
     std::cout << "  a b c d e f g" << std::endl;
     std::cout << " ╔═╦═╦═╦═╦═╦═╦═╗" << std::endl;
@@ -120,7 +120,7 @@ void print(const Position& pos, bool details)
         std::cout << "Eval: " << eval(pos) << std::endl;
         std::cout << "Score: " << score(pos) << std::endl;
         std::cout << "Phase: " << phase(pos) << std::endl;
-        std::cout << "Endgame: " << (isEndgame(pos) == true ? "true" : "false") << std::endl;
+        std::cout << "Endgame: " << (is_endgame(pos) == true ? "true" : "false") << std::endl;
 
         int validCode = valid(pos);
         if(validCode != 0)
@@ -134,10 +134,10 @@ void print(const Position& pos, bool details)
     }
 }
 
-int valid(const Position& pos)
+int valid(const Position &pos)
 {
     if(pos.pieces[SIDE::NOUGHT] & pos.pieces[SIDE::CROSS]) {return 1;}
     if(pos.pieces[SIDE::NOUGHT] & pos.blockers) {return 2;}
-    if(pos.pieces[SIDE::CROSS]  & pos.blockers) {return 3;}
+    if(pos.pieces[SIDE::CROSS] & pos.blockers) {return 3;}
     return 0;
 }

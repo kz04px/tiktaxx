@@ -33,7 +33,7 @@ int lsb(const uint64_t n)
     return __builtin_ctzll(n);
 }
 
-void printU64(const uint64_t n)
+void print_u64(const uint64_t n)
 {
     for(int y = 6; y >= 0; --y)
     {

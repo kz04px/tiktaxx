@@ -4,6 +4,6 @@
 #include "ataxx.hpp"
 #include "move.hpp"
 
-int movegen(const Position& pos, Move *moves);
+int movegen(const Position &pos, Move *moves);
 
 #endif

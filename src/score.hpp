@@ -3,6 +3,6 @@
 
 #include "ataxx.hpp"
 
-int score(const Position& pos);
+int score(const Position &pos);
 
 #endif
