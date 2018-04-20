@@ -6,7 +6,6 @@
 
 int main()
 {
-    srand(time(0));
     zobristInit();
 
     std::string mode;

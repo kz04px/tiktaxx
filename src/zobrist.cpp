@@ -19,8 +19,8 @@ uint64_t getPieceKey(const int side, const int sq)
 void zobristInit()
 {
     // Initialise
-    std::random_device rd;
-    std::mt19937_64 gen(rd());
+    auto seed = 1927725765;
+    std::mt19937_64 gen(seed);
 
     // Define the number generator type
     std::uniform_int_distribution<uint64_t> dis;
