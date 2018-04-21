@@ -83,15 +83,15 @@ int eval(const Position &pos)
         }
     }
 
-    int ourPST = 0;
-    int theirPST = 0;
+    int our_pst = 0;
+    int their_pst = 0;
 
     uint64_t copy = pos.pieces[PIECE::CROSS];
     while(copy)
     {
         int sq = lsb(copy);
 
-        ourPST += PST[sq];
+        our_pst += PST[sq];
 
         copy &= copy - 1;
     }
@@ -101,7 +101,7 @@ int eval(const Position &pos)
     {
         int sq = lsb(copy);
 
-        theirPST += PST[sq];
+        their_pst += PST[sq];
 
         copy &= copy - 1;
     }
@@ -111,8 +111,8 @@ int eval(const Position &pos)
                 - PIECE_VALUE*num_unfriendly
                 + MOBILITY_VALUE*our_mobility
                 - MOBILITY_VALUE*their_mobility
-                + ourPST
-                - theirPST;
+                + our_pst
+                - their_pst;
 
     if(pos.turn == SIDE::CROSS)
     {
