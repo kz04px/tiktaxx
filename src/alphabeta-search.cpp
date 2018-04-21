@@ -37,7 +37,7 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
 
     if(depth == 0)
     {
-        depth = INT_MAX;
+        depth = MAX_DEPTH;
         info.end = info.start + ((double)movetime/1000.0)*CLOCKS_PER_SEC;
     }
     else if(movetime == 0)
@@ -80,6 +80,7 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
 
         // Throw away the result if we ran out of time or were asked to stop
         if(*info.stop == true || end >= info.end)
+        if(d > 1 && (*info.stop == true || end >= info.end))
         {
             break;
         }
