@@ -8,7 +8,7 @@
 #include "searchstack.hpp"
 
 #define INF 1000000
-#define MAX_DEPTH 32
+#define MAX_DEPTH 128
 
 void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop, int depth, int movetime);
 
