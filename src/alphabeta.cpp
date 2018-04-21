@@ -16,6 +16,7 @@
 #include "sorting.hpp"
 #include "next-move.hpp"
 #include "searchstack.hpp"
+#include "other.hpp"
 
 int reduction(const int move_num, const int depth)
 {
@@ -194,6 +195,17 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
         makemove(new_pos, move);
 
         info.nodes++;
+
+#ifdef FUTILITY_PRUNING
+        if(!pvnode)
+        {
+            int material = 100*(popcountll(new_pos.pieces[new_pos.turn]) - popcountll(new_pos.pieces[!new_pos.turn]));
+            if(move_num > 0 && depth < 3 && -material + 800 < alpha)
+            {
+                continue;
+            }
+        }
+#endif
 
 #ifdef LMR
         int r = reduction(move_num, depth);

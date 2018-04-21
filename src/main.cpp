@@ -46,6 +46,9 @@ int main()
 #ifdef IID
         std::cout << "IID enabled" << std::endl;
 #endif
+#ifdef FUTILITY_PRUNING
+        std::cout << "FUTILITY_PRUNING enabled" << std::endl;
+#endif
         std::cout << std::endl;
 
         std::cout << "Other:" << std::endl;
