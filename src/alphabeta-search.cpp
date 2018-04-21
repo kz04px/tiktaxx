@@ -79,7 +79,6 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
         double time_spent = (double)(end - info.start)/CLOCKS_PER_SEC;
 
         // Throw away the result if we ran out of time or were asked to stop
-        if(*info.stop == true || end >= info.end)
         if(d > 1 && (*info.stop == true || end >= info.end))
         {
             break;
