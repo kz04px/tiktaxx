@@ -74,6 +74,7 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
     int alpha_original = alpha;
     uint64_t key = generate_key(pos);
     Move tt_move = NO_MOVE;
+    bool pvnode = (beta - alpha == 1);
 
     // Check the hash table
     Entry entry = probe(info.tt, key);
@@ -121,7 +122,7 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
 #ifdef NULLMOVE
     #define R (2)
 
-    if(ss->nullmove && depth > 2)
+    if(ss->nullmove && depth > 2 && !pvnode)
     {
         PV new_pv;
 
