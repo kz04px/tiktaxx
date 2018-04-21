@@ -167,6 +167,22 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
         }
     }
 
+#ifdef IID
+    if(tt_move == NO_MOVE && depth > 5)
+    {
+        int score = -alphabeta_search(pos, info, ss+1, new_pv, -beta, -alpha, depth-3);
+
+        for(int n = 0; n < num_moves; ++n)
+        {
+            if(moves[n] == new_pv.moves[0])
+            {
+                scores[n] = 10001;
+                break;
+            }
+        }
+    }
+#endif
+
     int move_num = 0;
     Move move = NO_MOVE;
     while(next_move(moves, num_moves, move, scores))

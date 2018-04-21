@@ -43,6 +43,9 @@ int main()
 #ifdef ASPIRATION_WINDOWS
         std::cout << "ASPIRATION_WINDOWS enabled" << std::endl;
 #endif
+#ifdef IID
+        std::cout << "IID enabled" << std::endl;
+#endif
         std::cout << std::endl;
 
         std::cout << "Other:" << std::endl;
