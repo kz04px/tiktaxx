@@ -3,6 +3,8 @@
 
 #include "zobrist.hpp"
 #include "uai.hpp"
+#include "move.hpp"
+#include "hashtable.hpp"
 
 int main()
 {
@@ -22,7 +24,10 @@ int main()
     {
         std::cout << "An Ataxx engine written in C++" << std::endl;
         std::cout << "https://github.com/kz04px/ataxx-engine" << std::endl;
-        std::cout << "Compiled: " <<   __TIME__ << " " << __DATE__ <<std::endl;
+        std::cout << "Compiled: " <<   __TIME__ << " " << __DATE__ << std::endl;
+        std::cout << std::endl;
+
+        std::cout << "Search:" << std::endl;
 #ifdef NDEBUG
         std::cout << "NDEBUG enabled" << std::endl;
 #endif
@@ -38,6 +43,13 @@ int main()
 #ifdef ASPIRATION_WINDOWS
         std::cout << "ASPIRATION_WINDOWS enabled" << std::endl;
 #endif
+        std::cout << std::endl;
+
+        std::cout << "Other:" << std::endl;
+        std::cout << "sizeof(Move): " << sizeof(Move) << " bytes" << std::endl;
+        std::cout << "sizeof(Entry): " << sizeof(Entry) << " bytes" << std::endl;
+        std::cout << "entries/MB: " << 1048576/sizeof(Entry) << std::endl;
+        std::cout << std::endl;
     }
     else
     {
