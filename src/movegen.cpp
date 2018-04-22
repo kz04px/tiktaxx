@@ -68,18 +68,6 @@ int movegen(const Position &pos, Move *moves)
 #ifndef NDEBUG
     for(int i = 0; i < num_moves; ++i)
     {
-        // Either one or the other
-        assert((is_single(moves[i]) ^ is_double(moves[i])) != 0);
-
-        // Destination needs to be empty
-        assert(((pos.pieces[pos.turn] | pos.pieces[!pos.turn] | pos.blockers) & ((1ULL)<<moves[i].to)) == 0ULL);
-
-        if(is_double(moves[i]) == true)
-        {
-            // Source needs to have our stone on it
-            assert((pos.pieces[pos.turn] & ((1ULL)<<moves[i].from)) != 0ULL);
-        }
-
         assert(legal_move(pos, moves[i]) == true);
     }
 #endif
