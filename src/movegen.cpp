@@ -79,6 +79,8 @@ int movegen(const Position &pos, Move *moves)
             // Source needs to have our stone on it
             assert((pos.pieces[pos.turn] & ((1ULL)<<moves[i].from)) != 0ULL);
         }
+
+        assert(legal_move(pos, moves[i]) == true);
     }
 #endif
 
