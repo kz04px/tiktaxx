@@ -6,6 +6,7 @@
 #include "eval.hpp"
 #include "phase.hpp"
 #include "other.hpp"
+#include "invalid.hpp"
 
 #define STARTPOS "x5o/7/2-1-2/7/2-1-2/7/o5x x"
 
@@ -84,7 +85,7 @@ int set_board(Position &pos, std::string fen)
 
     if(sq != SQUARE::a2) {return 7;}
 
-    if(valid(pos) != 0) {return 8;}
+    if(invalid(pos) == true) {return 8;}
 
     return 0;
 }
@@ -122,22 +123,14 @@ void print(const Position &pos, bool details)
         std::cout << "Phase: " << phase(pos) << std::endl;
         std::cout << "Endgame: " << (is_endgame(pos) == true ? "true" : "false") << std::endl;
 
-        int validCode = valid(pos);
-        if(validCode != 0)
+        int r = invalid(pos);
+        if(r == true)
         {
-            std::cout << "Valid: false (" << validCode << ")" << std::endl;
+            std::cout << "Valid: false (" << r << ")" << std::endl;
         }
         else
         {
             std::cout << "Valid: true" << std::endl;
         }
     }
-}
-
-int valid(const Position &pos)
-{
-    if(pos.pieces[SIDE::NOUGHT] & pos.pieces[SIDE::CROSS]) {return 1;}
-    if(pos.pieces[SIDE::NOUGHT] & pos.blockers) {return 2;}
-    if(pos.pieces[SIDE::CROSS] & pos.blockers) {return 3;}
-    return 0;
 }

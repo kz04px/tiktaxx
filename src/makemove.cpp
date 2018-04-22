@@ -1,7 +1,9 @@
 #include <string>
+#include <cassert>
 
 #include "makemove.hpp"
 #include "bitboards.hpp"
+#include "invalid.hpp"
 #include "other.hpp"
 
 void makemove(Position &pos, const int to)
@@ -66,6 +68,8 @@ void makemove(Position &pos, const Move &n)
 
     pos.turn = !pos.turn;
     pos.ply++;
+
+    assert(invalid(pos) == false);
 }
 
 bool makemoves(Position &pos, const std::string &moves_string)
