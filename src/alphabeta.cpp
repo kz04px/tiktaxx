@@ -294,12 +294,12 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
     add(info.tt, key, depth, best_score, best_move, flag);
 
 #ifndef NDEBUG
-    Entry testEntry = probe(info.tt, key);
-    assert(testEntry.key == key);
-    assert(testEntry.depth == depth);
-    assert(testEntry.eval == best_score);
-    assert(testEntry.move == best_move);
-    assert(testEntry.flag == flag);
+    Entry test_entry = probe(info.tt, key);
+    assert(test_entry.key == key);
+    assert(test_entry.depth == depth);
+    assert(test_entry.eval == best_score);
+    assert(test_entry.move == best_move);
+    assert(test_entry.flag == flag);
 #endif
 
     return best_score;
