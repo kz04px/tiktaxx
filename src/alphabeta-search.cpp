@@ -124,6 +124,16 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
     }
     std::cout << std::endl;
 
+    for(int i = 0; i < 9; ++i)
+    {
+        std::cout << "info "
+                  << "captured " << i << " "
+                  << "cutoffs " << info.capture_cutoffs[i] << " "
+                  << "(" << 100.0*info.capture_cutoffs[i]/total << "%)"
+                  << std::endl;
+    }
+    std::cout << std::endl;
+
     std::cout << "Single cutoffs: " << info.single_cutoffs << std::endl;
     std::cout << "Double cutoffs: " << info.double_cutoffs << std::endl;
     std::cout << std::endl;

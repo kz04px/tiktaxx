@@ -25,6 +25,10 @@ struct search_info
         {
             cutoffs[i] = 0ULL;
         }
+        for(int i = 0; i < 9; ++i)
+        {
+            capture_cutoffs[i] = 0ULL;
+        }
         hash_hits = 0ULL;
         hash_collisions = 0ULL;
         single_cutoffs = 0ULL;
@@ -43,6 +47,7 @@ struct search_info
     Options *options;
 #ifndef NDEBUG
     uint64_t cutoffs[256];
+    uint64_t capture_cutoffs[9];
     uint64_t single_cutoffs;
     uint64_t double_cutoffs;
     uint64_t hash_hits;

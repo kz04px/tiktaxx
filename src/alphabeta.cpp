@@ -244,6 +244,9 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
 #ifndef NDEBUG
             info.cutoffs[move_num]++;
 
+            int num_captured = count_captures(pos, move);
+            info.capture_cutoffs[num_captured]++;
+
             if(is_single(move) == true)
             {
                 info.single_cutoffs++;
