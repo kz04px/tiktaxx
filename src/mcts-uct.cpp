@@ -222,7 +222,7 @@ void printTree(Node node, int depth)
 }
 
 
-void mcts_uct(const Position &pos, int num_simulations, int movetime)
+void mcts_uct(const Position &pos, int nodes, int movetime)
 {
     Node root = Node(pos, NULL, NO_MOVE);
     int iteration = 0;
@@ -230,9 +230,9 @@ void mcts_uct(const Position &pos, int num_simulations, int movetime)
     clock_t start = clock();
     clock_t end_target = clock();
 
-    if(num_simulations == 0)
+    if(nodes == 0)
     {
-        num_simulations = INT_MAX;
+        nodes = INT_MAX;
         end_target = start + ((double)movetime/1000.0)*CLOCKS_PER_SEC;
     }
     else if(movetime == 0)
@@ -240,7 +240,7 @@ void mcts_uct(const Position &pos, int num_simulations, int movetime)
         end_target = INT_MAX;
     }
 
-    while(iteration < num_simulations && clock() < end_target)
+    while(iteration < nodes && clock() < end_target)
     {
         Node *node = tree_policy(&root);
         int score = default_policy(node->state.pos);

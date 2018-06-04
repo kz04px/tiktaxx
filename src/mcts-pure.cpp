@@ -43,7 +43,7 @@ int find_best_move(const int num_moves, const int *wins, const int *draws, const
     return best_index;
 }
 
-void mcts_pure(const Position &pos, int num_simulations, int movetime)
+void mcts_pure(const Position &pos, int nodes, int movetime)
 {
     int win[256] = {0};
     int draw[256] = {0};
@@ -61,9 +61,9 @@ void mcts_pure(const Position &pos, int num_simulations, int movetime)
     clock_t start = clock();
     clock_t end_target = clock();
 
-    if(num_simulations == 0)
+    if(nodes == 0)
     {
-        num_simulations = INT_MAX;
+        nodes = INT_MAX;
         end_target = start + ((double)movetime/1000.0)*CLOCKS_PER_SEC;
     }
     else if(movetime == 0)
@@ -73,7 +73,7 @@ void mcts_pure(const Position &pos, int num_simulations, int movetime)
 
     int n = 0;
     int sims = 0;
-    while(sims < num_simulations && clock() < end_target)
+    while(sims < nodes && clock() < end_target)
     {
         // Set position
         Position new_pos = pos;

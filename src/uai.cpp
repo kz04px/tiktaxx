@@ -68,7 +68,7 @@ void uai()
                 // Default subcommands
                 int depth = 5;
                 int movetime = 0;
-                int num_simulations = 1000;
+                int nodes = 1000;
 
                 // Subcommands
                 for(unsigned int i = n+1; i < tokens.size(); ++i)
@@ -92,9 +92,9 @@ void uai()
                         n += 2;
                         i += 1;
                     }
-                    else if(tokens[i] == "simulations")
+                    else if(tokens[i] == "nodes")
                     {
-                        num_simulations = stoi(tokens[i+1]);
+                        nodes = stoi(tokens[i+1]);
                         movetime = 0;
                         n += 2;
                         i += 1;
@@ -103,11 +103,11 @@ void uai()
 
                 if(options.search == "mcts-uct")
                 {
-                    search_thread = std::thread(mcts_uct, pos, num_simulations, movetime);
+                    search_thread = std::thread(mcts_uct, pos, nodes, movetime);
                 }
                 else if(options.search == "mcts-pure")
                 {
-                    search_thread = std::thread(mcts_pure, pos, num_simulations, movetime);
+                    search_thread = std::thread(mcts_pure, pos, nodes, movetime);
                 }
                 else if(options.search == "most-captures")
                 {

@@ -17,8 +17,8 @@ int minimax(const Position &pos, search_info &info, search_stack *ss, PV &pv, co
 int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, PV &pv, int alpha, int beta, int depth);
 
 // MCTS
-void mcts_pure(const Position &pos, int num_simulations, int movetime);
-void mcts_uct(const Position &pos, int num_simulations, int movetime);
+void mcts_pure(const Position &pos, int nodes, int movetime);
+void mcts_uct(const Position &pos, int nodes, int movetime);
 
 // Other
 void most_captures(const Position &pos);
