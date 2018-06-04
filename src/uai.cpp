@@ -31,8 +31,8 @@ void uai()
 
     Hashtable tt;
     table_init(&tt);
-    table_create(&tt, options.hash);
 
+    bool initialised = false;
     bool stop = false;
     std::thread search_thread;
 
@@ -48,6 +48,11 @@ void uai()
         {
             if(tokens[n] == "isready")
             {
+                if(initialised == false)
+                {
+                    table_create(&tt, options.hash);
+                    initialised = true;
+                }
                 std::cout << "readyok" << std::endl;
             }
             else if(tokens[n] == "uainewgame")
