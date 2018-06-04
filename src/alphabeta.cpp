@@ -283,9 +283,9 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
         }
     }
 
+    uint8_t flag;
     if(info.tt)
     {
-        uint8_t flag;
         if(best_score <= alpha_original)
         {
             flag = UPPERBOUND;
