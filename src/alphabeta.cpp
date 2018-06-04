@@ -77,45 +77,48 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
     Move tt_move = NO_MOVE;
     bool pvnode = (beta - alpha == 1);
 
-    // Check the hash table
-    Entry entry = probe(info.tt, key);
-    if(key == entry.key)
+    if(info.tt)
     {
-        tt_move = get_move(entry);
+        // Check the hash table
+        Entry entry = probe(info.tt, key);
+        if(key == entry.key)
+        {
+            tt_move = get_move(entry);
 
 #ifndef NDEBUG
-        info.hash_hits++;
-        if(legal_move(pos, tt_move) == false)
-        {
-            info.hash_collisions++;
-        }
+            info.hash_hits++;
+            if(legal_move(pos, tt_move) == false)
+            {
+                info.hash_collisions++;
+            }
 #endif
 
-        if(get_depth(entry) >= depth && legal_move(pos, tt_move) == true)
-        {
-            switch(get_flag(entry))
+            if(get_depth(entry) >= depth && legal_move(pos, tt_move) == true)
             {
-                case EXACT:
+                switch(get_flag(entry))
+                {
+                    case EXACT:
+                        pv.num_moves = 1;
+                        pv.moves[0] = tt_move;
+                        return get_eval(entry);
+                        break;
+                    case LOWERBOUND:
+                        alpha = (alpha > get_eval(entry) ? alpha : get_eval(entry));
+                        break;
+                    case UPPERBOUND:
+                        beta = (beta < get_eval(entry) ? beta : get_eval(entry));
+                        break;
+                    default:
+                        assert(false);
+                        break;
+                }
+
+                if(alpha >= beta)
+                {
                     pv.num_moves = 1;
                     pv.moves[0] = tt_move;
                     return get_eval(entry);
-                    break;
-                case LOWERBOUND:
-                    alpha = (alpha > get_eval(entry) ? alpha : get_eval(entry));
-                    break;
-                case UPPERBOUND:
-                    beta = (beta < get_eval(entry) ? beta : get_eval(entry));
-                    break;
-                default:
-                    assert(false);
-                    break;
-            }
-
-            if(alpha >= beta)
-            {
-                pv.num_moves = 1;
-                pv.moves[0] = tt_move;
-                return get_eval(entry);
+                }
             }
         }
     }
@@ -280,29 +283,35 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
         }
     }
 
-    uint8_t flag;
-    if(best_score <= alpha_original)
+    if(info.tt)
     {
-        flag = UPPERBOUND;
-    }
-    else if(best_score >= beta)
-    {
-        flag = LOWERBOUND;
-    }
-    else
-    {
-        flag = EXACT;
-    }
+        uint8_t flag;
+        if(best_score <= alpha_original)
+        {
+            flag = UPPERBOUND;
+        }
+        else if(best_score >= beta)
+        {
+            flag = LOWERBOUND;
+        }
+        else
+        {
+            flag = EXACT;
+        }
 
-    add(info.tt, key, depth, best_score, best_move, flag);
+        add(info.tt, key, depth, best_score, best_move, flag);
+    }
 
 #ifndef NDEBUG
-    Entry test_entry = probe(info.tt, key);
-    assert(test_entry.key == key);
-    assert(test_entry.depth == depth);
-    assert(test_entry.eval == best_score);
-    assert(test_entry.move == best_move);
-    assert(test_entry.flag == flag);
+    if(info.tt)
+    {
+        Entry test_entry = probe(info.tt, key);
+        assert(test_entry.key == key);
+        assert(test_entry.depth == depth);
+        assert(test_entry.eval == best_score);
+        assert(test_entry.move == best_move);
+        assert(test_entry.flag == flag);
+    }
 #endif
 
     return best_score;
