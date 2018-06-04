@@ -23,6 +23,7 @@ $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 
 bin:
 	mkdir -p $(BINDIR)
+
 obj:
 	mkdir -p $(OBJDIR)
 

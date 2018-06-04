@@ -199,7 +199,7 @@ int get_pv(Node *node, Move *moves)
 }
 
 
-void printTree(Node node, int depth)
+void print_tree(Node node, int depth)
 {
     if(depth > 8)
     {
@@ -216,7 +216,7 @@ void printTree(Node node, int depth)
 
         if(child.children.size() > 0)
         {
-            printTree(child, depth+1);
+            print_tree(child, depth+1);
         }
     }
 }
