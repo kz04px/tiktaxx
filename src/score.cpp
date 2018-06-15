@@ -1,3 +1,4 @@
+#include <cassert>
 #include "score.hpp"
 #include "bitboards.hpp"
 #include "other.hpp"
@@ -10,6 +11,8 @@ int score(const Position &pos)
     int num_nought = popcountll(pos.pieces[PIECE::NOUGHT]);
     int num_blockers = popcountll(pos.blockers);
     int num_empty = popcountll(empty);
+
+    assert(num_cross + num_nought + num_blockers + num_empty == 49);
 
     uint64_t cross_moves = single_jump_bb(pos.pieces[PIECE::CROSS]);
     cross_moves = single_jump_bb(cross_moves);
@@ -29,6 +32,9 @@ int score(const Position &pos)
     }
 
     int score = num_cross - num_nought;
+
+    assert(-49 + num_blockers <= score);
+    assert(score <= 49 - num_blockers);
 
     if(pos.turn == SIDE::CROSS)
     {
