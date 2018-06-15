@@ -116,7 +116,8 @@ void uai()
                 }
                 else if(options.search == "most-captures")
                 {
-                    search_thread = std::thread(most_captures, pos);
+                    // The search won't take long enough to need its own thread
+                    most_captures(pos);
                 }
                 else if(options.search == "minimax")
                 {
