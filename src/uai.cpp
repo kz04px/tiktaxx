@@ -124,7 +124,8 @@ void uai()
                 }
                 else if(options.search == "random")
                 {
-                    //search_thread = std::thread(random, pos);
+                    // The search won't take long enough to need its own thread
+                    random(pos);
                 }
                 else
                 {
