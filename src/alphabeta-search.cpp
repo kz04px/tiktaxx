@@ -118,9 +118,12 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
     {
         std::cout << "info "
                   << "move " << i+1 << " "
-                  << "cutoffs " << info.cutoffs[i] << " "
-                  << "(" << 100.0*info.cutoffs[i]/total << "%)"
-                  << std::endl;
+                  << "cutoffs " << info.cutoffs[i] << " ";
+        if(total > 0ULL)
+        {
+            std::cout << "(" << 100.0*info.cutoffs[i]/total << "%)";
+        }
+        std::cout << std::endl;
     }
     std::cout << std::endl;
 
@@ -128,9 +131,12 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
     {
         std::cout << "info "
                   << "captured " << i << " "
-                  << "cutoffs " << info.capture_cutoffs[i] << " "
-                  << "(" << 100.0*info.capture_cutoffs[i]/total << "%)"
-                  << std::endl;
+                  << "cutoffs " << info.capture_cutoffs[i] << " ";
+        if(total > 0ULL)
+        {
+            std::cout << "(" << 100.0*info.capture_cutoffs[i]/total << "%)";
+        }
+        std::cout << std::endl;
     }
     std::cout << std::endl;
 
