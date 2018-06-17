@@ -1,7 +1,6 @@
 #include <iostream>
 #include <ctime>
 #include <thread>
-
 #include "search.hpp"
 #include "movegen.hpp"
 #include "perft.hpp"
@@ -71,9 +70,9 @@ void uai()
                 }
 
                 // Default subcommands
-                int depth = 5;
+                int depth = 0;
                 int movetime = 0;
-                int nodes = 1000;
+                int nodes = 0;
 
                 // Subcommands
                 for(unsigned int i = n+1; i < tokens.size(); ++i)
@@ -222,33 +221,28 @@ void uai()
                     num_games = 1;
                 }
 
-                int wins = 0;
-                int losses = 0;
-                int draws = 0;
+                float score = 0.0;
 
                 clock_t start = clock();
                 for(int g = 0; g < num_games; ++g)
                 {
-                    int r = rollout(pos, 300);
-                         if(r == 1)  {wins++;}
-                    else if(r == -1) {losses++;}
-                    else             {draws++;}
+                    score += rollout(pos, 400);
+                    double time_taken = (double)(clock() - start)/CLOCKS_PER_SEC;
 
-                    if((g+1) % 100 == 0)
+                    if((g+1) % 1000 == 0)
                     {
                         std::cout << "info"
-                                  << " wins " << wins
-                                  << " draws " << draws
-                                  << " losses " << losses
-                                  << " winrate " << 100.0*(double)wins/(wins + draws + losses) << "%"
-                                  << " time " << 1000.0*(double)(clock() - start)/CLOCKS_PER_SEC
-                                  << std::endl;
+                                  << " nodes " << g+1
+                                  << " score " << 100.0*score/(g+1) << "%";
+                        if(time_taken > 0.0)
+                        {
+                            std::cout << " nps " << (uint64_t)((g+1)/time_taken);
+                        }
+                        std::cout << " time " << (uint64_t)(1000.0*time_taken) << std::endl;
                     }
                 }
 
-                std::cout << "winrate "
-                          << 100.0*(double)wins/(wins + draws + losses) << "%"
-                          << std::endl;
+                std::cout << "winrate " << 100.0*score/num_games << "%" << std::endl;
             }
             else if(tokens[n] == "hashtable")
             {

@@ -1,6 +1,6 @@
 /*
  * Monte Carlo Tree Search -- Upper Confidence Bound applied to Trees (UCT)
- * --
+ * -- Heavy rollouts
  * --
  * --
  *
@@ -12,7 +12,7 @@
 #include <cmath>
 #include <climits>
 #include <cassert>
-
+#include <limits>
 #include "search.hpp"
 #include "movegen.hpp"
 #include "move.hpp"
@@ -22,19 +22,27 @@
 struct State
 {
     Position pos;
-    int numMoves;
-    int currMove;
+    int num_moves;
+    int curr_move;
     Move moves[256];
 
     int moves_left() const
     {
-        return numMoves - currMove;
+        assert(num_moves - curr_move >= 0);
+
+        return num_moves - curr_move;
     }
 
     Move next()
     {
-        currMove++;
-        return moves[currMove-1];
+        assert(curr_move < num_moves);
+
+        curr_move++;
+      
+        assert(curr_move-1 >= 0);
+        assert(curr_move-1 < num_moves);
+
+        return moves[curr_move-1];
     }
 
     void move(const Move &move)
@@ -42,14 +50,14 @@ struct State
         makemove(pos, move);
     }
 
-    State() : pos(), numMoves(0), currMove(0)
+    State() : pos(), num_moves(0), curr_move(0)
     {
     }
 
     State(Position position) : pos(position)
     {
-        numMoves = movegen(position, moves);
-        currMove = 0;
+        num_moves = movegen(position, moves);
+        curr_move = 0;
     }
 };
 
@@ -57,7 +65,7 @@ struct Node
 {
     State state;
     Move move;
-    int wins;
+    float score;
     int visits;
     Node *parent;
     std::vector<Node> children;
@@ -81,47 +89,52 @@ struct Node
         return children.size() == 0 && state.moves_left() == 0;
     }
 
-    Node(State s, Node *p, Move m) : state(s), move(m), wins(0), visits(1), parent(p), children({})
+    Node(State s, Node *p, Move m) : state(s), move(m), score(0.0), visits(0), parent(p), children({})
     {
     }
 };
 
-
-Node* best_child(Node *node, float c)
+Node* best_child(Node *node, const float c)
 {
     assert(node != NULL);
+    assert(node->visits > 0);
+    assert(node->children.size() > 0);
+    assert(node->state.moves_left() == 0);
 
-    int best = -10000;
-    std::vector<Node> best_children;
-    for(auto child : node->children)
+    float best = std::numeric_limits<float>::lowest();
+    std::vector<Node*> best_children;
+
+    for(Node &child : node->children)
     {
-        int score = child.wins / child.visits + c * sqrt(2 * log(child.parent->visits));
+        assert(child.visits > 0);
+        assert(child.score >= 0);
+        assert(child.score <= child.visits);
+
+        float exploitation = child.score/child.visits;
+        float expansion = c * sqrt(2.0 * log(node->visits) / child.visits);
+        float captures = (float)(count_captures(node->state.pos, child.move) + (is_single(child.move) ? 1 : 0)) / 10.0;
+        float score = exploitation + expansion + captures;
+
         if(score > best)
         {
             best = score;
             best_children.clear();
-            best_children.push_back(child);
+            best_children.push_back(&child);
         }
         else if(score == best)
         {
-            best_children.push_back(child);
+            best_children.push_back(&child);
         }
     }
 
+    assert(best != std::numeric_limits<float>::lowest());
     assert(best_children.size() > 0);
+    assert(best_children.size() <= node->children.size());
 
     int index = rand() % best_children.size();
-    for(unsigned int i = 0; i < node->children.size(); ++i)
-    {
-        if(best_children[index].move == node->children[i].move)
-        {
-            return &node->children[i];
-        }
-    }
 
-    return NULL;
+    return best_children[index];
 }
-
 
 Node* tree_policy(Node *node)
 {
@@ -131,37 +144,44 @@ Node* tree_policy(Node *node)
     {
         if(node->state.moves_left() > 0)
         {
-            return node->expand();
+            node = node->expand();
+            break;
         }
         else
         {
-            node = best_child(node, sqrt(2));
+            node = best_child(node, 0.1);
         }
     }
+
+    assert(node != NULL);
 
     return node;
 }
 
-
-int default_policy(Position &pos)
+float default_policy(Position &pos)
 {
-    return rollout(pos, 400);
+    float r = 0.0;
+    for(int i = 0; i < 5; ++i)
+    {
+        r += 1.0 - rollout_heavy(pos, 400);
+    }
+    return r/5.0;
 }
 
-
-void backup_negamax(Node *node, int delta)
+void backup_negamax(Node *node, float delta)
 {
     assert(node != NULL);
+    assert(0.0 <= delta);
+    assert(delta <= 1.0);
 
     while(node != NULL)
     {
         node->visits += 1;
-        node->wins += delta;
-        delta = -delta;
+        node->score += delta;
+        delta = 1.0 - delta;
         node = node->parent;
     }
 }
-
 
 int get_pv(Node *node, Move *moves)
 {
@@ -169,14 +189,16 @@ int get_pv(Node *node, Move *moves)
     assert(moves != NULL);
 
     int pv_length = 0;
-    while(node->children.size())
+    while(node->children.size() > 0)
     {
         int best_index = 0;
-        double best_score = 0.0;
+        float best_score = std::numeric_limits<float>::lowest();
 
         for(unsigned int n = 0; n < node->children.size(); ++n)
         {
-            double score = node->children[n].wins / node->children[n].visits;
+            assert(node->children[n].visits > 0);
+
+            float score = node->children[n].visits;
 
             if(score >= best_score)
             {
@@ -198,7 +220,6 @@ int get_pv(Node *node, Move *moves)
     return pv_length;
 }
 
-
 void print_tree(Node node, int depth)
 {
     if(depth > 8)
@@ -206,13 +227,14 @@ void print_tree(Node node, int depth)
         return;
     }
 
-    for(auto child : node.children)
+    for(auto &child : node.children)
     {
+        float score = child.score/child.visits + (0.0) * sqrt(2.0 * log(node.visits) / child.visits);
         for(int i = 0; i < depth; ++i)
         {
             std::cout << "            ";
         }
-        std::cout << move_string(child.move) << " (" << child.wins << "/" << child.visits << ")" << std::endl;
+        std::cout << move_string(child.move) << " (" << child.score << "/" << child.visits << " " << score << ")" << std::endl;
 
         if(child.children.size() > 0)
         {
@@ -220,7 +242,6 @@ void print_tree(Node node, int depth)
         }
     }
 }
-
 
 void mcts_uct(const Position &pos, int nodes, int movetime)
 {
@@ -232,32 +253,35 @@ void mcts_uct(const Position &pos, int nodes, int movetime)
 
     if(nodes == 0)
     {
-        nodes = INT_MAX;
+        nodes = std::numeric_limits<int>::max();
         end_target = start + ((double)movetime/1000.0)*CLOCKS_PER_SEC;
     }
     else if(movetime == 0)
     {
-        end_target = INT_MAX;
+        end_target = std::numeric_limits<int>::max();
     }
 
     while(iteration < nodes && clock() < end_target)
     {
         Node *node = tree_policy(&root);
-        int score = default_policy(node->state.pos);
+        float score = default_policy(node->state.pos);
         backup_negamax(node, score);
         iteration++;
 
         if(iteration == 1 || iteration % 1000 == 0)
         {
             double time = (double)(clock() - start)/CLOCKS_PER_SEC;
-            Move moves[64];
+            Move moves[256];
             int pv_length = get_pv(&root, moves);
             std::string pv_string = get_pv_string(moves, pv_length);
 
             std::cout << "info"
-                      << " sims " << iteration
-                      << " sps " << (uint64_t)(iteration/time)
-                      << " time " << (uint64_t)(1000.0*time)
+                      << " nodes " << iteration;
+            if(time > 0.0)
+            {
+                std::cout << " nps " << (uint64_t)(iteration/time);
+            }
+            std::cout << " time " << (uint64_t)(1000.0*time)
                       << " pv " << pv_string
                       << std::endl;
         }

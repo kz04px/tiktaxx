@@ -1,20 +1,21 @@
 /*
- * Random pos simulation
- * -- Play a pos of Ataxx choosing moves at random
- * -- return  1 for a win
- * -- return  0 for a draw
- * -- return -1 for a loss
+ * Random game simulation
+ * -- Play a game of Ataxx choosing moves at random
+ * -- return 1.0 for a win
+ * -- return 0.5 for a draw
+ * -- return 0.0 for a loss
  * --
  *
  */
 
+#include <cmath>
 #include "rollout.hpp"
 #include "movegen.hpp"
 #include "move.hpp"
 #include "makemove.hpp"
 #include "score.hpp"
 
-int rollout(const Position &pos, const int max_depth)
+float rollout(const Position &pos, const int max_depth)
 {
     Position new_pos = pos;
     Move moves[256];
@@ -26,10 +27,10 @@ int rollout(const Position &pos, const int max_depth)
 
         if(num_moves == 0)
         {
-            int r = score(new_pos);
+            float r = score(new_pos);
 
-                 if(r > 0) {r = 1;}
-            else if(r < 0) {r = -1;}
+                 if(r > 0.0) {r = 1.0;}
+            else if(r < 0.0) {r = 0.0;}
 
             if(pos.turn == new_pos.turn)
             {
@@ -37,7 +38,7 @@ int rollout(const Position &pos, const int max_depth)
             }
             else
             {
-                return -r;
+                return 1.0 - r;
             }
         }
 
@@ -46,10 +47,10 @@ int rollout(const Position &pos, const int max_depth)
         d++;
     }
 
-    return 0;
+    return 0.5;
 }
 
-int rollout_heavy(const Position &pos, const int max_depth)
+float rollout_heavy(const Position &pos, const int max_depth)
 {
     Position new_pos = pos;
     Move moves[256];
@@ -59,12 +60,12 @@ int rollout_heavy(const Position &pos, const int max_depth)
     {
         int num_moves = movegen(new_pos, moves);
 
-        int r = score(new_pos);
+        float r = score(new_pos);
 
-        if(num_moves == 0 || abs(r) > 5)
+        if(num_moves == 0 || fabs(r) >= 5.0)
         {
-                 if(r > 0) {r = 1;}
-            else if(r < 0) {r = -1;}
+                 if(r > 0.0) {r = 1.0;}
+            else if(r < 0.0) {r = 0.0;}
 
             if(pos.turn == new_pos.turn)
             {
@@ -72,7 +73,7 @@ int rollout_heavy(const Position &pos, const int max_depth)
             }
             else
             {
-                return -r;
+                return 1.0 - r;
             }
         }
 
@@ -81,5 +82,5 @@ int rollout_heavy(const Position &pos, const int max_depth)
         d++;
     }
 
-    return 0;
+    return 0.5;
 }

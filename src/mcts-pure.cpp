@@ -10,45 +10,14 @@
 #include <iostream>
 #include <climits>
 #include <cassert>
-
 #include "search.hpp"
 #include "movegen.hpp"
 #include "move.hpp"
 #include "makemove.hpp"
 #include "rollout.hpp"
 
-int find_best_move(const int num_moves, const int *wins, const int *draws, const int *losses)
+void mcts_pure(const Position &pos, int max_nodes, int movetime)
 {
-    assert(num_moves >= 0);
-    assert(wins != NULL);
-    assert(draws != NULL);
-    assert(losses != NULL);
-
-    int best_index = 0;
-    double best_score = -INF;
-
-    for(int n = 0; n < num_moves; ++n)
-    {
-        if(wins[n] + draws[n] + losses[n] == 0) {continue;}
-
-        double score = (double)wins[n]/(wins[n] + draws[n] + losses[n]);
-
-        if(score >= best_score)
-        {
-            best_score = score;
-            best_index = n;
-        }
-    }
-
-    return best_index;
-}
-
-void mcts_pure(const Position &pos, int nodes, int movetime)
-{
-    int win[256] = {0};
-    int draw[256] = {0};
-    int loss[256] = {0};
-
     Move moves[256];
     int num_moves = movegen(pos, moves);
 
@@ -58,12 +27,14 @@ void mcts_pure(const Position &pos, int nodes, int movetime)
         return;
     }
 
+    float scores[256] = {0.0};
+    int games[256] = {0};
     clock_t start = clock();
     clock_t end_target = clock();
 
-    if(nodes == 0)
+    if(max_nodes == 0)
     {
-        nodes = INT_MAX;
+        max_nodes = INT_MAX;
         end_target = start + ((double)movetime/1000.0)*CLOCKS_PER_SEC;
     }
     else if(movetime == 0)
@@ -71,57 +42,64 @@ void mcts_pure(const Position &pos, int nodes, int movetime)
         end_target = INT_MAX;
     }
 
-    int n = 0;
-    int sims = 0;
-    while(sims < nodes && clock() < end_target)
+    int index = 0;
+    int nodes = 0;
+    while(nodes < max_nodes && clock() < end_target)
     {
         // Set position
         Position new_pos = pos;
-        makemove(new_pos, moves[n]);
+        makemove(new_pos, moves[index]);
 
         // Do rollouts
-        int result = -rollout(new_pos, 400);
-        sims++;
-
-        // Score
-        if(result == 1)
-        {
-            win[n]++;
-        }
-        else if(result == -1)
-        {
-            loss[n]++;
-        }
-        else
-        {
-            draw[n]++;
-        }
+        scores[index] += 1.0 - rollout(new_pos, 400);
+        games[index]++;
+        nodes++;
 
         // Next move
-        n++;
-        if(n >= num_moves)
-        {
-            n = 0;
-        }
+        index++;
+        index = index % num_moves;
 
         // Update
-        if(sims % 10000 == 0)
+        if(nodes % 10000 == 0)
         {
-            double time = (double)(clock() - start)/CLOCKS_PER_SEC;
-            int best_index = find_best_move(num_moves, win, draw, loss);
+            double time_taken = (double)(clock() - start)/CLOCKS_PER_SEC;
+
+            // Find best move
+            int best_index = 0;
+            double best_score = -INF;
+            for(int n = 0; n < num_moves; ++n)
+            {
+                if(scores[n] > best_score)
+                {
+                    best_score = scores[n];
+                    best_index = n;
+                }
+            }
 
             std::cout << "info"
-                      << " sims " << sims
-                      << " score winchance " << (double)win[best_index]/(win[best_index] + draw[best_index] + loss[best_index])
-                      << " sps " << (uint64_t)((double)sims/time)
-                      << " time " << 1000.0*time
+                      << " nodes " << nodes
+                      << " winrate " << (double)scores[best_index]/games[best_index] << "%";
+            if(time_taken > 0.0)
+            {
+                std::cout << " nps " << (uint64_t)((double)nodes/time_taken);
+            }
+            std::cout << " time " << 1000.0*time_taken
                       << " pv " << move_string(moves[best_index])
                       << std::endl;
         }
     }
 
     // Find best move
-    int best_index = find_best_move(num_moves, win, draw, loss);
+    int best_index = 0;
+    double best_score = -INF;
+    for(int n = 0; n < num_moves; ++n)
+    {
+        if(scores[n] > best_score)
+        {
+            best_score = scores[n];
+            best_index = n;
+        }
+    }
 
     std::cout << "bestmove " << move_string(moves[best_index]) << std::endl;
 }
