@@ -123,13 +123,14 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
         }
     }
 
+    PV new_pv;
+
 #ifdef NULLMOVE
     #define R (2)
 
     if(ss->nullmove && depth > 2 && !pvnode)
     {
-        PV new_pv;
-
+        new_pv.num_moves = 0;
         Position new_pos = pos;
         new_pos.turn = !new_pos.turn;
 
@@ -144,7 +145,6 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
     (ss+1)->nullmove = true;
 #endif
 
-    PV new_pv;
     Move best_move = NO_MOVE;
     int best_score = -INF;
     Move moves[256];
@@ -175,6 +175,7 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
 #ifdef IID
     if(tt_move == NO_MOVE && depth > 5)
     {
+        new_pv.num_moves = 0;
         int score = -alphabeta_search(pos, info, ss+1, new_pv, -beta, -alpha, depth-3);
 
         for(int n = 0; n < num_moves; ++n)
@@ -193,6 +194,7 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
     while(next_move(moves, num_moves, move, scores))
     {
         assert(move != NO_MOVE);
+        new_pv.num_moves = 0;
         Position new_pos = pos;
 
         makemove(new_pos, move);
@@ -214,6 +216,7 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
         // Re-search
         if(score > alpha)
         {
+            new_pv.num_moves = 0;
             score = -alphabeta_search(new_pos, info, ss+1, new_pv, -beta, -alpha, depth-1);
         }
 #else
