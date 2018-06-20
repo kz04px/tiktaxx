@@ -10,9 +10,9 @@ struct PV
     }
 
     int num_moves;
-    Move moves[64];
+    Move moves[256];
 };
 
-std::string get_pv_string(const Move *moves, const int pv_length);
+std::string get_pv_string(const PV &pv);
 
 #endif

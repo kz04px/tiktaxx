@@ -183,12 +183,11 @@ void backup_negamax(Node *node, float delta)
     }
 }
 
-int get_pv(Node *node, Move *moves)
+PV get_pv(Node *node)
 {
     assert(node != NULL);
-    assert(moves != NULL);
 
-    int pv_length = 0;
+    PV pv;
     while(node->children.size() > 0)
     {
         int best_index = 0;
@@ -207,17 +206,17 @@ int get_pv(Node *node, Move *moves)
             }
         }
 
-        if(pv_length < 256)
+        if(pv.num_moves < 256)
         {
-            moves[pv_length] = node->children[best_index].move;
-            pv_length++;
+            pv.moves[pv.num_moves] = node->children[best_index].move;
+            pv.num_moves++;
         }
 
         // Move on to the best child node
         node = &(node->children[best_index]);
     }
 
-    return pv_length;
+    return pv;
 }
 
 void print_tree(Node node, int depth)
@@ -271,9 +270,8 @@ void mcts_uct(const Position &pos, int nodes, int movetime)
         if(iteration == 1 || iteration % 1000 == 0)
         {
             double time = (double)(clock() - start)/CLOCKS_PER_SEC;
-            Move moves[256];
-            int pv_length = get_pv(&root, moves);
-            std::string pv_string = get_pv_string(moves, pv_length);
+            PV pv = get_pv(&root);
+            std::string pv_string = get_pv_string(pv);
 
             std::cout << "info"
                       << " nodes " << iteration;
@@ -288,13 +286,12 @@ void mcts_uct(const Position &pos, int nodes, int movetime)
     }
 
     // Extract PV
-    Move moves[256];
-    int pv_length = get_pv(&root, moves);
+    PV pv = get_pv(&root);
 
-    if(pv_length > 0)
+    if(pv.num_moves > 0)
     {
         std::cout << "bestmove "
-                  << move_string(moves[0])
+                  << move_string(pv.moves[0])
                   << std::endl;
     }
     else

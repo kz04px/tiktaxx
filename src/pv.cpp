@@ -1,21 +1,19 @@
 #include <cassert>
 #include "pv.hpp"
 
-std::string get_pv_string(const Move *moves, const int pv_length)
+std::string get_pv_string(const PV &pv)
 {
-    assert(moves != NULL);
+    std::string str = "";
 
-    std::string pv_string = "";
-
-    for(int n = 0; n < pv_length; ++n)
+    for(int n = 0; n < pv.num_moves; ++n)
     {
         if(n > 0)
         {
-            pv_string += " ";
+            str += " ";
         }
 
-        pv_string += move_string(moves[n]);
+        str += move_string(pv.moves[n]);
     }
 
-    return pv_string;
+    return str;
 }
