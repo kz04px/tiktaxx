@@ -14,5 +14,6 @@ struct PV
 };
 
 std::string get_pv_string(const PV &pv);
+bool legal_pv(const Position &pos, const PV &pv);
 
 #endif

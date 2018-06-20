@@ -271,6 +271,7 @@ void mcts_uct(const Position &pos, int nodes, int movetime)
         {
             double time = (double)(clock() - start)/CLOCKS_PER_SEC;
             PV pv = get_pv(&root);
+            assert(legal_pv(pos, pv) == true);
             std::string pv_string = get_pv_string(pv);
 
             std::cout << "info"

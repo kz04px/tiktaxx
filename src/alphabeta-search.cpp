@@ -75,6 +75,8 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
 #endif
         last_score = score;
 
+        assert(legal_pv(pos, pv) == true);
+
         clock_t end = clock();
         double time_spent = (double)(end - info.start)/CLOCKS_PER_SEC;
 
