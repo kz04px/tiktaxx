@@ -96,11 +96,7 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
 
         if(pv.num_moves > 0)
         {
-            std::cout << " pv";
-            for(int n = 0; n < pv.num_moves; ++n)
-            {
-                std::cout << " " << move_string(pv.moves[n]);
-            }
+            std::cout << " pv " + get_pv_string(pv);
         }
 
         std::cout << std::endl;
