@@ -85,7 +85,7 @@ int set_board(Position &pos, std::string fen)
 
     if(sq != SQUARE::a2) {return 7;}
 
-    if(invalid(pos) == true) {return 8;}
+    if(invalid(pos) != 0) {return 8;}
 
     return 0;
 }
@@ -124,7 +124,7 @@ void print(const Position &pos, bool details)
         std::cout << "Endgame: " << (is_endgame(pos) == true ? "true" : "false") << std::endl;
 
         int r = invalid(pos);
-        if(r == true)
+        if(r != 0)
         {
             std::cout << "Valid: false (" << r << ")" << std::endl;
         }
