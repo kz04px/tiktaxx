@@ -1,9 +1,10 @@
 #include <iostream>
 #include <cassert>
-
 #include "hashtable.hpp"
 
 #define MAX_MEGABYTES (4*1024)
+#define INF 1000000
+#define MAX_DEPTH 128
 
 // Entry.data item layout:
 //   Search -- [8 empty] [move] [eval] [depth]
@@ -218,4 +219,18 @@ void add_perft(Hashtable *table, const uint64_t key, const int depth, const uint
         table->entries[index].depth = depth;
         table->entries[index].nodes = nodes;
     #endif
+}
+
+int eval_to_tt(const int eval, const int ply)
+{
+    if(eval >  INF-MAX_DEPTH) {return eval + ply;}
+    if(eval < -INF+MAX_DEPTH) {return eval - ply;}
+    return eval;
+}
+
+int eval_from_tt(const int eval, const int ply)
+{
+    if(eval >  INF-MAX_DEPTH) {return eval - ply;}
+    if(eval < -INF+MAX_DEPTH) {return eval + ply;}
+    return eval;
 }

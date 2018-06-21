@@ -95,6 +95,8 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
 
             if(get_depth(entry) >= depth && legal_move(pos, tt_move) == true)
             {
+                const int score = eval_from_tt(get_eval(entry), ss->ply);
+
                 switch(get_flag(entry))
                 {
                     case EXACT:
@@ -103,10 +105,10 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
                         return get_eval(entry);
                         break;
                     case LOWERBOUND:
-                        alpha = (alpha > get_eval(entry) ? alpha : get_eval(entry));
+                        alpha = (alpha > score ? alpha : score);
                         break;
                     case UPPERBOUND:
-                        beta = (beta < get_eval(entry) ? beta : get_eval(entry));
+                        beta = (beta < score ? beta : score);
                         break;
                     default:
                         assert(false);
@@ -117,7 +119,7 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
                 {
                     pv.num_moves = 1;
                     pv.moves[0] = tt_move;
-                    return get_eval(entry);
+                    return score;
                 }
             }
         }
@@ -317,13 +319,13 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
             flag = EXACT;
         }
 
-        add(info.tt, key, depth, best_score, best_move, flag);
+        add(info.tt, key, depth, eval_to_tt(best_score, ss->ply), best_move, flag);
 
 #ifndef NDEBUG
         Entry test_entry = probe(info.tt, key);
         assert(test_entry.key == key);
         assert(test_entry.depth == depth);
-        assert(test_entry.eval == best_score);
+        assert(eval_from_tt(test_entry.eval, ss->ply) == best_score);
         assert(test_entry.move == best_move);
         assert(test_entry.flag == flag);
 #endif

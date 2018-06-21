@@ -46,4 +46,7 @@ Move get_move(const Entry &n);
 uint64_t get_nodes(const Entry &n);
 uint8_t get_flag(const Entry &n);
 
+int eval_to_tt(const int eval, const int ply);
+int eval_from_tt(const int eval, const int ply);
+
 #endif
