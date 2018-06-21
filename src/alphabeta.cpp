@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <cassert>
-
+#include <limits>
 #include "ataxx.hpp"
 #include "search.hpp"
 #include "movegen.hpp"
@@ -128,7 +128,7 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
 #ifdef NULLMOVE
     #define R (2)
 
-    if(ss->nullmove && depth > 2 && !pvnode)
+    if(ss->ply > 0 && ss->nullmove && depth > 2 && !pvnode)
     {
         new_pv.num_moves = 0;
         Position new_pos = pos;
@@ -146,7 +146,7 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
 #endif
 
     Move best_move = NO_MOVE;
-    int best_score = -INF;
+    int best_score = std::numeric_limits<int>::lowest();
     Move moves[256];
     int num_moves = movegen(pos, moves);
 
@@ -205,6 +205,7 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
         int material = 100*(popcountll(new_pos.pieces[new_pos.turn]) - popcountll(new_pos.pieces[!new_pos.turn]));
         if(move_num > 0 && depth < 3 && -material + 100 < alpha)
         {
+            assert(best_move != NO_MOVE);
             continue;
         }
 #endif
@@ -270,6 +271,8 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
 
     if(num_moves == 0)
     {
+        assert(best_move == NO_MOVE);
+
         int val = score(pos);
 
         if(val > 0)
@@ -286,9 +289,21 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
         }
     }
 
-    uint8_t flag;
+    assert(best_move != NO_MOVE);
+    assert(best_score != std::numeric_limits<int>::lowest());
+
+    // Every move failed low so we need to update the pv
+    if(pv.num_moves == 0)
+    {
+        assert(best_score <= alpha);
+
+        pv.num_moves = 1;
+        pv.moves[0] = best_move;
+    }
+
     if(info.tt)
     {
+        uint8_t flag;
         if(best_score <= alpha_original)
         {
             flag = UPPERBOUND;
@@ -303,19 +318,16 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
         }
 
         add(info.tt, key, depth, best_score, best_move, flag);
-    }
 
 #ifndef NDEBUG
-    if(info.tt)
-    {
         Entry test_entry = probe(info.tt, key);
         assert(test_entry.key == key);
         assert(test_entry.depth == depth);
         assert(test_entry.eval == best_score);
         assert(test_entry.move == best_move);
         assert(test_entry.flag == flag);
-    }
 #endif
+    }
 
     return best_score;
 }

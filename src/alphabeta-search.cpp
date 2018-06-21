@@ -1,7 +1,6 @@
 #include <iostream>
 #include <climits>
 #include <cassert>
-
 #include "search.hpp"
 #include "movegen.hpp"
 #include "move.hpp"
@@ -75,8 +74,6 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
 #endif
         last_score = score;
 
-        assert(legal_pv(pos, pv) == true);
-
         clock_t end = clock();
         double time_spent = (double)(end - info.start)/CLOCKS_PER_SEC;
 
@@ -85,6 +82,9 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
         {
             break;
         }
+
+        assert(pv.num_moves > 0);
+        assert(legal_pv(pos, pv) == true);
 
         node_total += info.nodes;
 
@@ -148,7 +148,10 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
 
     std::cout << "Hash table hits: " << info.hash_hits << std::endl;
     std::cout << "Collisions: " << info.hash_collisions << std::endl;
-    std::cout << "Percent: " << 100.0*(double)info.hash_collisions/info.hash_hits << "%" <<  std::endl;
+    if(info.hash_hits > 0ULL)
+    {
+        std::cout << "Percent: " << 100.0*(double)info.hash_collisions/info.hash_hits << "%" <<  std::endl;
+    }
     std::cout << std::endl;
 
     std::cout << "tt->num_entries: " << tt->num_entries << std::endl;
@@ -175,7 +178,6 @@ void alphabeta(Hashtable *tt, Options *options, const Position &pos, bool *stop,
     }
     else
     {
-        assert(legal_move(pos, last_pv.moves[0]) == true);
         std::cout << "bestmove " << move_string(last_pv.moves[0]) << std::endl;
     }
 }
