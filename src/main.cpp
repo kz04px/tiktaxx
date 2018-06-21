@@ -22,15 +22,19 @@ int main()
     }
     else if(mode == "about")
     {
-        std::cout << "An Ataxx engine written in C++" << std::endl;
-        std::cout << "https://github.com/kz04px/ataxx-engine" << std::endl;
+        std::cout << "Tiktaxx - An Ataxx engine written in C++" << std::endl;
+        std::cout << "https://github.com/kz04px/tiktaxx" << std::endl;
         std::cout << "Compiled: " <<   __TIME__ << " " << __DATE__ << std::endl;
         std::cout << std::endl;
 
-        std::cout << "Search:" << std::endl;
 #ifdef NDEBUG
-        std::cout << "NDEBUG enabled" << std::endl;
+        std::cout << "Release mode" << std::endl;
+#else
+        std::cout << "Debug mode" << std::endl;
 #endif
+        std::cout << std::endl;
+
+        std::cout << "Search:" << std::endl;
 #ifdef NULLMOVE
         std::cout << "NULLMOVE enabled" << std::endl;
 #endif
