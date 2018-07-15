@@ -3,8 +3,16 @@ Tiktaxx is a C++ engine for the board game Ataxx. It uses traditional alphabeta 
 
 ---
 ### About the game
-Ataxx is a two player, turn based, perfect information board game created in 1988.<br/>
+Ataxx is a two player, turn-based, perfect information board game created in 1988.<br/>
 [Wikipedia article](https://en.wikipedia.org/wiki/Ataxx)
+
+---
+### Build instructions
+```bash
+git clone https://github.com/kz04px/tiktaxx
+cd ./tiktaxx
+make
+```
 
 ---
 ### UAI protocol
