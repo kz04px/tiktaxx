@@ -23,6 +23,9 @@ void uai() {
               << " min 1 max 1" << std::endl;
     std::cout << "option name Contempt type spin default " << options.contempt
               << " min -1000000 max 1000000" << std::endl;
+    std::cout << "option name Search type combo default alphabeta options "
+                 "alphabeta mcts-uct mcts-pure most-captures random"
+              << std::endl;
     // std::cout << "option name Ponder type check default " << (options.ponder
     // ? "true" : "false") << std::endl;
 
