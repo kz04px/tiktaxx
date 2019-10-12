@@ -1,125 +1,77 @@
-#include <iostream>
-
 #include "eval.hpp"
-#include "bitboards.hpp"
+#include <iostream>
+#include <libataxx/bitboard.hpp>
+#include "other.hpp"
 #include "phase.hpp"
 #include "score.hpp"
-#include "other.hpp"
 
 #define INF 1000000
 #define TURN_BONUS 300
 #define PIECE_VALUE 100
 #define MOBILITY_VALUE 1
 
-const int PST[49] =
-{
-  30,  20,  10,  10,  10,  20,  30,
-  20,  10,  10,   5,  10,  10,  20,
-  10,  10,   5,   0,   5,  10,  10,
-  10,   5,   0,   0,   0,   5,  10,
-  10,  10,   5,   0,   5,  10,  10,
-  20,  10,  10,   5,  10,  10,  20,
-  30,  20,  10,  10,  10,  20,  30
-};
+const int PST[49] = {30, 20, 10, 10, 10, 20, 30, 20, 10, 10, 5,  10, 10,
+                     20, 10, 10, 5,  0,  5,  10, 10, 10, 5,  0,  0,  0,
+                     5,  10, 10, 10, 5,  0,  5,  10, 10, 20, 10, 10, 5,
+                     10, 10, 20, 30, 20, 10, 10, 10, 20, 30};
 
-void split_eval(const Position &pos)
-{
-    int num_friendly = popcountll(pos.pieces[PIECE::CROSS]);
-    int num_unfriendly = popcountll(pos.pieces[PIECE::NOUGHT]);
+void split_eval(const libataxx::Position &pos) {
+    int num_friendly = pos.us().count();
+    int num_unfriendly = pos.them().count();
 
     std::cout << "Num friendly:   " << num_friendly << std::endl;
     std::cout << "Num unfriendly: " << num_unfriendly << std::endl;
 }
 
-int eval(const Position &pos)
-{
-    int num_friendly = popcountll(pos.pieces[PIECE::CROSS]);
-    int num_unfriendly = popcountll(pos.pieces[PIECE::NOUGHT]);
+int eval(const libataxx::Position &pos) {
+    int num_friendly = pos.us().count();
+    int num_unfriendly = pos.them().count();
     int our_mobility = 0;
     int their_mobility = 0;
-    uint64_t empty = U64_BOARD & ~(pos.pieces[PIECE::CROSS] | pos.pieces[PIECE::NOUGHT] | pos.blockers);
+    const auto empty = pos.empty();
     float p = phase(pos);
 
-    uint64_t cross_moves = single_jump_bb(pos.pieces[PIECE::CROSS]);
-    cross_moves = single_jump_bb(cross_moves);
-    cross_moves &= empty;
+    auto our_moves = pos.us().singles() | pos.us().doubles();
+    our_moves &= empty;
 
-    uint64_t nought_moves = single_jump_bb(pos.pieces[PIECE::NOUGHT]);
-    nought_moves = single_jump_bb(nought_moves);
-    nought_moves &= empty;
+    auto their_moves = pos.them().singles() | pos.them().doubles();
+    their_moves &= empty;
 
     // Win condition
-    if(cross_moves == 0ULL || nought_moves == 0ULL)
-    {
-        int num_empty = popcountll(empty);
+    if (our_moves == 0ULL || their_moves == 0ULL) {
+        const auto num_empty = empty.count();
 
         int score = num_friendly - num_unfriendly;
 
-        if(cross_moves == 0ULL)
-        {
+        if (our_moves == 0ULL) {
             score -= num_empty;
-        }
-        else if(nought_moves == 0ULL)
-        {
+        } else if (their_moves == 0ULL) {
             score += num_empty;
         }
 
-        if(score > 0)
-        {
+        if (score > 0) {
             score = INF;
-        }
-        else
-        {
+        } else {
             score = -INF;
         }
 
-        if(pos.turn == SIDE::CROSS)
-        {
-            return score;
-        }
-        else
-        {
-            return -score;
-        }
+        return score;
     }
 
     int our_pst = 0;
     int their_pst = 0;
 
-    uint64_t copy = pos.pieces[PIECE::CROSS];
-    while(copy)
-    {
-        int sq = lsb(copy);
-
-        our_pst += PST[sq];
-
-        copy &= copy - 1;
+    for (const auto &sq : pos.us()) {
+        our_pst += PST[static_cast<int>(sq)];
     }
 
-    copy = pos.pieces[PIECE::NOUGHT];
-    while(copy)
-    {
-        int sq = lsb(copy);
-
-        their_pst += PST[sq];
-
-        copy &= copy - 1;
+    for (const auto &sq : pos.them()) {
+        their_pst += PST[static_cast<int>(sq)];
     }
 
-    int score =   (p*TURN_BONUS + 200)*(pos.turn == SIDE::CROSS ? 1 : -1)
-                + PIECE_VALUE*num_friendly
-                - PIECE_VALUE*num_unfriendly
-                + MOBILITY_VALUE*our_mobility
-                - MOBILITY_VALUE*their_mobility
-                + our_pst
-                - their_pst;
+    int score = (p * TURN_BONUS + 200) + PIECE_VALUE * num_friendly -
+                PIECE_VALUE * num_unfriendly + MOBILITY_VALUE * our_mobility -
+                MOBILITY_VALUE * their_mobility + our_pst - their_pst;
 
-    if(pos.turn == SIDE::CROSS)
-    {
-        return score;
-    }
-    else
-    {
-        return -score;
-    }
+    return score;
 }

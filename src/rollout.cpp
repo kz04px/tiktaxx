@@ -8,77 +8,70 @@
  *
  */
 
-#include <cmath>
 #include "rollout.hpp"
-#include "movegen.hpp"
-#include "move.hpp"
-#include "makemove.hpp"
+#include <cmath>
+#include <libataxx/move.hpp>
+#include <libataxx/position.hpp>
 #include "score.hpp"
 
-float rollout(const Position &pos, const int max_depth)
-{
-    Position new_pos = pos;
-    Move moves[256];
+float rollout(const libataxx::Position &pos, const int max_depth) {
+    libataxx::Position new_pos = pos;
+    libataxx::Move moves[256];
 
     int d = 0;
-    while(d < max_depth)
-    {
-        int num_moves = movegen(new_pos, moves);
+    while (d < max_depth) {
+        int num_moves = new_pos.legal_moves(moves);
 
-        if(num_moves == 0)
-        {
+        if (num_moves == 0) {
             float r = score(new_pos);
 
-                 if(r > 0.0) {r = 1.0;}
-            else if(r < 0.0) {r = 0.0;}
-
-            if(pos.turn == new_pos.turn)
-            {
-                return r;
+            if (r > 0.0) {
+                r = 1.0;
+            } else if (r < 0.0) {
+                r = 0.0;
             }
-            else
-            {
+
+            if (pos.turn() == new_pos.turn()) {
+                return r;
+            } else {
                 return 1.0 - r;
             }
         }
 
         int n = rand() % num_moves;
-        makemove(new_pos, moves[n]);
+        new_pos.makemove(moves[n]);
         d++;
     }
 
     return 0.5;
 }
 
-float rollout_heavy(const Position &pos, const int max_depth)
-{
-    Position new_pos = pos;
-    Move moves[256];
+float rollout_heavy(const libataxx::Position &pos, const int max_depth) {
+    libataxx::Position new_pos = pos;
+    libataxx::Move moves[256];
 
     int d = 0;
-    while(d < max_depth)
-    {
-        int num_moves = movegen(new_pos, moves);
+    while (d < max_depth) {
+        int num_moves = new_pos.legal_moves(moves);
 
         float r = score(new_pos);
 
-        if(num_moves == 0 || fabs(r) >= 5.0)
-        {
-                 if(r > 0.0) {r = 1.0;}
-            else if(r < 0.0) {r = 0.0;}
-
-            if(pos.turn == new_pos.turn)
-            {
-                return r;
+        if (num_moves == 0 || fabs(r) >= 5.0) {
+            if (r > 0.0) {
+                r = 1.0;
+            } else if (r < 0.0) {
+                r = 0.0;
             }
-            else
-            {
+
+            if (pos.turn() == new_pos.turn()) {
+                return r;
+            } else {
                 return 1.0 - r;
             }
         }
 
         int n = rand() % num_moves;
-        makemove(new_pos, moves[n]);
+        new_pos.makemove(moves[n]);
         d++;
     }
 

@@ -1,16 +1,13 @@
 #ifndef SEARCHINFO_HPP_INCLUDED
 #define SEARCHINFO_HPP_INCLUDED
 
-#include <ctime>
 #include <cinttypes>
-
+#include <ctime>
 #include "hashtable.hpp"
 #include "options.hpp"
 
-struct search_info
-{
-    search_info()
-    {
+struct search_info {
+    search_info() {
         nodes = 0ULL;
         leaf_nodes = 0ULL;
         depth = 0;
@@ -21,12 +18,10 @@ struct search_info
         tt = NULL;
         options = NULL;
 #ifndef NDEBUG
-        for(int i = 0; i < 256; ++i)
-        {
+        for (int i = 0; i < 256; ++i) {
             cutoffs[i] = 0ULL;
         }
-        for(int i = 0; i < 9; ++i)
-        {
+        for (int i = 0; i < 9; ++i) {
             capture_cutoffs[i] = 0ULL;
         }
         hash_hits = 0ULL;

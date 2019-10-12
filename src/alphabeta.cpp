@@ -1,109 +1,93 @@
-#include <iostream>
-#include <cstring>
 #include <cassert>
+#include <cstring>
+#include <iostream>
+#include <libataxx/move.hpp>
+#include <libataxx/position.hpp>
 #include <limits>
-#include "ataxx.hpp"
-#include "search.hpp"
-#include "movegen.hpp"
-#include "move.hpp"
-#include "makemove.hpp"
-#include "hashtable.hpp"
-#include "pv.hpp"
-#include "searchinfo.hpp"
 #include "eval.hpp"
-#include "score.hpp"
-#include "zobrist.hpp"
-#include "sorting.hpp"
+#include "hashtable.hpp"
 #include "next-move.hpp"
-#include "searchstack.hpp"
 #include "other.hpp"
+#include "pv.hpp"
+#include "score.hpp"
+#include "search.hpp"
+#include "searchinfo.hpp"
+#include "searchstack.hpp"
+#include "sorting.hpp"
 
-int reduction(const int move_num, const int depth)
-{
+int reduction(const int move_num, const int depth) {
     assert(move_num >= 0);
     assert(depth >= 0);
 
-    if(move_num < 2 || depth < 3)
-    {
+    if (move_num < 2 || depth < 3) {
         return 0;
     }
 
-    if(move_num < 6)
-    {
+    if (move_num < 6) {
         return 1;
-    }
-    else if(move_num < 12)
-    {
+    } else if (move_num < 12) {
         return depth / 3;
-    }
-    else
-    {
+    } else {
         return depth / 2;
     }
 }
 
-int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, PV &pv, int alpha, int beta, int depth)
-{
+int alphabeta_search(const libataxx::Position &pos,
+                     search_info &info,
+                     search_stack *ss,
+                     PV &pv,
+                     int alpha,
+                     int beta,
+                     int depth) {
     assert(ss != NULL);
     assert(depth >= 0);
     assert(beta >= alpha);
 
-    if(depth == 0 || info.depth >= MAX_DEPTH)
-    {
+    if (depth == 0 || info.depth >= MAX_DEPTH) {
         info.leaf_nodes++;
         return eval(pos);
     }
 
-    if(info.nodes != 0)
-    {
+    if (info.nodes != 0) {
         // Stop searching if we've ran out of time
-        if(*info.stop == true || clock() >= info.end)
-        {
+        if (*info.stop == true || clock() >= info.end) {
             return 0;
         }
 
         // Send an update on what we're doing
-        if(info.nodes % 2000000 == 0)
-        {
-            double time_spent = (double)(clock() - info.start)/CLOCKS_PER_SEC;
+        if (info.nodes % 2000000 == 0) {
+            double time_spent = (double)(clock() - info.start) / CLOCKS_PER_SEC;
             std::cout << "info"
-                      << " nps " << (uint64_t)(info.nodes/time_spent)
+                      << " nps " << (uint64_t)(info.nodes / time_spent)
                       << std::endl;
         }
     }
 
     int alpha_original = alpha;
-    uint64_t key = generate_key(pos);
-    Move tt_move = NO_MOVE;
+    libataxx::Move tt_move = libataxx::Move::nullmove();
     bool pvnode = (beta - alpha == 1);
 
-    if(info.tt)
-    {
+    if (info.tt) {
         // Check the hash table
-        Entry entry = probe(info.tt, key);
-        if(key == entry.key)
-        {
+        Entry entry = probe(info.tt, pos.hash());
+        if (pos.hash() == entry.key) {
             tt_move = get_move(entry);
 
 #ifndef NDEBUG
             info.hash_hits++;
-            if(legal_move(pos, tt_move) == false)
-            {
+            if (pos.legal_move(tt_move) == false) {
                 info.hash_collisions++;
             }
 #endif
 
-            if(get_depth(entry) >= depth && legal_move(pos, tt_move) == true)
-            {
+            if (get_depth(entry) >= depth && pos.legal_move(tt_move) == true) {
                 const int score = eval_from_tt(get_eval(entry), ss->ply);
 
-                switch(get_flag(entry))
-                {
+                switch (get_flag(entry)) {
                     case EXACT:
                         pv.num_moves = 1;
                         pv.moves[0] = tt_move;
                         return get_eval(entry);
-                        break;
                     case LOWERBOUND:
                         alpha = (alpha > score ? alpha : score);
                         break;
@@ -115,8 +99,7 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
                         break;
                 }
 
-                if(alpha >= beta)
-                {
+                if (alpha >= beta) {
                     pv.num_moves = 1;
                     pv.moves[0] = tt_move;
                     return score;
@@ -128,62 +111,55 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
     PV new_pv;
 
 #ifdef NULLMOVE
-    #define R (2)
+#define R (2)
 
-    if(ss->ply > 0 && ss->nullmove && depth > 2 && !pvnode)
-    {
+    if (ss->ply > 0 && ss->nullmove && depth > 2 && !pvnode) {
         new_pv.num_moves = 0;
-        Position new_pos = pos;
-        new_pos.turn = !new_pos.turn;
+        libataxx::Position new_pos = pos;
+        new_pos.makemove(libataxx::Move::nullmove());
 
-        (ss+1)->nullmove = false;
-        int score = -alphabeta_search(new_pos, info, ss+1, new_pv, -beta, -beta+1, depth-1-R);
+        (ss + 1)->nullmove = false;
+        int score = -alphabeta_search(
+            new_pos, info, ss + 1, new_pv, -beta, -beta + 1, depth - 1 - R);
 
-        if(score >= beta)
-        {
+        if (score >= beta) {
             return score;
         }
     }
-    (ss+1)->nullmove = true;
+    (ss + 1)->nullmove = true;
 #endif
 
-    Move best_move = NO_MOVE;
+    libataxx::Move best_move = libataxx::Move::nullmove();
     int best_score = std::numeric_limits<int>::lowest();
-    Move moves[256];
-    int num_moves = movegen(pos, moves);
+    libataxx::Move moves[256];
+    int num_moves = pos.legal_moves(moves);
 
     // Score moves
     int scores[256] = {0};
-    for(int n = 0; n < num_moves; ++n)
-    {
-        if(moves[n] == tt_move)
-        {
+    for (int n = 0; n < num_moves; ++n) {
+        if (moves[n] == tt_move) {
             scores[n] = 10001;
         }
 #ifdef KILLER_MOVES
-        else if(moves[n] == ss->killer)
-        {
+        else if (moves[n] == ss->killer) {
             scores[n] = 10000;
         }
 #endif
-        else
-        {
+        else {
             scores[n] = count_captures(pos, moves[n]);
 
-            scores[n] += (is_single(moves[n]) ? 1 : 0);
+            scores[n] += (moves[n].is_single() ? 1 : 0);
         }
     }
 
 #ifdef IID
-    if(tt_move == NO_MOVE && depth > 5)
-    {
+    if (tt_move == libataxx::Move::nullmove() && depth > 5) {
         new_pv.num_moves = 0;
-        int score = -alphabeta_search(pos, info, ss+1, new_pv, -beta, -alpha, depth-3);
+        int score = -alphabeta_search(
+            pos, info, ss + 1, new_pv, -beta, -alpha, depth - 3);
 
-        for(int n = 0; n < num_moves; ++n)
-        {
-            if(moves[n] == new_pv.moves[0])
-            {
+        for (int n = 0; n < num_moves; ++n) {
+            if (moves[n] == new_pv.moves[0]) {
                 scores[n] = 10001;
                 break;
             }
@@ -192,61 +168,59 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
 #endif
 
     int move_num = 0;
-    Move move = NO_MOVE;
-    while(next_move(moves, num_moves, move, scores))
-    {
-        assert(move != NO_MOVE);
+    libataxx::Move move = libataxx::Move::nullmove();
+    while (next_move(moves, num_moves, move, scores)) {
+        assert(move != libataxx::Move::nullmove());
         new_pv.num_moves = 0;
-        Position new_pos = pos;
+        libataxx::Position new_pos = pos;
 
-        makemove(new_pos, move);
+        new_pos.makemove(move);
 
         info.nodes++;
 
 #ifdef FUTILITY_PRUNING
-        int material = 100*(popcountll(new_pos.pieces[new_pos.turn]) - popcountll(new_pos.pieces[!new_pos.turn]));
-        if(move_num > 0 && depth < 3 && -material + 100 < alpha)
-        {
-            assert(best_move != NO_MOVE);
+        int material = 100 * (new_pos.us().count() - new_pos.them().count());
+        if (move_num > 0 && depth < 3 && -material + 100 < alpha) {
+            assert(best_move != libataxx::Move::nullmove());
             continue;
         }
 #endif
 
 #ifdef LMR
         int r = reduction(move_num, depth);
-        int score = -alphabeta_search(new_pos, info, ss+1, new_pv, -alpha-1, -alpha, depth-1-r);
+        int score = -alphabeta_search(
+            new_pos, info, ss + 1, new_pv, -alpha - 1, -alpha, depth - 1 - r);
 
         // Re-search
-        if(score > alpha)
-        {
+        if (score > alpha) {
             new_pv.num_moves = 0;
-            score = -alphabeta_search(new_pos, info, ss+1, new_pv, -beta, -alpha, depth-1);
+            score = -alphabeta_search(
+                new_pos, info, ss + 1, new_pv, -beta, -alpha, depth - 1);
         }
 #else
-        int score = -alphabeta_search(new_pos, info, ss+1, new_pv, -beta, -alpha, depth-1);
+        int score = -alphabeta_search(
+            new_pos, info, ss + 1, new_pv, -beta, -alpha, depth - 1);
 #endif
 
-        if(score > best_score)
-        {
+        if (score > best_score) {
             best_move = move;
             best_score = score;
         }
 
-        if(score > alpha)
-        {
+        if (score > alpha) {
             alpha = score;
 
             // Update PV
             pv.moves[0] = move;
-            memcpy(pv.moves + 1, new_pv.moves, new_pv.num_moves * sizeof(Move));
+            memcpy(pv.moves + 1,
+                   new_pv.moves,
+                   new_pv.num_moves * sizeof(libataxx::Move));
             pv.num_moves = new_pv.num_moves + 1;
         }
 
-        if(alpha >= beta)
-        {
+        if (alpha >= beta) {
 #ifdef KILLER_MOVES
-            if(count_captures(pos, move) == 0)
-            {
+            if (count_captures(pos, move) == 0) {
                 ss->killer = move;
             }
 #endif
@@ -256,12 +230,9 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
             int num_captured = count_captures(pos, move);
             info.capture_cutoffs[num_captured]++;
 
-            if(is_single(move) == true)
-            {
+            if (move.is_single() == true) {
                 info.single_cutoffs++;
-            }
-            else
-            {
+            } else {
                 info.double_cutoffs++;
             }
 #endif
@@ -271,59 +242,51 @@ int alphabeta_search(const Position &pos, search_info &info, search_stack *ss, P
         move_num++;
     }
 
-    if(num_moves == 0)
-    {
-        assert(best_move == NO_MOVE);
+    if (num_moves == 0) {
+        assert(best_move == libataxx::Move::nullmove());
 
-        int val = score(pos);
+        const int val = score(pos);
 
-        if(val > 0)
-        {
+        if (val > 0) {
             return INF - ss->ply;
-        }
-        else if(val < 0)
-        {
+        } else if (val < 0) {
             return -INF + ss->ply;
-        }
-        else
-        {
+        } else {
             return (*info.options).contempt;
         }
     }
 
-    assert(best_move != NO_MOVE);
+    assert(best_move != libataxx::Move::nullmove());
     assert(best_score != std::numeric_limits<int>::lowest());
 
     // Every move failed low so we need to update the pv
-    if(pv.num_moves == 0)
-    {
+    if (pv.num_moves == 0) {
         assert(best_score <= alpha);
 
         pv.num_moves = 1;
         pv.moves[0] = best_move;
     }
 
-    if(info.tt)
-    {
+    if (info.tt) {
         uint8_t flag;
-        if(best_score <= alpha_original)
-        {
+        if (best_score <= alpha_original) {
             flag = UPPERBOUND;
-        }
-        else if(best_score >= beta)
-        {
+        } else if (best_score >= beta) {
             flag = LOWERBOUND;
-        }
-        else
-        {
+        } else {
             flag = EXACT;
         }
 
-        add(info.tt, key, depth, eval_to_tt(best_score, ss->ply), best_move, flag);
+        add(info.tt,
+            pos.hash(),
+            depth,
+            eval_to_tt(best_score, ss->ply),
+            best_move,
+            flag);
 
 #ifndef NDEBUG
-        Entry test_entry = probe(info.tt, key);
-        assert(test_entry.key == key);
+        Entry test_entry = probe(info.tt, pos.hash());
+        assert(test_entry.key == pos.hash());
         assert(test_entry.depth == depth);
         assert(eval_from_tt(test_entry.eval, ss->ply) == best_score);
         assert(test_entry.move == best_move);

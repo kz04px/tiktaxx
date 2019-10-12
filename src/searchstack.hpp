@@ -1,13 +1,12 @@
 #ifndef SEARCHSTACK_HPP_INCLUDED
 #define SEARCHSTACK_HPP_INCLUDED
 
-#include "move.hpp"
+#include <libataxx/move.hpp>
 
-struct search_stack
-{
+struct search_stack {
     int ply;
 #ifdef KILLER_MOVES
-    Move killer;
+    libataxx::Move killer;
 #endif
 #ifdef NULLMOVE
     bool nullmove;

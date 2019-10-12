@@ -1,8 +1,8 @@
 #ifndef SCORE_HPP_INCLUDED
 #define SCORE_HPP_INCLUDED
 
-#include "ataxx.hpp"
+#include <libataxx/position.hpp>
 
-int score(const Position &pos);
+int score(const libataxx::Position &pos);
 
 #endif

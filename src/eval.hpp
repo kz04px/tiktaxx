@@ -1,9 +1,9 @@
 #ifndef EVAL_HPP_INCLUDED
 #define EVAL_HPP_INCLUDED
 
-#include "ataxx.hpp"
+#include <libataxx/position.hpp>
 
-int eval(const Position &pos);
-void split_eval(const Position &pos);
+int eval(const libataxx::Position &pos);
+void split_eval(const libataxx::Position &pos);
 
 #endif

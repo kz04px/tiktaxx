@@ -1,30 +1,20 @@
-#include <iostream>
 #include <ctime>
-
-#include "zobrist.hpp"
-#include "uai.hpp"
-#include "move.hpp"
+#include <iostream>
+#include <libataxx/move.hpp>
 #include "hashtable.hpp"
+#include "uai.hpp"
 
-int main()
-{
-    zobrist_init();
-
+int main() {
     std::string mode;
     std::cin >> mode;
-    if(mode == "manual")
-    {
+    if (mode == "manual") {
         manual();
-    }
-    else if(mode == "uai")
-    {
+    } else if (mode == "uai") {
         uai();
-    }
-    else if(mode == "about")
-    {
+    } else if (mode == "about") {
         std::cout << "Tiktaxx - An Ataxx engine written in C++" << std::endl;
         std::cout << "https://github.com/kz04px/tiktaxx" << std::endl;
-        std::cout << "Compiled: " <<   __TIME__ << " " << __DATE__ << std::endl;
+        std::cout << "Compiled: " << __TIME__ << " " << __DATE__ << std::endl;
         std::cout << std::endl;
 
 #ifdef NDEBUG
@@ -56,13 +46,13 @@ int main()
         std::cout << std::endl;
 
         std::cout << "Other:" << std::endl;
-        std::cout << "sizeof(Move): " << sizeof(Move) << " bytes" << std::endl;
-        std::cout << "sizeof(Entry): " << sizeof(Entry) << " bytes" << std::endl;
-        std::cout << "entries/MB: " << 1048576/sizeof(Entry) << std::endl;
+        std::cout << "sizeof(libataxx::Move): " << sizeof(libataxx::Move)
+                  << " bytes" << std::endl;
+        std::cout << "sizeof(Entry): " << sizeof(Entry) << " bytes"
+                  << std::endl;
+        std::cout << "entries/MB: " << 1048576 / sizeof(Entry) << std::endl;
         std::cout << std::endl;
-    }
-    else
-    {
+    } else {
         std::cout << "ERROR: Unknown protocol " << mode << std::endl;
     }
 

@@ -3,14 +3,16 @@
 
 #include <iostream>
 
-struct Options
-{
-    Options() : contempt(0), threads(1), hash(128), ponder(false), search("alphabeta")
-    {
+struct Options {
+    Options()
+        : contempt(0),
+          threads(1),
+          hash(128),
+          ponder(false),
+          search("alphabeta") {
     }
 
-    void print() const
-    {
+    void print() const {
         std::cout << "Contempt: " << contempt << std::endl;
         std::cout << "Threads: " << threads << std::endl;
         std::cout << "Hash: " << hash << std::endl;

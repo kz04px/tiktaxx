@@ -1,16 +1,15 @@
-#include <cassert>
 #include "phase.hpp"
+#include <cassert>
 #include "other.hpp"
 
-float phase(const Position &pos)
-{
-    float p = (float)popcountll(pos.pieces[PIECE::CROSS] | pos.pieces[PIECE::NOUGHT] | pos.blockers) / 49;
+float phase(const libataxx::Position &pos) {
+    libataxx::Bitboard all = pos.black() | pos.white() | pos.gaps();
+    float p = (float)all.count() / 49;
     assert(p >= 0.0);
     assert(p <= 1.0);
     return p;
 }
 
-bool is_endgame(const Position &pos)
-{
+bool is_endgame(const libataxx::Position &pos) {
     return phase(pos) >= 0.75;
 }

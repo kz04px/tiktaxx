@@ -1,9 +1,12 @@
 #ifndef SORTING_HPP_INCLUDED
 #define SORTING_HPP_INCLUDED
 
-#include "ataxx.hpp"
-#include "move.hpp"
+#include <libataxx/move.hpp>
+#include <libataxx/position.hpp>
 
-void sort_moves(const Position &pos, Move *moves, const int num_moves, const Move &tt_move);
+void sort_moves(const libataxx::Position &pos,
+                libataxx::Move *moves,
+                const int num_moves,
+                const libataxx::Move &tt_move);
 
 #endif

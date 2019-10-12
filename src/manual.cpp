@@ -1,21 +1,25 @@
-#include <iostream>
-#include <sstream>
-#include <cstring>
 #include <cassert>
-
-#include "ataxx.hpp"
+#include <cstring>
+#include <iostream>
+#include <libataxx/move.hpp>
+#include <libataxx/position.hpp>
+#include <sstream>
 #include "hashtable.hpp"
-#include "makemove.hpp"
-#include "move.hpp"
+#include "options.hpp"
+#include "print.hpp"
 #include "search.hpp"
 #include "uai.hpp"
-#include "options.hpp"
 
-std::string get_engine_move(Hashtable *tt, Options *options, Position &pos, int depth, int movetime, bool verbose=false)
-{
+std::string get_engine_move(Hashtable *tt,
+                            Options *options,
+                            libataxx::Position &pos,
+                            int depth,
+                            int movetime,
+                            bool verbose = false) {
     assert(tt != NULL);
 
-    // We need to eat the output of the search because the user doesn't want to read it
+    // We need to eat the output of the search because the user doesn't want to
+    // read it
     std::stringstream buffer;
     std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
 
@@ -25,22 +29,22 @@ std::string get_engine_move(Hashtable *tt, Options *options, Position &pos, int 
     // Restore the normal output
     std::cout.rdbuf(old);
 
-    // Looking for the "bestmove" line so we can play the move the search returns
+    // Looking for the "bestmove" line so we can play the move the search
+    // returns
     std::string best_move = "";
-    while(!buffer.eof())
-    {
+    while (!buffer.eof()) {
         std::string line;
         std::getline(buffer, line, '\n');
 
-        if(verbose == true)
-        {
+        if (verbose == true) {
             std::cout << line << std::endl;
         }
 
-        if(line.size() < 3) {continue;}
+        if (line.size() < 3) {
+            continue;
+        }
 
-        if(line.substr(0, line.find_first_of(' ')) == "bestmove")
-        {
+        if (line.substr(0, line.find_first_of(' ')) == "bestmove") {
             best_move = line.substr(9);
             break;
         }
@@ -49,10 +53,8 @@ std::string get_engine_move(Hashtable *tt, Options *options, Position &pos, int 
     return best_move;
 }
 
-void manual()
-{
-    Position pos;
-    set_board(pos, "startpos");
+void manual() {
+    libataxx::Position pos{"startpos"};
 
     Options options;
 
@@ -62,61 +64,53 @@ void manual()
 
     // Give the user the choice of either side
     char side = ' ';
-    do
-    {
+    do {
         std::cout << "Do you want to play X or O?" << std::endl;
         std::cin >> side;
         std::cout << std::endl;
-    }
-    while(side != 'X' && side != 'O' && side != 'x' && side != 'o');
+    } while (side != 'X' && side != 'O' && side != 'x' && side != 'o');
 
     bool engine_turn = false;
-    if(side == 'x' || side == 'X')
-    {
+    if (side == 'x' || side == 'X') {
         engine_turn = false;
-    }
-    else
-    {
+    } else {
         engine_turn = true;
     }
 
     std::cout << std::endl;
 
-    while(true)
-    {
-        if(engine_turn == true)
-        {
+    while (true) {
+        if (engine_turn == true) {
             std::cout << "Thinking..." << std::endl;
-            std::string move_string = get_engine_move(&tt, &options, pos, 0, 5000);
+            std::string move_string =
+                get_engine_move(&tt, &options, pos, 0, 5000);
             std::cout << "Engine move: " << move_string << std::endl;
             std::cout << std::endl;
             std::cout << std::endl;
 
-            makemove(pos, move_string);
+            const auto move = libataxx::Move::from_uai(move_string);
+
+            pos.makemove(move);
             engine_turn = false;
-        }
-        else
-        {
+        } else {
             print(pos, false);
 
             std::cout << "Enter move: ";
             std::string move_string;
             std::cin >> move_string;
 
-            if(move_string == "quit")
-            {
+            if (move_string == "quit") {
                 break;
             }
-            else if(legal_move(pos, move_string) == false)
-            {
+
+            try {
+                const auto move = libataxx::Move::from_uai(move_string);
+                pos.makemove(move);
+                engine_turn = !engine_turn;
+            } catch (...) {
                 std::cout << std::endl;
                 std::cout << std::endl;
                 std::cout << "Illegal move" << std::endl;
-            }
-            else
-            {
-                makemove(pos, move_string);
-                engine_turn = !engine_turn;
             }
 
             std::cout << std::endl;
