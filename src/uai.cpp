@@ -1,6 +1,7 @@
 #include <ctime>
 #include <iostream>
 #include <libataxx/position.hpp>
+#include <sstream>
 #include <thread>
 #include "eval.hpp"
 #include "options.hpp"
@@ -41,19 +42,20 @@ void uai() {
         std::string input;
         getline(std::cin, input);
 
-        std::vector<std::string> tokens = split(input, ' ');
+        std::stringstream ss{input};
+        std::string word;
 
-        for (unsigned int n = 0; n < tokens.size(); ++n) {
-            if (tokens[n] == "isready") {
+        while (ss >> word) {
+            if (word == "isready") {
                 if (initialised == false) {
                     table_create(&tt, options.hash);
                     initialised = true;
                 }
                 std::cout << "readyok" << std::endl;
-            } else if (tokens[n] == "uainewgame") {
+            } else if (word == "uainewgame") {
                 pos.set_fen("startpos");
                 table_clear(&tt);
-            } else if (tokens[n] == "go") {
+            } else if (word == "go") {
                 // Stop the search if there's already one going
                 if (search_thread.joinable()) {
                     stop = true;
@@ -67,25 +69,18 @@ void uai() {
                 int nodes = 0;
 
                 // Subcommands
-                for (unsigned int i = n + 1; i < tokens.size(); ++i) {
-                    if (tokens[i] == "infinite") {
+                while (ss >> word) {
+                    if (word == "infinite") {
                         depth = 20;
-                        n += 1;
-                    } else if (tokens[i] == "depth") {
-                        depth = stoi(tokens[i + 1]);
+                    } else if (word == "depth") {
+                        ss >> depth;
                         movetime = 0;
-                        n += 2;
-                        i += 1;
-                    } else if (tokens[i] == "movetime") {
+                    } else if (word == "movetime") {
+                        ss >> movetime;
                         depth = 0;
-                        movetime = stoi(tokens[i + 1]);
-                        n += 2;
-                        i += 1;
-                    } else if (tokens[i] == "nodes") {
-                        nodes = stoi(tokens[i + 1]);
+                    } else if (word == "nodes") {
+                        ss >> nodes;
                         movetime = 0;
-                        n += 2;
-                        i += 1;
                     }
                 }
 
@@ -107,21 +102,18 @@ void uai() {
                     search_thread = std::thread(
                         alphabeta, &tt, &options, pos, &stop, depth, movetime);
                 }
-            } else if (tokens[n] == "stop") {
+            } else if (word == "stop") {
                 // Stop the search if there's already one going
                 if (search_thread.joinable()) {
                     stop = true;
                     search_thread.join();
                     stop = false;
                 }
-            } else if (tokens[n] == "perft") {
+            } else if (word == "perft") {
                 int depth = 5;
 
                 // Subcommands
-                if (n + 1 < tokens.size()) {
-                    depth = stoi(tokens[n + 1]);
-                    n += 1;
-                }
+                ss >> depth;
 
                 // Subcommand checking
                 if (depth < 1) {
@@ -132,14 +124,10 @@ void uai() {
                 std::cout << "depth " << depth;
                 std::cout << " nodes " << nodes;
                 std::cout << std::endl;
-            } else if (tokens[n] == "rollout") {
-                if (n + 1 >= tokens.size()) {
-                    continue;
-                }
-
+            } else if (word == "rollout") {
                 // Subcommands
-                int num_games = stoi(tokens[n + 1]);
-                n += 1;
+                int num_games = 0;
+                ss >> num_games;
 
                 // Subcommand checking
                 if (num_games <= 1) {
@@ -169,96 +157,97 @@ void uai() {
 
                 std::cout << "winrate " << 100.0 * score / num_games << "%"
                           << std::endl;
-            } else if (tokens[n] == "hashtable") {
-                if (n + 1 >= tokens.size()) {
-                    continue;
-                }
-
-                if (tokens[n + 1] == "clear") {
-                    n += 1;
+            } else if (word == "hashtable") {
+                ss >> word;
+                if (word == "clear") {
                     table_clear(&tt);
-                } else if (tokens[n + 1] == "print") {
-                    n += 1;
+                } else if (word == "print") {
                     print_details(&tt);
                 }
-            } else if (tokens[n] == "print") {
+            } else if (word == "print") {
                 print(pos, true);
-            } else if (tokens[n] == "position") {
-                if (n + 1 < tokens.size()) {
-                    n += 1;
-                    if (tokens[n] == "startpos") {
-                        pos.set_fen("startpos");
-                    } else if (tokens[n] == "fen") {
-                        if (n + 1 < tokens.size()) {
-                            n += 1;
-                            std::string fen_string = tokens[n];
-
-                            while (n + 1 < tokens.size() &&
-                                   tokens[n + 1] != "moves") {
-                                n += 1;
-                                fen_string += " " + tokens[n];
-                            }
-
-                            pos.set_fen(fen_string);
+            } else if (word == "position") {
+                ss >> word;
+                if (word == "startpos") {
+                    pos.set_fen("startpos");
+                } else if (word == "fen") {
+                    std::string fen;
+                    while (ss >> word && word != "moves") {
+                        if (fen.empty()) {
+                            fen = word;
+                        } else {
+                            fen += " " + word;
                         }
                     }
+                    pos.set_fen(fen);
                 }
-            } else if (tokens[n] == "eval") {
+            } else if (word == "eval") {
                 split_eval(pos);
-            } else if (tokens[n] == "movegen") {
+            } else if (word == "movegen") {
                 libataxx::Move moves[libataxx::max_moves];
                 const auto num_moves = pos.legal_moves(moves);
                 for (int i = 0; i < num_moves; ++i) {
                     std::cout << i << ": " << moves[i] << std::endl;
                 }
-            } else if (tokens[n] == "moves") {
-                for (unsigned int i = n + 1; i < tokens.size(); ++i) {
+            } else if (word == "moves") {
+                while (ss >> word) {
                     try {
-                        const auto move = libataxx::Move::from_uai(tokens[i]);
+                        const auto move = libataxx::Move::from_uai(word);
                         pos.makemove(move);
-                        n++;
                     } catch (...) {
                         break;
                     }
-
-                    n += 1;
                 }
-            } else if (tokens[n] == "options") {
+            } else if (word == "options") {
                 options.print();
-            } else if (tokens[n] == "setoption") {
-                if (n + 4 >= tokens.size() || tokens[n + 1] != "name" ||
-                    tokens[n + 3] != "value") {
+            } else if (word == "setoption") {
+                ss >> word;
+
+                if (word != "name") {
                     continue;
                 }
 
-                std::string option = tokens[n + 2];
+                std::string name;
+                std::string value;
 
-                if (option == "Hash") {
-                    int value = stoi(tokens[n + 4]);
-
-                    if (value < 1) {
-                        value = 1;
-                    } else if (value > 1024) {
-                        value = 1024;
+                while (ss >> word && word != "value") {
+                    if (name.empty()) {
+                        name = word;
+                    } else {
+                        name += " " + word;
                     }
-
-                    options.hash = table_create(&tt, value);
-                } else if (option == "Search") {
-                    options.search = tokens[n + 4];
-                } else if (option == "Contempt") {
-                    options.contempt = stoi(tokens[n + 4]);
-                } else if (option == "Threads") {
-                    options.threads = stoi(tokens[n + 4]);
-                } else if (option == "Ponder") {
-                    options.ponder = false;
                 }
 
-                n += 4;
-            } else if (tokens[n] == "quit") {
+                while (ss >> word) {
+                    if (value.empty()) {
+                        value = word;
+                    } else {
+                        value += " " + word;
+                    }
+                }
+
+                if (name == "Hash") {
+                    int n = stoi(value);
+                    if (n < 1) {
+                        n = 1;
+                    } else if (n > 1024) {
+                        n = 1024;
+                    }
+                    options.hash = table_create(&tt, n);
+                } else if (name == "Search") {
+                    options.search = value;
+                } else if (name == "Contempt") {
+                    options.contempt = stoi(value);
+                } else if (name == "Threads") {
+                    options.threads = stoi(value);
+                } else if (name == "Ponder") {
+                    options.ponder = false;
+                }
+            } else if (word == "quit") {
                 quit = true;
                 break;
             } else {
-                std::cout << "Unknown token (" << tokens[n] << ")" << std::endl;
+                std::cout << "Unknown token (" << word << ")" << std::endl;
             }
         }
     }
