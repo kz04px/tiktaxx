@@ -31,29 +31,83 @@ void uai() {
 
     std::cout << "uaiok" << std::endl;
 
+    bool stop = false;
+    std::thread search_thread;
     libataxx::Position pos{"startpos"};
-
     Hashtable tt;
     table_init(&tt);
 
-    bool initialised = false;
-    bool stop = false;
-    std::thread search_thread;
-
+    // Get options and wait for isready
     bool quit = false;
-    while (quit == false) {
+    while (!quit) {
         std::string input;
         getline(std::cin, input);
+        std::stringstream ss{input};
+        std::string word;
+        while (ss >> word) {
+            if (word == "isready") {
+                table_create(&tt, options.hash);
+                std::cout << "readyok" << std::endl;
+                quit = true;
+                break;
+            } else if (word == "setoption") {
+                ss >> word;
 
+                if (word != "name") {
+                    continue;
+                }
+
+                std::string name;
+                std::string value;
+
+                while (ss >> word && word != "value") {
+                    if (name.empty()) {
+                        name = word;
+                    } else {
+                        name += " " + word;
+                    }
+                }
+
+                while (ss >> word) {
+                    if (value.empty()) {
+                        value = word;
+                    } else {
+                        value += " " + word;
+                    }
+                }
+
+                if (name == "Hash") {
+                    int n = stoi(value);
+                    if (n < 1) {
+                        n = 1;
+                    } else if (n > 1024) {
+                        n = 1024;
+                    }
+                    options.hash = table_create(&tt, n);
+                } else if (name == "Search") {
+                    options.search = value;
+                } else if (name == "Contempt") {
+                    options.contempt = stoi(value);
+                } else if (name == "Threads") {
+                    options.threads = stoi(value);
+                } else if (name == "Ponder") {
+                    options.ponder = false;
+                }
+            } else if (word == "quit") {
+                return;
+            }
+        }
+    }
+
+    quit = false;
+    while (!quit) {
+        std::string input;
+        getline(std::cin, input);
         std::stringstream ss{input};
         std::string word;
 
         while (ss >> word) {
             if (word == "isready") {
-                if (initialised == false) {
-                    table_create(&tt, options.hash);
-                    initialised = true;
-                }
                 std::cout << "readyok" << std::endl;
             } else if (word == "uainewgame") {
                 pos.set_fen("startpos");
@@ -203,49 +257,6 @@ void uai() {
                 }
             } else if (word == "options") {
                 options.print();
-            } else if (word == "setoption") {
-                ss >> word;
-
-                if (word != "name") {
-                    continue;
-                }
-
-                std::string name;
-                std::string value;
-
-                while (ss >> word && word != "value") {
-                    if (name.empty()) {
-                        name = word;
-                    } else {
-                        name += " " + word;
-                    }
-                }
-
-                while (ss >> word) {
-                    if (value.empty()) {
-                        value = word;
-                    } else {
-                        value += " " + word;
-                    }
-                }
-
-                if (name == "Hash") {
-                    int n = stoi(value);
-                    if (n < 1) {
-                        n = 1;
-                    } else if (n > 1024) {
-                        n = 1024;
-                    }
-                    options.hash = table_create(&tt, n);
-                } else if (name == "Search") {
-                    options.search = value;
-                } else if (name == "Contempt") {
-                    options.contempt = stoi(value);
-                } else if (name == "Threads") {
-                    options.threads = stoi(value);
-                } else if (name == "Ponder") {
-                    options.ponder = false;
-                }
             } else if (word == "quit") {
                 quit = true;
                 break;
