@@ -63,9 +63,9 @@ int alphabeta_search(const libataxx::Position &pos,
         }
     }
 
-    int alpha_original = alpha;
+    const int alpha_original = alpha;
     libataxx::Move tt_move = libataxx::Move::nullmove();
-    bool pvnode = (beta - alpha == 1);
+    const bool pvnode = (beta - alpha == 1);
 
     if (info.tt) {
         // Check the hash table
@@ -132,7 +132,22 @@ int alphabeta_search(const libataxx::Position &pos,
     libataxx::Move best_move = libataxx::Move::nullmove();
     int best_score = std::numeric_limits<int>::lowest();
     libataxx::Move moves[256];
-    int num_moves = pos.legal_moves(moves);
+    const int num_moves = pos.legal_moves(moves);
+
+    // No legal moves, the game is over
+    if (num_moves == 0) {
+        assert(best_move == libataxx::Move::nullmove());
+
+        const int val = score(pos);
+
+        if (val > 0) {
+            return INF - ss->ply;
+        } else if (val < 0) {
+            return -INF + ss->ply;
+        } else {
+            return (*info.options).contempt;
+        }
+    }
 
     // Score moves
     int scores[256] = {0};
@@ -170,7 +185,6 @@ int alphabeta_search(const libataxx::Position &pos,
     int move_num = 0;
     libataxx::Move move = libataxx::Move::nullmove();
     while (next_move(moves, num_moves, move, scores)) {
-        assert(move != libataxx::Move::nullmove());
         new_pv.num_moves = 0;
         libataxx::Position new_pos = pos;
 
@@ -187,7 +201,7 @@ int alphabeta_search(const libataxx::Position &pos,
 #endif
 
 #ifdef LMR
-        int r = reduction(move_num, depth);
+        const int r = reduction(move_num, depth);
         int score = -alphabeta_search(
             new_pos, info, ss + 1, new_pv, -alpha - 1, -alpha, depth - 1 - r);
 
@@ -198,7 +212,7 @@ int alphabeta_search(const libataxx::Position &pos,
                 new_pos, info, ss + 1, new_pv, -beta, -alpha, depth - 1);
         }
 #else
-        int score = -alphabeta_search(
+        const int score = -alphabeta_search(
             new_pos, info, ss + 1, new_pv, -beta, -alpha, depth - 1);
 #endif
 
@@ -242,21 +256,6 @@ int alphabeta_search(const libataxx::Position &pos,
         move_num++;
     }
 
-    if (num_moves == 0) {
-        assert(best_move == libataxx::Move::nullmove());
-
-        const int val = score(pos);
-
-        if (val > 0) {
-            return INF - ss->ply;
-        } else if (val < 0) {
-            return -INF + ss->ply;
-        } else {
-            return (*info.options).contempt;
-        }
-    }
-
-    assert(best_move != libataxx::Move::nullmove());
     assert(best_score != std::numeric_limits<int>::lowest());
 
     // Every move failed low so we need to update the pv
