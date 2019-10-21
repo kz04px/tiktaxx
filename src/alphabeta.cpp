@@ -94,6 +94,9 @@ int alphabeta_search(const libataxx::Position &pos,
             if (get_depth(entry) >= depth && pos.legal_move(tt_move) == true) {
                 const int score = eval_from_tt(get_eval(entry), ss->ply);
 
+                assert(score <= INF);
+                assert(score >= -INF);
+
                 switch (get_flag(entry)) {
                     case EXACT:
                         pv.num_moves = 1;
@@ -191,7 +194,6 @@ int alphabeta_search(const libataxx::Position &pos,
 #ifdef FUTILITY_PRUNING
         int material = 100 * (new_pos.us().count() - new_pos.them().count());
         if (move_num > 0 && depth < 3 && -material + 100 < alpha) {
-            assert(best_move != libataxx::Move::nullmove());
             continue;
         }
 #endif
@@ -211,6 +213,9 @@ int alphabeta_search(const libataxx::Position &pos,
         const int score = -alphabeta_search(
             new_pos, info, ss + 1, new_pv, -beta, -alpha, depth - 1);
 #endif
+
+        assert(score <= INF);
+        assert(score >= -INF);
 
         if (score > best_score) {
             best_move = move;

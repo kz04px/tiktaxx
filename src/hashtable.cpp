@@ -159,8 +159,10 @@ void add(Hashtable *table,
          const libataxx::Move &move,
          const uint8_t flag) {
     assert(table != NULL);
+    assert(eval <= INF);
+    assert(eval >= -INF);
 
-    int index = key % table->max_entries;
+    const int index = key % table->max_entries;
 
     if (table->entries[index].key == 0ULL) {
         table->num_entries++;
@@ -191,7 +193,7 @@ void add_perft(Hashtable *table,
                const uint64_t nodes) {
     assert(table != NULL);
 
-    int index = key % table->max_entries;
+    const int index = key % table->max_entries;
 
     if (table->entries[index].key == 0ULL) {
         table->num_entries++;
@@ -209,6 +211,9 @@ void add_perft(Hashtable *table,
 }
 
 int eval_to_tt(const int eval, const int ply) {
+    assert(ply <= MAX_DEPTH);
+    assert(eval <= INF);
+    assert(eval >= -INF);
     if (eval > INF - MAX_DEPTH) {
         return eval + ply;
     }
@@ -219,6 +224,9 @@ int eval_to_tt(const int eval, const int ply) {
 }
 
 int eval_from_tt(const int eval, const int ply) {
+    assert(ply <= MAX_DEPTH);
+    assert(eval <= INF);
+    assert(eval >= -INF);
     if (eval > INF - MAX_DEPTH) {
         return eval - ply;
     }
