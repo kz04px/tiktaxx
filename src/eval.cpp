@@ -51,7 +51,7 @@ int eval(const libataxx::Position &pos) {
 
         if (score > 0) {
             score = INF;
-        } else {
+        } else if (score < 0) {
             score = -INF;
         }
 

@@ -45,7 +45,14 @@ int alphabeta_search(const libataxx::Position &pos,
 
     if (depth == 0 || info.depth >= MAX_DEPTH) {
         info.leaf_nodes++;
-        return eval(pos);
+        const auto score = eval(pos);
+        if (score == INF) {
+            return INF - ss->ply;
+        } else if (score == -INF) {
+            return -INF + ss->ply;
+        } else {
+            return score;
+        }
     }
 
     if (info.nodes != 0) {
