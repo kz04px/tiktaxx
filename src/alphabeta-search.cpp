@@ -80,9 +80,11 @@ void alphabeta(Hashtable *tt,
 
         node_total += info.nodes;
 
-        std::cout << "info"
-                  << " depth " << d << " nodes " << info.nodes << " score "
-                  << score << " time " << (uint64_t)(1000.0 * time_spent);
+        std::cout << "info";
+        std::cout << " depth " << d;
+        std::cout << " nodes " << info.nodes;
+        std::cout << " score cp " << score;
+        std::cout << " time " << (uint64_t)(1000.0 * time_spent);
 
         if (pv.num_moves > 0) {
             std::cout << " pv " + get_pv_string(pv);
