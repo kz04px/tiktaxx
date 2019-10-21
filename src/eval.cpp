@@ -37,27 +37,6 @@ int eval(const libataxx::Position &pos) {
     auto their_moves = pos.them().singles() | pos.them().doubles();
     their_moves &= empty;
 
-    // Win condition
-    if (our_moves == 0ULL || their_moves == 0ULL) {
-        const auto num_empty = empty.count();
-
-        int score = num_friendly - num_unfriendly;
-
-        if (our_moves == 0ULL) {
-            score -= num_empty;
-        } else if (their_moves == 0ULL) {
-            score += num_empty;
-        }
-
-        if (score > 0) {
-            score = INF;
-        } else if (score < 0) {
-            score = -INF;
-        }
-
-        return score;
-    }
-
     int our_pst = 0;
     int their_pst = 0;
 

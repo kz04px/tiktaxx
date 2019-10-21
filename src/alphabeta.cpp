@@ -43,16 +43,20 @@ int alphabeta_search(const libataxx::Position &pos,
     assert(depth >= 0);
     assert(beta >= alpha);
 
-    if (depth == 0 || info.depth >= MAX_DEPTH) {
-        info.leaf_nodes++;
-        const auto score = eval(pos);
-        if (score == INF) {
+    if (pos.gameover()) {
+        const auto material = pos.us().count() - pos.them().count();
+        if (material > 0) {
             return INF - ss->ply;
-        } else if (score == -INF) {
+        } else if (material < 0) {
             return -INF + ss->ply;
         } else {
-            return score;
+            return (*info.options).contempt;
         }
+    }
+
+    if (depth == 0 || info.depth >= MAX_DEPTH) {
+        info.leaf_nodes++;
+        return eval(pos);
     }
 
     if (info.nodes != 0) {
@@ -140,21 +144,6 @@ int alphabeta_search(const libataxx::Position &pos,
     int best_score = std::numeric_limits<int>::lowest();
     libataxx::Move moves[256];
     const int num_moves = pos.legal_moves(moves);
-
-    // No legal moves, the game is over
-    if (num_moves == 0) {
-        assert(best_move == libataxx::Move::nullmove());
-
-        const int val = score(pos);
-
-        if (val > 0) {
-            return INF - ss->ply;
-        } else if (val < 0) {
-            return -INF + ss->ply;
-        } else {
-            return (*info.options).contempt;
-        }
-    }
 
     // Score moves
     int scores[256] = {0};
