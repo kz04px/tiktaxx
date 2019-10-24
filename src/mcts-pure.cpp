@@ -21,6 +21,9 @@ void mcts_pure(const libataxx::Position &pos, int max_nodes, int movetime) {
     if (num_moves == 0) {
         std::cout << "bestmove 0000" << std::endl;
         return;
+    } else if (num_moves == 1) {
+        std::cout << "bestmove " << moves[0] << std::endl;
+        return;
     }
 
     float scores[256] = {0.0};
