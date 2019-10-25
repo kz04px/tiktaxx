@@ -8,12 +8,16 @@
 #define INF 1000000
 #define TURN_BONUS 300
 #define PIECE_VALUE 100
-#define MOBILITY_VALUE 1
+#define MOBILITY_VALUE 3
+#define PST_MUL 3
 
-const int PST[49] = {30, 20, 10, 10, 10, 20, 30, 20, 10, 10, 5,  10, 10,
-                     20, 10, 10, 5,  0,  5,  10, 10, 10, 5,  0,  0,  0,
-                     5,  10, 10, 10, 5,  0,  5,  10, 10, 20, 10, 10, 5,
-                     10, 10, 20, 30, 20, 10, 10, 10, 20, 30};
+const int PST[49] = {30, 20, 10, 10, 10, 20, 30,
+                     20, 10, 10, 5,  10, 10, 20,
+                     10, 10, 5,  0,  5,  10, 10,
+                     10, 5,  0,  0,  0,   5, 10,
+                     10, 10, 5,  0,  5,  10, 10,
+                     20, 10, 10, 5, 10,  10, 20,
+                     30, 20, 10, 10, 10, 20, 30};
 
 void split_eval(const libataxx::Position &pos) {
     int num_friendly = pos.us().count();
@@ -41,11 +45,11 @@ int eval(const libataxx::Position &pos) {
     int their_pst = 0;
 
     for (const auto &sq : pos.us()) {
-        our_pst += PST[static_cast<int>(sq)];
+        our_pst += PST[static_cast<int>(sq)] * PST_MUL;
     }
 
     for (const auto &sq : pos.them()) {
-        their_pst += PST[static_cast<int>(sq)];
+        their_pst += PST[static_cast<int>(sq)] * PST_MUL;
     }
 
     int score = (p * TURN_BONUS + 200) + PIECE_VALUE * num_friendly -
