@@ -3,9 +3,9 @@
 
 #include <libataxx/move.hpp>
 
-bool next_move(const libataxx::Move *moves,
+bool next_move(libataxx::Move *moves,
                const int num_moves,
                libataxx::Move &move,
-               int *scores);
+               int *scores, const int move_num);
 
 #endif

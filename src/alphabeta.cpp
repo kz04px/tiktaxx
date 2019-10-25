@@ -183,7 +183,7 @@ int alphabeta_search(const libataxx::Position &pos,
 
     int move_num = 0;
     libataxx::Move move = libataxx::Move::nullmove();
-    while (next_move(moves, num_moves, move, scores)) {
+    while (next_move(moves, num_moves, move, scores, move_num)) {
         new_pv.num_moves = 0;
         libataxx::Position new_pos = pos;
 
@@ -194,6 +194,7 @@ int alphabeta_search(const libataxx::Position &pos,
 #ifdef FUTILITY_PRUNING
         int material = 100 * (new_pos.us().count() - new_pos.them().count());
         if (move_num > 0 && depth < 3 && -material + 100 < alpha) {
+            move_num++;
             continue;
         }
 #endif
