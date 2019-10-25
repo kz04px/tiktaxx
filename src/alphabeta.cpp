@@ -19,16 +19,16 @@ int reduction(const int move_num, const int depth) {
     assert(move_num >= 0);
     assert(depth >= 0);
 
-    if (move_num < 2 || depth < 3) {
+    if (move_num < 2) {
         return 0;
     }
 
     if (move_num < 6) {
         return 1;
     } else if (move_num < 12) {
-        return depth / 3;
+        return 1 + (depth / 3);
     } else {
-        return depth / 2;
+        return 2 + (depth / 2);
     }
 }
 
@@ -40,7 +40,6 @@ int alphabeta_search(const libataxx::Position &pos,
                      int beta,
                      int depth) {
     assert(ss != NULL);
-    assert(depth >= 0);
     assert(beta >= alpha);
 
     if (pos.gameover()) {
@@ -54,7 +53,7 @@ int alphabeta_search(const libataxx::Position &pos,
         }
     }
 
-    if (depth == 0 || info.depth >= MAX_DEPTH) {
+    if (depth <= 0 || info.depth >= MAX_DEPTH) {
         info.leaf_nodes++;
         return eval(pos);
     }
