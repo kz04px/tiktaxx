@@ -182,7 +182,7 @@ int alphabeta_search(const libataxx::Position &pos,
 
     int move_num = 0;
     libataxx::Move move = libataxx::Move::nullmove();
-    while (next_move(moves, num_moves, move, scores, move_num)) {
+    while (next_move(moves, num_moves, move, scores, move_num, depth)) {
         new_pv.num_moves = 0;
         libataxx::Position new_pos = pos;
 

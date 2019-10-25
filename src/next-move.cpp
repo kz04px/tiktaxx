@@ -6,7 +6,8 @@ bool next_move(libataxx::Move *moves,
                const int num_moves,
                libataxx::Move &move,
                int *scores,
-               const int cur_move) {
+               const int cur_move,
+               const int depth) {
     assert(moves != NULL);
     assert(scores != NULL);
     assert(cur_move <= num_moves);
@@ -15,7 +16,7 @@ bool next_move(libataxx::Move *moves,
         return false;
     }
 
-    if (cur_move < 12) {
+    if (cur_move < 6 + depth) {
         int best_index;
         int best_score = INT_MIN;
 
