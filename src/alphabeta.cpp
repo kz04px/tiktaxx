@@ -152,17 +152,16 @@ int alphabeta_search(const libataxx::Position &pos,
     for (int n = 0; n < num_moves; ++n) {
         if (moves[n] == tt_move) {
             scores[n] = 10001;
+            continue;
         }
+        int captures = count_captures(pos, moves[n]);
+        scores[n] = 10 * captures;
+        scores[n] += (moves[n].is_single() ? 10 : 0);
 #ifdef KILLER_MOVES
-        else if (moves[n] == ss->killer) {
-            scores[n] = 10000;
+        if (moves[n] == ss->killer) {
+            scores[n] += 1;
         }
 #endif
-        else {
-            scores[n] = count_captures(pos, moves[n]);
-
-            scores[n] += (moves[n].is_single() ? 1 : 0);
-        }
     }
 
 #ifdef IID
@@ -235,9 +234,7 @@ int alphabeta_search(const libataxx::Position &pos,
 
         if (alpha >= beta) {
 #ifdef KILLER_MOVES
-            if (count_captures(pos, move) == 0) {
-                ss->killer = move;
-            }
+            ss->killer = move;
 #endif
 #ifndef NDEBUG
             info.cutoffs[move_num]++;

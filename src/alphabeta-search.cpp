@@ -22,7 +22,7 @@ void alphabeta(Hashtable *tt,
     for (int n = 0; n < MAX_DEPTH; ++n) {
         ss[n].ply = n;
 #ifdef KILLER_MOVES
-        ss[n].killer = NO_MOVE;
+        ss[n].killer = {};
 #endif
 #ifdef NULLMOVE
         ss[n].nullmove = true;

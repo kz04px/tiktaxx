@@ -1,5 +1,5 @@
 CC         = g++
-CFLAGS     = -std=c++14 -Wall -Wextra -O3 -flto -DNDEBUG -DNULLMOVE -DASPIRATION_WINDOWS -DLMR -DFUTILITY_PRUNING
+CFLAGS     = -std=c++14 -Wall -Wextra -O3 -flto -mpopcnt -march=native -DNDEBUG -DNULLMOVE -DASPIRATION_WINDOWS -DLMR -DFUTILITY_PRUNING -DKILLER_MOVES
 
 LINKER     = g++ -o
 LFLAGS     = -L./libs/libataxx/build/static -pthread -lataxx
