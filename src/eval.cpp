@@ -9,7 +9,7 @@
 #define TURN_BONUS 300
 #define PIECE_VALUE 100
 #define MOBILITY_VALUE 3
-#define PST_MUL 3
+#define PST_MUL 2
 
 const int PST[49] = {30, 20, 10, 10, 10, 20, 30,
                      20, 10, 10, 5,  10, 10, 20,
