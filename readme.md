@@ -39,18 +39,21 @@ Some potentially useful python scripts for Ataxx engine development, among other
 
 ---
 ### Example UAI usage
->uai<br/>
-id name Tiktaxx<br/>
-id author kz04px<br/>
-uaiok<br/>
-isready<br/>
-readyok<br/>
-uainewgame<br/>
-go depth 5<br/>
-info depth 1 nodes 15 score -135 time 0 pv f1<br/>
-info depth 2 nodes 45 score 261 time 0 pv f1<br/>
-info depth 3 nodes 565 score -147 time 0 pv g2 b1<br/>
-info depth 4 nodes 1213 score 273 time 0 pv g2 b1 f1 a2<br/>
-info depth 5 nodes 6787 score -53 time 1 pv f2 b1 e1 a2 e1c1<br/>
-bestmove f2<br/>
-quit
+```
+>uai
+<id name Tiktaxx
+<id author kz04px
+<uaiok
+>isready
+<readyok
+>uainewgame
+>position startpos
+>go depth 5
+<info depth 1 nodes 15 score -135 time 0 pv f1
+<info depth 2 nodes 45 score 261 time 0 pv f1
+<info depth 3 nodes 565 score -147 time 0 pv g2 b1
+<info depth 4 nodes 1213 score 273 time 0 pv g2 b1 f1 a2
+<info depth 5 nodes 6787 score -53 time 1 pv f2 b1 e1 a2 e1c1
+<bestmove f2
+>quit
+```
