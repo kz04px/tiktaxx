@@ -24,8 +24,8 @@ The only differences are that instances of 'c' for 'chess' have been replaced by
 ### FEN strings
 "x" are player one's pieces. "o" are player two's pieces. Numbers represent the number of empty squares. Dashes represent blocked squares. The final character shows the current side to play.<br/>
 Examples:
->x5o/7/7/7/7/7/o5x x<br/>
->x5o/7/2-1-2/7/2-1-2/7/o5x x
+>x5o/7/7/7/7/7/o5x x 0 1<br/>
+>x5o/7/2-1-2/7/2-1-2/7/o5x x 0 1
 
 ---
 ### Play without a GUI
@@ -49,11 +49,11 @@ Some potentially useful python scripts for Ataxx engine development, among other
 >uainewgame
 >position startpos
 >go depth 5
-<info depth 1 nodes 15 score -135 time 0 pv f1
-<info depth 2 nodes 45 score 261 time 0 pv f1
-<info depth 3 nodes 565 score -147 time 0 pv g2 b1
-<info depth 4 nodes 1213 score 273 time 0 pv g2 b1 f1 a2
-<info depth 5 nodes 6787 score -53 time 1 pv f2 b1 e1 a2 e1c1
-<bestmove f2
+<info depth 1 nodes 17 score cp -140 time 0 pv f1
+<info depth 2 nodes 51 score cp 236 time 0 pv f1
+<info depth 3 nodes 741 score cp -102 time 0 pv f1 b1
+<info depth 4 nodes 1666 score cp 178 time 0 pv f1 a2 e1
+<info depth 5 nodes 12926 score cp -63 time 5 pv f1 a2 e1 b1
+<bestmove f1
 >quit
 ```
