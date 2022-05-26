@@ -10,7 +10,11 @@ void alphabeta(Hashtable *tt,
                const libataxx::Position &pos,
                bool *stop,
                int depth,
-               int movetime) {
+               int movetime,
+               int btime,
+               int wtime,
+               int binc,
+               int winc) {
     assert(tt != NULL);
     assert(stop != NULL);
 
@@ -36,10 +40,14 @@ void alphabeta(Hashtable *tt,
     info.tt = tt;
     info.options = options;
 
-    if (depth == 0) {
+    if (movetime > 0) {
         depth = MAX_DEPTH;
         info.end = info.start + ((double)movetime / 1000.0) * CLOCKS_PER_SEC;
-    } else if (movetime == 0) {
+    } else if (btime > 0 || wtime > 0 || binc > 0 || winc > 0) {
+        depth = MAX_DEPTH;
+        double search_time = pos.turn() == libataxx::Side::Black ? (btime / 30.0) : (wtime / 30.0);
+        info.end = info.start + (search_time / 1000.0) * CLOCKS_PER_SEC;
+    } else if (depth > 0) {
         info.end = INT_MAX;
     }
 

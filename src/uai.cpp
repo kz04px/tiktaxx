@@ -124,6 +124,10 @@ void uai() {
                 int depth = 0;
                 int movetime = 0;
                 int nodes = 0;
+                int btime = 0;
+                int wtime = 0;
+                int binc = 0;
+                int winc = 0;
 
                 // Subcommands
                 while (ss >> word) {
@@ -131,13 +135,18 @@ void uai() {
                         depth = 20;
                     } else if (word == "depth") {
                         ss >> depth;
-                        movetime = 0;
                     } else if (word == "movetime") {
                         ss >> movetime;
-                        depth = 0;
                     } else if (word == "nodes") {
                         ss >> nodes;
-                        movetime = 0;
+                    } else if (word == "btime") {
+                        ss >> btime;
+                    } else if (word == "wtime") {
+                        ss >> wtime;
+                    } else if (word == "binc") {
+                        ss >> binc;
+                    } else if (word == "winc") {
+                        ss >> winc;
                     }
                 }
 
@@ -157,7 +166,7 @@ void uai() {
                     random(pos);
                 } else {
                     search_thread = std::thread(
-                        alphabeta, &tt, &options, pos, &stop, depth, movetime);
+                        alphabeta, &tt, &options, pos, &stop, depth, movetime, btime, wtime, binc, winc);
                 }
             } else if (word == "stop") {
                 // Stop the search if there's already one going

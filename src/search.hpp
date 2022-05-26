@@ -15,7 +15,11 @@ void alphabeta(Hashtable *tt,
                const libataxx::Position &pos,
                bool *stop,
                int depth,
-               int movetime);
+               int movetime,
+               int btime,
+               int wtime,
+               int binc,
+               int winc);
 
 // Alpha Beta
 int minimax(const libataxx::Position &pos,

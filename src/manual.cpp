@@ -24,7 +24,7 @@ std::string get_engine_move(Hashtable *tt,
     std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
 
     bool stop = false;
-    alphabeta(tt, options, pos, &stop, depth, movetime);
+    alphabeta(tt, options, pos, &stop, depth, movetime, 0, 0, 0, 0);
 
     // Restore the normal output
     std::cout.rdbuf(old);
