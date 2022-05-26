@@ -236,6 +236,7 @@ void uai() {
                 ss >> word;
                 if (word == "startpos") {
                     pos.set_fen("startpos");
+                    ss >> word;
                 } else if (word == "fen") {
                     std::string fen;
                     while (ss >> word && word != "moves") {
@@ -246,6 +247,17 @@ void uai() {
                         }
                     }
                     pos.set_fen(fen);
+                }
+
+                if (word == "moves") {
+                    while (ss >> word) {
+                        try {
+                            const auto move = libataxx::Move::from_uai(word);
+                            pos.makemove(move);
+                        } catch (...) {
+                            break;
+                        }
+                    }
                 }
             } else if (word == "eval") {
                 split_eval(pos);
