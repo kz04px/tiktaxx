@@ -6,7 +6,7 @@
 int score(const libataxx::Position &pos) {
     int num_us = pos.get_us().count();
     int num_them = pos.get_them().count();
-    const int num_blockers = pos.get_gaps().count();
+    [[maybe_unused]] const int num_blockers = pos.get_gaps().count();
     const int num_empty = pos.get_empty().count();
 
     assert(num_us + num_them + num_blockers + num_empty == 49);
