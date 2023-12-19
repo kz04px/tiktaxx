@@ -4,7 +4,7 @@ CFLAGS     = -std=c++17 -Wall -Wextra -O3 -flto -DNDEBUG -DNULLMOVE -DASPIRATION
 LINKER     = g++ -o
 LFLAGS     = -L./libs/libataxx/build/src/ -pthread -lataxx_static
 
-TARGET     = main
+TARGET     = tiktaxx
 SRCDIR     = src
 OBJDIR     = obj
 BINDIR     = bin
