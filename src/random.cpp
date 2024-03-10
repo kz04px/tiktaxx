@@ -21,6 +21,6 @@ void random(const libataxx::Position &pos) {
               << " nodes " << 1 << " score " << -eval(new_pos) << " pv "
               << moves[n] << std::endl;
 
-    assert(pos.legal_move(moves[n]) == true);
+    assert(pos.is_legal_move(moves[n]) == true);
     std::cout << "bestmove " << moves[n] << std::endl;
 }

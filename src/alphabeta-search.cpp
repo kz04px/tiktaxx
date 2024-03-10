@@ -45,7 +45,9 @@ void alphabeta(Hashtable *tt,
         info.end = info.start + ((double)movetime / 1000.0) * CLOCKS_PER_SEC;
     } else if (btime > 0 || wtime > 0 || binc > 0 || winc > 0) {
         depth = MAX_DEPTH;
-        double search_time = pos.turn() == libataxx::Side::Black ? (btime / 30.0) : (wtime / 30.0);
+        double search_time = pos.get_turn() == libataxx::Side::Black
+                                 ? (btime / 30.0)
+                                 : (wtime / 30.0);
         info.end = info.start + (search_time / 1000.0) * CLOCKS_PER_SEC;
     } else if (depth > 0) {
         info.end = INT_MAX;
@@ -159,7 +161,7 @@ void alphabeta(Hashtable *tt,
             std::cout << "bestmove 0000" << std::endl;
         } else {
             int n = rand() % num_moves;
-            assert(pos.legal_move(moves[n]) == true);
+            assert(pos.is_legal_move(moves[n]) == true);
             std::cout << "bestmove " << moves[n] << std::endl;
         }
     } else {

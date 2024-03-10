@@ -2,7 +2,7 @@ CC         = g++
 CFLAGS     = -std=c++14 -Wall -Wextra -O3 -flto -DNDEBUG -DNULLMOVE -DASPIRATION_WINDOWS -DLMR -DFUTILITY_PRUNING
 
 LINKER     = g++ -o
-LFLAGS     = -L./libs/libataxx/build/static -pthread -lataxx
+LFLAGS     = -L./libs/libataxx/build/src/ -pthread -lataxx_static
 
 TARGET     = main
 SRCDIR     = src

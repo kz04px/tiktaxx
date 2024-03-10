@@ -21,7 +21,7 @@ bool legal_pv(const libataxx::Position &pos, const PV &pv) {
     libataxx::Position npos = pos;
 
     for (int i = 0; i < pv.num_moves; ++i) {
-        if (npos.legal_move(pv.moves[i]) == false) {
+        if (npos.is_legal_move(pv.moves[i]) == false) {
             return false;
         }
 

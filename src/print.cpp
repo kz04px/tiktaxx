@@ -19,11 +19,11 @@ void print(const libataxx::Position &pos, bool details) {
             const auto sq = libataxx::Square{f, r};
             const auto bb = libataxx::Bitboard{sq};
 
-            if (pos.black() & bb) {
+            if (pos.get_black() & bb) {
                 std::cout << "X";
-            } else if (pos.white() & bb) {
+            } else if (pos.get_white() & bb) {
                 std::cout << "O";
-            } else if (pos.gaps() & bb) {
+            } else if (pos.get_gaps() & bb) {
                 std::cout << "#";
             } else {
                 std::cout << " ";
@@ -40,7 +40,7 @@ void print(const libataxx::Position &pos, bool details) {
 
     if (details == true) {
         std::cout << "Turn: "
-                  << (pos.turn() == libataxx::Side::Black ? 'X' : 'O')
+                  << (pos.get_turn() == libataxx::Side::Black ? 'X' : 'O')
                   << std::endl;
         std::cout << "Eval: " << eval(pos) << std::endl;
         std::cout << "Score: " << score(pos) << std::endl;

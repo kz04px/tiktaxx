@@ -165,8 +165,17 @@ void uai() {
                     // The search won't take long enough to need its own thread
                     random(pos);
                 } else {
-                    search_thread = std::thread(
-                        alphabeta, &tt, &options, pos, &stop, depth, movetime, btime, wtime, binc, winc);
+                    search_thread = std::thread(alphabeta,
+                                                &tt,
+                                                &options,
+                                                pos,
+                                                &stop,
+                                                depth,
+                                                movetime,
+                                                btime,
+                                                wtime,
+                                                binc,
+                                                winc);
                 }
             } else if (word == "stop") {
                 // Stop the search if there's already one going

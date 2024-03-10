@@ -4,18 +4,18 @@
 #include "other.hpp"
 
 int score(const libataxx::Position &pos) {
-    int num_us = pos.us().count();
-    int num_them = pos.them().count();
-    const int num_blockers = pos.gaps().count();
-    const int num_empty = pos.empty().count();
+    int num_us = pos.get_us().count();
+    int num_them = pos.get_them().count();
+    const int num_blockers = pos.get_gaps().count();
+    const int num_empty = pos.get_empty().count();
 
     assert(num_us + num_them + num_blockers + num_empty == 49);
 
-    auto our_moves = pos.us().singles() | pos.us().doubles();
-    our_moves &= pos.empty();
+    auto our_moves = pos.get_us().singles() | pos.get_us().doubles();
+    our_moves &= pos.get_empty();
 
-    auto their_moves = pos.them().singles() | pos.them().doubles();
-    their_moves &= pos.empty();
+    auto their_moves = pos.get_them().singles() | pos.get_them().doubles();
+    their_moves &= pos.get_empty();
 
     if (our_moves == 0ULL && their_moves != 0ULL) {
         num_them += num_empty;

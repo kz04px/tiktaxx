@@ -31,7 +31,7 @@ float rollout(const libataxx::Position &pos, const int max_depth) {
                 r = 0.0;
             }
 
-            if (pos.turn() == new_pos.turn()) {
+            if (pos.get_turn() == new_pos.get_turn()) {
                 return r;
             } else {
                 return 1.0 - r;
@@ -63,7 +63,7 @@ float rollout_heavy(const libataxx::Position &pos, const int max_depth) {
                 r = 0.0;
             }
 
-            if (pos.turn() == new_pos.turn()) {
+            if (pos.get_turn() == new_pos.get_turn()) {
                 return r;
             } else {
                 return 1.0 - r;

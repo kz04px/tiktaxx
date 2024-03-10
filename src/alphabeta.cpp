@@ -43,8 +43,8 @@ int alphabeta_search(const libataxx::Position &pos,
     assert(depth >= 0);
     assert(beta >= alpha);
 
-    if (pos.gameover()) {
-        const auto material = pos.us().count() - pos.them().count();
+    if (pos.is_gameover()) {
+        const auto material = pos.get_us().count() - pos.get_them().count();
         if (material > 0) {
             return INF - ss->ply;
         } else if (material < 0) {
@@ -80,18 +80,19 @@ int alphabeta_search(const libataxx::Position &pos,
 
     if (info.tt) {
         // Check the hash table
-        Entry entry = probe(info.tt, pos.hash());
-        if (pos.hash() == entry.key) {
+        Entry entry = probe(info.tt, pos.get_hash());
+        if (pos.get_hash() == entry.key) {
             tt_move = get_move(entry);
 
 #ifndef NDEBUG
             info.hash_hits++;
-            if (pos.legal_move(tt_move) == false) {
+            if (pos.is_legal_move(tt_move) == false) {
                 info.hash_collisions++;
             }
 #endif
 
-            if (get_depth(entry) >= depth && pos.legal_move(tt_move) == true) {
+            if (get_depth(entry) >= depth &&
+                pos.is_legal_move(tt_move) == true) {
                 const int score = eval_from_tt(get_eval(entry), ss->ply);
 
                 assert(score <= INF);
@@ -192,7 +193,8 @@ int alphabeta_search(const libataxx::Position &pos,
         info.nodes++;
 
 #ifdef FUTILITY_PRUNING
-        int material = 100 * (new_pos.us().count() - new_pos.them().count());
+        int material =
+            100 * (new_pos.get_us().count() - new_pos.get_them().count());
         if (move_num > 0 && depth < 3 && -material + 100 < alpha) {
             continue;
         }
@@ -278,15 +280,15 @@ int alphabeta_search(const libataxx::Position &pos,
         }
 
         add(info.tt,
-            pos.hash(),
+            pos.get_hash(),
             depth,
             eval_to_tt(best_score, ss->ply),
             best_move,
             flag);
 
 #ifndef NDEBUG
-        Entry test_entry = probe(info.tt, pos.hash());
-        assert(test_entry.key == pos.hash());
+        Entry test_entry = probe(info.tt, pos.get_hash());
+        assert(test_entry.key == pos.get_hash());
         assert(test_entry.depth == depth);
         assert(eval_from_tt(test_entry.eval, ss->ply) == best_score);
         assert(test_entry.move == best_move);
